@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import ManageQuiz from './ManageQuiz';
-import SystemSettings from './SystemSettings'; // <-- Janii naya component yahan import kar dya ha
+import SystemSettings from './SystemSettings';
 
 export default function AdminDashboard({ onLogout, onNavigateToResults }) {
   const [currentView, setCurrentView] = useState('dashboard');
-
   const [showAllStudents, setShowAllStudents] = useState(false);
 
   const studentsData = [
@@ -49,55 +48,71 @@ export default function AdminDashboard({ onLogout, onNavigateToResults }) {
   return (
     <div className="min-h-screen bg-[#fafbfc] flex flex-col font-sans text-[#111111] antialiased selection:bg-pink-200">
       
-      <header className="bg-white border-b border-gray-100 px-4 sm:px-8 py-4 flex items-center justify-between sticky top-0 z-40">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-[#bd24df] rounded-xl flex items-center justify-center text-white font-extrabold text-lg shadow-sm">
-            C
-          </div>
-          <div className="flex flex-col select-none">
-            <span className="text-lg font-bold text-gray-950 tracking-tight leading-none">
-              CareerPath<span className="text-[#bd24df]">AI</span>
-            </span>
-            <span className="text-[11px] text-gray-400 font-medium mt-1 tracking-normal">
-              Smart Counseling For Your Future.
-            </span>
-          </div>
-        </div>
-        
-        <div className="flex items-center gap-4 sm:gap-5">
-          <button 
-            onClick={() => setCurrentView('dashboard')}
-            className={`px-5 py-2 rounded-xl text-sm font-bold flex items-center gap-2 transition-all cursor-pointer ${
-              currentView === 'dashboard' 
-                ? 'bg-[#fff5fa] text-[#bd24df] border border-[#fbdff3] hover:bg-[#fdecf7]' 
-                : 'bg-transparent text-gray-600 hover:bg-gray-50 border border-transparent'
-            }`}
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-            </svg>
-            Dashboard
-          </button>
+      {/* ================= ONLY ONE MAIN TOP HEADER ================= */}
+      <header className="sticky top-0 z-50 bg-white border-b border-gray-100 shadow-sm w-full">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           
-          <div className="border border-gray-200 bg-white pl-2 pr-5 py-1.5 rounded-full flex items-center gap-2 text-sm font-bold text-gray-800 shadow-3xs">
-            <div className="w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center text-gray-500 border border-gray-200">
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-              </svg>
-            </div>
-            <span className="text-gray-800 tracking-tight">Admin!</span>
+          {/* Left Side: Dynamic Logo Trigger */}
+          <div 
+            className="flex items-center select-none cursor-pointer" 
+            onClick={() => setCurrentView('dashboard')}
+          >
+            <img 
+              src="/logoo.png" 
+              alt="CareerPath AI Logo" 
+              className="h-12 sm:h-14 w-auto object-contain transition-transform hover:scale-105" 
+            />
           </div>
 
-          <div className="hidden sm:block h-6 border-l border-gray-200"></div>
-          
-          <button onClick={onLogout} className="text-sm font-bold text-gray-500 hover:text-red-600 flex items-center gap-2 cursor-pointer bg-transparent border-none p-0 transition-colors">
-            <svg className="w-4 h-4 text-gray-400 hover:text-red-500 transition-colors" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-            </svg>
-            <span className="hidden sm:inline">Logout</span>
-          </button>
+          {/* Right Side: Header Actions */}
+          <div className="flex items-center gap-4 sm:gap-6">
+            <button 
+              onClick={() => setCurrentView('dashboard')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold border cursor-pointer transition-colors ${
+                currentView === 'dashboard'
+                  ? 'bg-[#fdf2ff] text-[#bd24df] border-[#f5dbfc]'
+                  : 'bg-transparent text-gray-600 border-transparent hover:bg-gray-50'
+              }`}
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <rect x="3" y="3" width="7" height="9" rx="1" />
+                <rect x="14" y="3" width="7" height="5" rx="1" />
+                <rect x="14" y="12" width="7" height="9" rx="1" />
+                <rect x="3" y="16" width="7" height="5" rx="1" />
+              </svg>
+              <span className="hidden sm:inline">Dashboard</span>
+            </button>
+            
+            {/* Admin Identity Box */}
+            <div 
+              className="flex items-center gap-2 text-gray-700 font-medium text-sm border-l border-r border-gray-200 px-4 cursor-pointer hover:text-[#bd24df] transition-colors"
+              onClick={() => setCurrentView('settings')}
+            >
+              <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
+                <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                  <circle cx="12" cy="7" r="4" />
+                </svg>
+              </div>
+              <span className="hidden sm:inline">Admin!</span>
+            </div>
+            
+            {/* Logout Link */}
+            <button 
+              onClick={onLogout} 
+              className="flex items-center gap-1.5 text-gray-500 hover:text-red-600 text-sm font-medium transition cursor-pointer bg-transparent border-none p-0"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                <polyline points="16 17 21 12 16 7" />
+                <line x1="21" y1="12" x2="9" y2="12" />
+              </svg>
+              <span className="hidden sm:inline">Logout</span>
+            </button>
+          </div>
         </div>
       </header>
+      {/* ========================================================== */}
 
       <main className="max-w-[1440px] w-full mx-auto p-4 sm:p-8 space-y-8 flex-1">
         
@@ -118,7 +133,7 @@ export default function AdminDashboard({ onLogout, onNavigateToResults }) {
                 <svg className="w-4 h-4 text-[#bd24df]" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
                 </svg>
-                 Add New Question
+                  Add New Question
               </button>
             </div>
 
@@ -143,7 +158,6 @@ export default function AdminDashboard({ onLogout, onNavigateToResults }) {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              
               <div className="lg:col-span-2 bg-white border border-gray-100 rounded-2xl p-6 space-y-5 shadow-xs">
                 <div className="flex items-center justify-between border-b border-gray-50 pb-3">
                   <h3 className="text-sm sm:text-base font-bold text-gray-800 uppercase tracking-tight">Recent Student Activity</h3>
@@ -224,7 +238,7 @@ export default function AdminDashboard({ onLogout, onNavigateToResults }) {
                       <svg className="w-[18px] h-[18px] text-gray-400 group-hover:text-[#bd24df] transition-colors" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                       </svg>
-                      <span><span>Students Results</span></span>
+                      <span>Students Results</span>
                     </button>
 
                     <button 
@@ -323,6 +337,7 @@ export default function AdminDashboard({ onLogout, onNavigateToResults }) {
           </>
         )}
 
+        {/* Dynamic sections smoothly unique header ke niche load hongey */}
         {currentView === 'quiz' && (
           <ManageQuiz onBack={() => setCurrentView('dashboard')} />
         )}

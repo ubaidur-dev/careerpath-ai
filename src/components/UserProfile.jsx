@@ -15,7 +15,7 @@ import {
   Edit2
 } from 'lucide-react';
 
-export default function UserProfile({ onNavigate }) {
+export default function UserProfile({ onNavigate, onLogout }) {
   // Mock State for Profile Data
   const [profileData, setProfileData] = useState({
     fullName: "Ahmed Raza",
@@ -67,11 +67,23 @@ export default function UserProfile({ onNavigate }) {
 
   return (
     <div className="min-h-screen bg-[#fcf8fe] text-gray-800 font-sans antialiased">
+      {/* Poppins Import Stylesheet */}
+      <style>
+        {`
+          @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+          .font-sans {
+            font-family: 'Poppins', sans-serif;
+          }
+        `}
+      </style>
+
+      {}
       {/* GLOBAL NAVBAR */}
       <header className="sticky top-0 z-50 bg-white border-b border-gray-100 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2 cursor-pointer" onClick={() => onNavigate('dashboard')}>
-            <div className="w-8 h-8 rounded-lg bg-[#bd24df] flex items-center justify-center text-white font-bold text-xl">¢</div>
+            {/* REPLACED ¢ WITH logo.png */}
+            <img src="logo.png" alt="Logo" className="w-8 h-8 object-contain" />
             <span className="font-bold text-xl tracking-tight text-gray-900">CareerPath<span className="text-[#bd24df]">AI</span></span>
           </div>
           <div className="flex items-center gap-4 sm:gap-6">
@@ -89,7 +101,12 @@ export default function UserProfile({ onNavigate }) {
               </div>
               <span className="hidden sm:inline">Ahmed!</span>
             </div>
-            <button className="flex items-center gap-1.5 text-gray-500 hover:text-red-600 text-sm font-medium transition cursor-pointer">
+            
+            {/* FIXED LOGOUT ACTION HOOKED UP TO PROPS */}
+            <button 
+              onClick={() => onLogout && onLogout()} 
+              className="flex items-center gap-1.5 text-gray-500 hover:text-red-600 text-sm font-medium transition cursor-pointer"
+            >
               <LogOut size={18} />
               <span className="hidden sm:inline">Logout</span>
             </button>
@@ -97,6 +114,7 @@ export default function UserProfile({ onNavigate }) {
         </div>
       </header>
 
+      {}
       {/* BODY WRAPPER */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
         
@@ -218,6 +236,7 @@ export default function UserProfile({ onNavigate }) {
 
           </div>
 
+          {}
           {/* RIGHT COLUMN: FORM PANELS */}
           <div className="lg:col-span-8 bg-white border border-gray-100 rounded-3xl shadow-sm p-6 sm:p-8 space-y-8">
             

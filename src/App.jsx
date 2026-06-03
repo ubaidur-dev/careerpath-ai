@@ -121,12 +121,13 @@ export default function App() {
         />
       )}
 
-      {/* STUDENT PROFILE SCREEN */}
+      {/* STUDENT PROFILE SCREEN - FIXED LOGOUT PROP ADDED */}
       {currentScreen === 'profile' && (
         <UserProfile 
           onNavigate={(target) => {
             if (target === 'dashboard') setCurrentScreen('student-dash');
           }}
+          onLogout={() => setCurrentScreen('home')}
         />
       )}
 
