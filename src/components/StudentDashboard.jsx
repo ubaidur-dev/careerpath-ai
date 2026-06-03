@@ -27,7 +27,6 @@ export default function StudentDashboard({ onLogout, onNavigate }) {
     { id: 4, label: 'Hours Saved', value: '8', icon: Zap, iconColor: 'text-amber-400', bgColor: 'bg-amber-50' },
   ];
 
-  // FIXED: No require(). Straight JavaScript object reference mapping.
   const dynamicIconMap = {
     'Software Developer': Code2,
     'Data Analyst': BarChart3,
@@ -47,30 +46,42 @@ export default function StudentDashboard({ onLogout, onNavigate }) {
   ];
 
   return (
-    <div className="min-h-screen bg-[#fcf8fe] text-gray-800 font-sans antialiased">
+    <div className="min-h-screen bg-[#fcf8fe] text-gray-800 font-poppins antialiased">
       
-      {/* YAHAN HUMNE NAYA HEADER CALL KIYA HAI */}
+      {/* Poppins Font embedding & custom utility classes */}
+      <style>
+        {`
+          @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+          .font-poppins {
+            font-family: 'Poppins', sans-serif;
+          }
+          .custom-quiz-border {
+            border: 0.7px solid #FF00D3;
+          }
+        `}
+      </style>
+      
       <Header onNavigate={onNavigate} onLogout={onLogout} />
 
-      {/* MAIN BODY */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
         <div className="space-y-4 text-left">
           <div className="space-y-1">
             <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-gray-900">Hello, Ahmed! 👋</h1>
             <p className="text-gray-500 text-base sm:text-lg">Ready to take the next step in your career journey?</p>
           </div>
+          
           <button 
             type="button"
             onClick={() => {
               if(onNavigate) onNavigate('quiz');
             }}
-            className="inline-flex items-center justify-center bg-[#bd24df] text-white font-semibold px-6 py-3 rounded-full shadow-md cursor-pointer hover:bg-[#a61fc5] transition"
+            style={{ backgroundColor: '#FFD7FC', color: '#890080' }}
+            className="inline-flex items-center justify-center font-bold px-6 py-3 rounded-full shadow-md cursor-pointer custom-quiz-border hover:opacity-90 transition transform active:scale-95"
           >
             🎯 Start Career Quiz
           </button>
         </div>
 
-        {/* FOUR CARDS GRID */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {stats.map((stat) => {
             const IconComponent = stat.icon;
@@ -86,10 +97,8 @@ export default function StudentDashboard({ onLogout, onNavigate }) {
           })}
         </div>
 
-        {/* SPLIT LAYOUT */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
           <div className="lg:col-span-2 space-y-6">
-            {/* Journey */}
             <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-6 text-left">
               <div className="flex items-center justify-between">
                 <h2 className="text-lg font-bold text-gray-900">Your Career Journey</h2>
@@ -101,19 +110,20 @@ export default function StudentDashboard({ onLogout, onNavigate }) {
                 </div>
                 <div className="text-right text-xs font-bold text-[#bd24df]">75%</div>
               </div>
+              
+              {/* Responsive Quiz Info Boxes with requested custom backgrounds */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="bg-[#fcf5fe] p-4 rounded-xl border border-[#f5e6fa]">
+                <div style={{ backgroundColor: '#F3E4FF' }} className="p-4 rounded-xl border border-[#e2ccf0]">
                   <div className="text-2xl font-bold text-gray-900">87%</div>
                   <div className="text-xs font-medium text-gray-500 mt-0.5">Last Quiz Score</div>
                 </div>
-                <div className="bg-[#fcf5fe] p-4 rounded-xl border border-[#f5e6fa]">
+                <div style={{ backgroundColor: '#FFE4FF' }} className="p-4 rounded-xl border border-[#f5ccf5]">
                   <div className="text-2xl font-bold text-gray-900">5</div>
                   <div className="text-xs font-medium text-gray-500 mt-0.5">Matching Careers</div>
                 </div>
               </div>
             </div>
 
-            {/* Top Career Matches */}
             <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-5 text-left">
               <h2 className="text-lg font-bold text-gray-900">Top Career Matches</h2>
               <div className="space-y-3">
@@ -124,7 +134,8 @@ export default function StudentDashboard({ onLogout, onNavigate }) {
                       <div className="flex items-center gap-4">
                         <div className={`p-2.5 rounded-lg ${career.bgColor}`}><CareerIcon size={20} className="text-purple-600" /></div>
                         <div>
-                          <div className="font-bold text-gray-900 text-sm">{career.title}</div>
+                          {/* Heading with the new requested #BE007F brand color */}
+                          <div style={{ color: '#BE007F' }} className="font-bold text-sm">{career.title}</div>
                           <div className="text-xs font-semibold text-gray-500 mt-0.5">Match: <span className="text-[#bd24df]">{career.match}</span></div>
                         </div>
                       </div>
@@ -146,7 +157,6 @@ export default function StudentDashboard({ onLogout, onNavigate }) {
             </div>
           </div>
 
-          {/* RIGHT SIDEBAR */}
           <div className="space-y-6 text-left">
             <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-5">
               <h2 className="text-lg font-bold text-gray-900">Recent Activity</h2>
@@ -166,12 +176,10 @@ export default function StudentDashboard({ onLogout, onNavigate }) {
               </div>
             </div>
 
-            {/* QUICK ACTIONS SECTION (Ab Hover Effects Completely Dynamic & Fixed!) */}
             <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-4">
               <h2 className="text-lg font-bold text-gray-900">Quick Actions</h2>
               <div className="flex flex-col gap-2.5">
                 
-                {/* 1. Retake Assessment */}
                 <button 
                   type="button"
                   onClick={() => {
@@ -183,7 +191,6 @@ export default function StudentDashboard({ onLogout, onNavigate }) {
                   <RefreshCw size={16} className="text-gray-400 group-hover:text-[#bd24df] transition-colors" />
                 </button>
                 
-                {/* 2. Browse Careers */}
                 <button 
                   type="button"
                   onClick={() => {
@@ -195,7 +202,6 @@ export default function StudentDashboard({ onLogout, onNavigate }) {
                   <ChevronRight size={16} className="text-gray-400 group-hover:text-[#bd24df] transition-colors" />
                 </button>
                 
-                {/* 3. Update Profile */}
                 <button 
                   type="button"
                   onClick={() => {

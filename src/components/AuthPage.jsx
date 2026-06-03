@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
-// Agar assets folder is path par na ho toh apna customized path theek karlena jani
 import AuthImage from '../assets/Authentication.PNG'; 
 
 export default function AuthPage({ mode, setMode, onSuccess, onBackHome }) {
@@ -16,7 +15,6 @@ export default function AuthPage({ mode, setMode, onSuccess, onBackHome }) {
   return (
     <div className="min-h-screen bg-white flex flex-col lg:flex-row relative font-poppins overflow-hidden">
       
-      {/* Dynamic Style Tag to load and apply Poppins Font globally on this component */}
       <style>
         {`
           @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
@@ -26,8 +24,8 @@ export default function AuthPage({ mode, setMode, onSuccess, onBackHome }) {
         `}
       </style>
 
-      {/* 1. BACK TO HOME BUTTON WITH POPPINS STYLE */}
-      <div className="absolute top-6 left-6 z-50">
+      {/* Back To Home Button: Desktop par absolute, mobile par header container mein responsive handle hoga */}
+      <div className="absolute hidden lg:block top-6 left-6 z-50">
         <button 
           onClick={onBackHome} 
           className="flex items-center gap-2 px-4 py-2 border border-gray-200 bg-white hover:bg-gray-50 rounded-xl text-sm font-semibold text-gray-700 transition-colors shadow-sm cursor-pointer"
@@ -36,11 +34,19 @@ export default function AuthPage({ mode, setMode, onSuccess, onBackHome }) {
         </button>
       </div>
 
-      {/* FORM WRAPPER (55% Width) */}
       <div className={`w-full lg:w-[55%] flex flex-col justify-center items-center px-8 sm:px-16 lg:px-24 py-12 h-screen overflow-y-auto ${isLogin ? 'order-1' : 'order-2'}`}>
         <div className="w-full max-w-[420px] space-y-6">
           
-          {/* Header Typography */}
+          {/* Mobile Back Button Container: Yeh sirf mobile screen par top par space maintain karega */}
+          <div className="block lg:hidden w-full mb-2">
+            <button 
+              onClick={onBackHome} 
+              className="inline-flex items-center gap-2 px-4 py-2 border border-gray-200 bg-white hover:bg-gray-50 rounded-xl text-sm font-semibold text-gray-700 transition-colors shadow-sm cursor-pointer"
+            >
+              &larr; Back To Home
+            </button>
+          </div>
+
           <div className="text-center space-y-2">
             <h1 className="text-3xl lg:text-4xl font-bold tracking-tight text-gray-900">
               {isLogin ? 'Welcome Back' : 'Create Your Account'}
@@ -50,7 +56,6 @@ export default function AuthPage({ mode, setMode, onSuccess, onBackHome }) {
             </p>
           </div>
 
-          {/* Student / Admin Interactive Toggle */}
           {isLogin && (
             <div className="flex bg-gray-100/80 p-1.5 rounded-full items-center w-[250px] mx-auto border border-gray-200">
               <button
@@ -78,7 +83,6 @@ export default function AuthPage({ mode, setMode, onSuccess, onBackHome }) {
             </div>
           )}
 
-          {/* Inputs Section */}
           <form onSubmit={handleFormSubmit} className="space-y-5">
             {!isLogin && (
               <div className="space-y-2">
@@ -159,14 +163,12 @@ export default function AuthPage({ mode, setMode, onSuccess, onBackHome }) {
               {isLogin ? 'Sign In' : 'Create Account'}
             </button>
           </form>
-
-          {/* Custom Divider */}
+          
           <div className="relative flex items-center justify-center py-2">
             <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-gray-200"></div></div>
             <span className="relative bg-white px-4 text-xs font-bold text-gray-400 uppercase tracking-widest">or continue with</span>
           </div>
 
-          {/* Social Google Login */}
           <button 
             type="button" 
             onClick={() => onSuccess(role)} 
@@ -176,7 +178,6 @@ export default function AuthPage({ mode, setMode, onSuccess, onBackHome }) {
             <span>{isLogin ? 'Sign in with Google' : 'Sign up with Google'}</span>
           </button>
 
-          {/* Bottom Navigation Switcher */}
           <p className="text-center text-sm font-bold text-gray-500">
             {isLogin ? "Don't have an account?" : "Already have an account?"}{' '}
             <button 
@@ -190,7 +191,6 @@ export default function AuthPage({ mode, setMode, onSuccess, onBackHome }) {
         </div>
       </div>
 
-      {/* 2 & 3. DYNAMIC GRAPHICS / IMAGE PANEL (45% Width - Edge-to-Edge) */}
       <div className={`hidden lg:flex w-[45%] bg-[#FCEDF7] h-screen items-center justify-center relative select-none ${isLogin ? 'order-2' : 'order-1'}`}>
         <img 
           src={AuthImage} 
