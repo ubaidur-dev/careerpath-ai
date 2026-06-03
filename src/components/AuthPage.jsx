@@ -3,7 +3,7 @@ import { Eye, EyeOff } from 'lucide-react';
 import AuthImage from '../assets/Authentication.PNG'; 
 
 export default function AuthPage({ mode, setMode, onSuccess, onBackHome }) {
-  const [role, setRole] = useState('student'); // 'student' | 'admin'
+  const [role, setRole] = useState('student'); 
   const [showPass, setShowPass] = useState(false);
   const isLogin = mode === 'login';
 
@@ -24,7 +24,6 @@ export default function AuthPage({ mode, setMode, onSuccess, onBackHome }) {
         `}
       </style>
 
-      {/* Back To Home Button: Desktop par absolute, mobile par header container mein responsive handle hoga */}
       <div className="absolute hidden lg:block top-6 left-6 z-50">
         <button 
           onClick={onBackHome} 
@@ -37,7 +36,6 @@ export default function AuthPage({ mode, setMode, onSuccess, onBackHome }) {
       <div className={`w-full lg:w-[55%] flex flex-col justify-center items-center px-8 sm:px-16 lg:px-24 py-12 h-screen overflow-y-auto ${isLogin ? 'order-1' : 'order-2'}`}>
         <div className="w-full max-w-[420px] space-y-6">
           
-          {/* Mobile Back Button Container: Yeh sirf mobile screen par top par space maintain karega */}
           <div className="block lg:hidden w-full mb-2">
             <button 
               onClick={onBackHome} 

@@ -48,7 +48,6 @@ export default function StudentDashboard({ onLogout, onNavigate }) {
   return (
     <div className="min-h-screen bg-[#fcf8fe] text-gray-800 font-poppins antialiased">
       
-      {/* Poppins Font embedding & custom utility classes */}
       <style>
         {`
           @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
@@ -111,7 +110,6 @@ export default function StudentDashboard({ onLogout, onNavigate }) {
                 <div className="text-right text-xs font-bold text-[#bd24df]">75%</div>
               </div>
               
-              {/* Responsive Quiz Info Boxes with requested custom backgrounds */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div style={{ backgroundColor: '#F3E4FF' }} className="p-4 rounded-xl border border-[#e2ccf0]">
                   <div className="text-2xl font-bold text-gray-900">87%</div>
@@ -134,7 +132,6 @@ export default function StudentDashboard({ onLogout, onNavigate }) {
                       <div className="flex items-center gap-4">
                         <div className={`p-2.5 rounded-lg ${career.bgColor}`}><CareerIcon size={20} className="text-purple-600" /></div>
                         <div>
-                          {/* Heading with the new requested #BE007F brand color */}
                           <div style={{ color: '#BE007F' }} className="font-bold text-sm">{career.title}</div>
                           <div className="text-xs font-semibold text-gray-500 mt-0.5">Match: <span className="text-[#bd24df]">{career.match}</span></div>
                         </div>
