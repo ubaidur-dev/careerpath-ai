@@ -15,10 +15,8 @@ export default function App() {
   const [authMode, setAuthMode] = useState('login');
   const [selectedCareerData, setSelectedCareerData] = useState(null); 
   
-  // NAYI STATE: Yahan hum selected career ki ID save karenge jo Result page se aayegi
   const [selectedCareerId, setSelectedCareerId] = useState(null); 
   
-  // Global state to store user MCQ selections dynamically
   const [quizAnswers, setQuizAnswers] = useState({
     q1: null, q2: null, q3: null, q4: null, q5: null,
     q6: null, q7: null, q8: null, q9: null, q10: null
@@ -27,7 +25,6 @@ export default function App() {
   return (
     <div className="min-h-screen bg-[#fafafa] text-[#111111]">
       
-      {/* LANDING PAGE SCREEN */}
       {currentScreen === 'home' && (
         <LandingPage 
           onNavigate={() => {
@@ -37,7 +34,6 @@ export default function App() {
         />
       )}
       
-      {/* AUTHENTICATION SCREEN */}
       {currentScreen === 'auth' && (
         <AuthPage 
           mode={authMode} 
@@ -53,13 +49,12 @@ export default function App() {
         />
       )}
 
-      {/* STUDENT DASHBOARD SCREEN */}
       {currentScreen === 'student-dash' && (
         <StudentDashboard 
           onLogout={() => setCurrentScreen('home')} 
           onNavigate={(target) => {
             if (target === 'browse') {
-              setSelectedCareerId(null); // Dashboard se jayen to id clear kar dein
+              setSelectedCareerId(null); 
               setCurrentScreen('browse-careers');
             } else if (target === 'profile') {
               setCurrentScreen('profile');
@@ -72,7 +67,6 @@ export default function App() {
         />
       )}
 
-      {/* ADMIN DASHBOARD SCREEN */}
       {currentScreen === 'admin-dash' && (
         <AdminDashboard 
           onLogout={() => setCurrentScreen('home')} 
@@ -80,7 +74,6 @@ export default function App() {
         />
       )}
 
-      {/* STUDENT RESULTS SCREEN */}
       {currentScreen === 'student-results' && (
         <div className="p-6 max-w-7xl mx-auto">
           <button 
@@ -93,10 +86,9 @@ export default function App() {
         </div>
       )}
 
-      {/* BROWSE CAREERS SCREEN */}
       {currentScreen === 'browse-careers' && (
         <BrowseCareers 
-          activeCareerId={selectedCareerId} // YEH DEKHEIN: Yahan ID bhej di BrowseCareers ko!
+          activeCareerId={selectedCareerId} 
           onNavigate={(target, data) => {
             if (target === 'dashboard') {
               setCurrentScreen('student-dash');
@@ -110,7 +102,6 @@ export default function App() {
         />
       )}
 
-      {/* DYNAMIC CAREER DETAILS SCREEN */}
       {currentScreen === 'career-details' && (
         <CareerDetails 
           careerData={selectedCareerData}
@@ -121,7 +112,6 @@ export default function App() {
         />
       )}
 
-      {/* STUDENT PROFILE SCREEN - FIXED LOGOUT PROP ADDED */}
       {currentScreen === 'profile' && (
         <UserProfile 
           onNavigate={(target) => {
@@ -131,7 +121,6 @@ export default function App() {
         />
       )}
 
-      {/* QUIZ WIZARD SCREEN */}
       {currentScreen === 'quiz' && (
         <CareerAssessment 
           onNavigate={(target, answersData) => {
@@ -151,7 +140,6 @@ export default function App() {
         />
       )}
 
-      {/* AI CAREER SUGGESTION RESULTS SCREEN */}
       {currentScreen === 'career-results' && (
         <CareerResults 
           answers={quizAnswers}
@@ -166,7 +154,6 @@ export default function App() {
             } else if (target === 'home') {
               setCurrentScreen('home');
             } else if (target === 'roadmap-detail') {
-              // YEH DEKHEIN: Result page se button daba toh id pakar li aur browse-careers khol diya
               if (data && data.careerId) {
                 setSelectedCareerId(data.careerId);
               }
