@@ -350,7 +350,7 @@ export default function BrowseCareers({ onNavigate, onLogout, activeCareerId }) 
   }, [activeCareerId, onNavigate]);
 
   return (
-    <div className="min-h-screen bg-[#fcf8fe] text-gray-800 font-sans antialiased">
+    <div className="min-h-screen bg-[#fcf8fe] text-gray-800 font-['Poppins',sans-serif] antialiased">
       <header className="sticky top-0 z-50 bg-white border-b border-gray-100 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2 cursor-pointer" onClick={() => onNavigate('dashboard')}>
