@@ -376,7 +376,30 @@ export default function BrowseCareers({ onNavigate, onLogout, activeCareerId }) 
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10 relative">
+        
+        {/* --- Back To Dashboard Button --- */}
+        {/* Desktop Layout View */}
+        <div className="absolute hidden lg:block top-6 left-8 z-40">
+          <button 
+            onClick={() => onNavigate('dashboard')} 
+            className="flex items-center gap-2 px-4 py-2 border border-gray-200 bg-white hover:bg-gray-50 rounded-xl text-sm font-semibold text-gray-700 transition-colors shadow-sm cursor-pointer"
+          >
+            &larr; Back To Dashboard
+          </button>
+        </div>
+
+        {/* Mobile Layout View */}
+        <div className="block lg:hidden w-full text-left mb-2">
+          <button 
+            onClick={() => onNavigate('dashboard')} 
+            className="inline-flex items-center gap-2 px-4 py-2 border border-gray-200 bg-white hover:bg-gray-50 rounded-xl text-sm font-semibold text-gray-700 transition-colors shadow-sm cursor-pointer"
+          >
+            &larr; Back To Dashboard
+          </button>
+        </div>
+        {/* -------------------------------- */}
+
         <div className="text-center space-y-3 max-w-2xl mx-auto">
           <div className="inline-flex items-center gap-1.5 border border-[#f2c6fa] text-[#bd24df] text-xs font-semibold px-3 py-1 rounded-full bg-white shadow-sm">
             <Search size={12} />
