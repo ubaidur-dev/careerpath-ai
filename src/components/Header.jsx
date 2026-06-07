@@ -6,7 +6,6 @@ export default function Header({ onNavigate, onLogout }) {
     <header className="sticky top-0 z-50 bg-white border-b border-gray-100 shadow-sm w-full">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         
-        {/* Left Side: Logo Section - Size Increased for Prominence */}
         <div 
           className="flex items-center select-none cursor-pointer" 
           onClick={() => { if(onNavigate) onNavigate('dashboard'); }}
@@ -18,7 +17,6 @@ export default function Header({ onNavigate, onLogout }) {
           />
         </div>
 
-        {/* Right Side: Logics & Navigation */}
         <div className="flex items-center gap-4 sm:gap-6">
           <button 
             onClick={() => { if(onNavigate) onNavigate('dashboard'); }} 

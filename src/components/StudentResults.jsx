@@ -1,6 +1,5 @@
 import React, { useState, useMemo } from 'react';
 
-// --- INITIALIZING INTEGRATED TOP HEADER COMPONENT ---
 function Header({ onNavigate, onLogout }) {
   return (
     <header className="w-full bg-white border-b border-gray-100 px-6 py-4 flex items-center justify-between sticky top-0 z-40 shadow-3xs">
@@ -31,20 +30,16 @@ function Header({ onNavigate, onLogout }) {
 }
 
 export default function StudentResults({ onBack, onNavigate, onLogout }) {
-  // --- SEARCH & FILTER CONTROLS STATE ---
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
   const [dateFilter, setDateFilter] = useState('All');
   const [activeDropdown, setActiveDropdown] = useState(null);
 
-  // --- MODAL DETAILED INTERACTION STATE ---
   const [selectedStudent, setSelectedStudent] = useState(null);
 
-  // --- PAGINATION SYSTEMS CONTROL ---
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
-  // --- COMPLETE RAW DATABASE MATRIX (30 RECORDS WITH UNIQUE IMAGE SCHEMAS) ---
   const initialStudents = [
     { id: 1, name: 'Sarah Johnson', email: 'sarah.j@gmail.com', status: 'Completed', score: 92, matchCareer: 'Software Developer', matchPct: 92, secondCareer: 'Data Analyst', secondPct: 87, time: '12 min', questions: '25/25', date: '2025-03-10', img: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150' },
     { id: 2, name: 'Michael Chen', email: 'michael.c@email.com', status: 'Completed', score: 87, matchCareer: 'UX Designer', matchPct: 87, secondCareer: 'Product Manager', secondPct: 81, time: '15 min', questions: '24/25', date: '2025-03-10', img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150' },
@@ -110,7 +105,6 @@ export default function StudentResults({ onBack, onNavigate, onLogout }) {
     }
   };
 
-  // --- COMPREHENSIVE 30 STUDENTS BATCH PDF EXPORT SYSTEM ---
   const handleBulkDataExportPDF = () => {
     const script = document.createElement('script');
     script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
@@ -121,7 +115,6 @@ export default function StudentResults({ onBack, onNavigate, onLogout }) {
       let processedCount = 0;
       const totalRecords = initialStudents.length;
 
-      // Inner helper to execute sequential page layout production loop
       const generatePage = (index) => {
         if (index >= totalRecords) {
           doc.save(`Complete_Student_Matrix_Report_30.pdf`);
@@ -141,24 +134,19 @@ export default function StudentResults({ onBack, onNavigate, onLogout }) {
           ctx.drawImage(img, 0, 0);
           const dataURL = canvas.toDataURL('image/jpeg');
 
-          // If not the first student, add a clean break canvas page
           if (index > 0) {
             doc.addPage();
           }
 
-          // Strict Background Frame Style Injection
           doc.setFillColor(248, 250, 252);
           doc.rect(0, 0, 210, 297, 'F');
           
-          // Original Top Header Line Accent
-          doc.setDrawColor(219, 39, 119); // Brand Pink Color
+          doc.setDrawColor(219, 39, 119); 
           doc.setLineWidth(1.5);
           doc.line(15, 15, 195, 15);
 
-          // Student Picture Block Rendering
           doc.addImage(dataURL, 'JPEG', 15, 23, 24, 24);
           
-          // Header Text Elements
           doc.setTextColor(17, 24, 39);
           doc.setFont('Helvetica', 'bold');
           doc.setFontSize(19);
@@ -173,7 +161,6 @@ export default function StudentResults({ onBack, onNavigate, onLogout }) {
           doc.setLineWidth(0.5);
           doc.line(15, 54, 195, 54);
 
-          // Table Metric Labels Header Array
           doc.setTextColor(107, 114, 128);
           doc.setFontSize(10);
           doc.setFont('Helvetica', 'bold');
@@ -199,9 +186,8 @@ export default function StudentResults({ onBack, onNavigate, onLogout }) {
             doc.setTextColor(55, 65, 81);
             doc.text(label, 15, currentLineY);
             
-            // Highlight styling rules for precise colors logic
             if (label.includes('Score') || label.includes('Primary')) {
-              doc.setTextColor(27, 67, 50); // Deep professional variant green
+              doc.setTextColor(27, 67, 50); 
             } else if (value === 'Failed') {
               doc.setTextColor(185, 28, 28);
             } else if (value === 'In Progress') {
@@ -218,17 +204,14 @@ export default function StudentResults({ onBack, onNavigate, onLogout }) {
             currentLineY += 12;
           });
 
-          // Master Corporate Professional Footer Stamp
           doc.setFont('Helvetica', 'normal');
           doc.setFontSize(9);
           doc.setTextColor(156, 163, 175);
           doc.text(`Page ${index + 1} of ${totalRecords} — CareerPathAI Global Analytics Engine Automated Record.`, 15, 275);
 
-          // Run Next Item Execution Sequence
           generatePage(index + 1);
         };
 
-        // Fallback execution handler for any local canvas image block exceptions
         img.onerror = () => {
           if (index > 0) doc.addPage();
           doc.setFont('Helvetica', 'bold');
@@ -237,13 +220,11 @@ export default function StudentResults({ onBack, onNavigate, onLogout }) {
         };
       };
 
-      // Trigger structural execution matrix
       generatePage(0);
     };
     document.body.appendChild(script);
   };
 
-  // --- INDIVIDUAL ROW ACTION HANDLERS ---
   const handleSendEmail = (student) => {
     const targetEmail = student.email;
     const mailSubject = encodeURIComponent(`CareerPathAI Assessment Summary Results`);
@@ -336,13 +317,10 @@ export default function StudentResults({ onBack, onNavigate, onLogout }) {
   return (
     <div className="w-full min-h-screen bg-slate-50/50 flex flex-col antialiased text-[#111111] font-sans relative">
       
-      {/* ================= DITTO TOP HEADER INTEGRATION ================= */}
       <Header onNavigate={onNavigate} onLogout={onLogout} />
 
-      {/* ================= MAIN CONTENT APP FRAME WORKSPACE ================= */}
       <div className="flex-1 p-6 max-w-7xl w-full mx-auto space-y-7">
         
-        {/* ================= HEADER ACTIONS SECTION ================= */}
         <div className="flex items-center justify-between border-b border-gray-100 pb-6">
           <button 
             onClick={onBack}
@@ -354,7 +332,6 @@ export default function StudentResults({ onBack, onNavigate, onLogout }) {
             Back to Dashboard
           </button>
 
-          {/* ULTRA-BADA, EXTRA BOLD MASSIVE EXPORT DATA BUTTON */}
           <button 
             onClick={handleBulkDataExportPDF}
             className="flex items-center gap-3 px-8 py-4 bg-[#db2777] border border-[#db2777] hover:bg-[#be185d] text-white rounded-xl font-black text-base tracking-wider transition-all cursor-pointer shadow-md hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0 duration-200"
@@ -366,7 +343,6 @@ export default function StudentResults({ onBack, onNavigate, onLogout }) {
           </button>
         </div>
 
-        {/* ================= EXTRA LARGE CARDS METRICS INFO GRID WITH LARGE EMOJIS ================= */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="bg-white border border-gray-200/80 p-5 rounded-2xl shadow-2xs flex flex-col justify-between relative overflow-hidden">
             <div>
@@ -425,7 +401,6 @@ export default function StudentResults({ onBack, onNavigate, onLogout }) {
           </div>
         </div>
 
-        {/* ================= SEARCH & INTERACTIVE FILTERS ================= */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="relative">
             <input 
@@ -486,7 +461,6 @@ export default function StudentResults({ onBack, onNavigate, onLogout }) {
           </div>
         </div>
 
-        {/* ================= RESULTS MATRIX TABLE CONTAINER ================= */}
         <div className="bg-white border border-gray-100 rounded-2xl p-4 shadow-3xs overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
@@ -583,7 +557,6 @@ export default function StudentResults({ onBack, onNavigate, onLogout }) {
           </div>
         </div>
 
-        {/* ================= PAGINATION NAVIGATION CONTROLS ================= */}
         <div className="flex items-center justify-center pt-1">
           <div className="flex items-center gap-1 text-xs font-semibold">
             <button 
@@ -629,7 +602,6 @@ export default function StudentResults({ onBack, onNavigate, onLogout }) {
           </div>
         </div>
 
-        {/* ================= DYNAMIC DETAILED MODAL ================= */}
         {selectedStudent && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4">
             <div className="bg-white rounded-3xl max-w-xl w-full p-7 relative shadow-2xl border border-gray-100">

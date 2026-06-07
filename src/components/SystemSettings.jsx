@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
 
 export default function SystemSettings({ onBack }) {
-  // --- MASTER STATE FOR ALL EDITABLE FIELDS ---
-  const [activeTab, setActiveTab] = useState('General'); // General, Notifications, Security, Appearance
+  const [activeTab, setActiveTab] = useState('General'); 
 
-  // 1. General Settings State
   const [generalSettings, setGeneralSettings] = useState({
     siteName: 'AI Career Advisor',
     adminEmail: 'admin@aicareeradvisor.com',
@@ -17,7 +15,6 @@ export default function SystemSettings({ onBack }) {
     dateFormat: 'DD/MM/YYYY'
   });
 
-  // 2. Notification Settings State
   const [notifications, setNotifications] = useState({
     emailNotifications: true,
     weeklyReports: true,
@@ -26,21 +23,18 @@ export default function SystemSettings({ onBack }) {
     pushNotifications: false
   });
 
-  // 3. Security Settings State
   const [security, setSecurity] = useState({
     twoFactorAuth: false,
     sessionTimeout: '35',
     minPasswordLength: '8'
   });
 
-  // 4. Appearance Settings State
   const [appearance, setAppearance] = useState({
-    theme: 'Light', // Light, Dark, Auto
+    theme: 'Light', 
     primaryColor: '#8405CD',
     secondaryColor: '#FFB8FA'
   });
 
-  // --- HANDLERS FOR REALTIME EDITING ---
   const handleGeneralChange = (key, value) => {
     setGeneralSettings(prev => ({ ...prev, [key]: value }));
   };
@@ -60,7 +54,6 @@ export default function SystemSettings({ onBack }) {
   return (
     <div className="min-h-screen bg-[#fafbfc] p-6 antialiased" style={{ fontFamily: "'Poppins', sans-serif" }}>
       
-      {/* --- TOP BACK NAVIGATION LINK --- */}
       <div className="mb-6">
         <button 
           onClick={onBack}
@@ -73,16 +66,13 @@ export default function SystemSettings({ onBack }) {
         </button>
       </div>
 
-      {/* --- HEADER TITLE SECTION --- */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 tracking-tight">System Settings</h1>
         <p className="text-sm font-medium text-gray-400 mt-1">Configure platform settings and preferences</p>
       </div>
 
-      {/* --- MAIN DOUBLE PANEL GRID LAYOUT --- */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         
-        {/* LEFT CONTROL PANEL: TABS NAVIGATION & QUICK SAVE */}
         <div className="lg:col-span-3 space-y-4">
           <div className="bg-white border border-gray-100 rounded-2xl p-3 shadow-[0_2px_12px_rgba(0,0,0,0.03)] space-y-1">
             
@@ -157,10 +147,8 @@ export default function SystemSettings({ onBack }) {
           </button>
         </div>
 
-        {/* RIGHT CONTENT WORKPLACE: DYNAMIC INNER SECTIONS FORM */}
         <div className="lg:col-span-9 bg-white border border-gray-100 rounded-3xl p-6 sm:p-8 shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
           
-          {/* ================= TAB 1: GENERAL SETTING COMPONENT ================= */}
           {activeTab === 'General' && (
             <div className="space-y-6">
               <div className="flex items-center gap-2.5 pb-4 border-b border-gray-50">
@@ -173,7 +161,6 @@ export default function SystemSettings({ onBack }) {
                 </div>
               </div>
 
-              {/* Sub-Section 1: Site Information inputs */}
               <div className="space-y-4">
                 <div className="flex items-center gap-2 text-sm font-bold text-gray-800">
                   <svg className="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -215,7 +202,6 @@ export default function SystemSettings({ onBack }) {
                 </div>
               </div>
 
-              {/* Sub-Section 2: Platform Toggles */}
               <div className="pt-2 space-y-4">
                 <div className="flex items-center gap-2 text-sm font-bold text-gray-800">
                   <svg className="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -266,7 +252,6 @@ export default function SystemSettings({ onBack }) {
                 </div>
               </div>
 
-              {/* Sub-Section 3: Regional Custom Dropdowns */}
               <div className="pt-4 border-t border-gray-100 space-y-4">
                 <div className="text-sm font-bold text-gray-800">Regional Settings</div>
                 
@@ -315,7 +300,6 @@ export default function SystemSettings({ onBack }) {
             </div>
           )}
 
-          {/* ================= TAB 2: NOTIFICATION SETTING COMPONENT ================= */}
           {activeTab === 'Notifications' && (
             <div className="space-y-6">
               <div className="flex items-center gap-2.5 pb-4 border-b border-gray-50">
@@ -328,7 +312,6 @@ export default function SystemSettings({ onBack }) {
                 </div>
               </div>
 
-              {/* Sub-Section 1: Email Triggers */}
               <div className="space-y-4">
                 <div className="flex items-center gap-2 text-sm font-bold text-gray-800">
                   <svg className="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -379,7 +362,6 @@ export default function SystemSettings({ onBack }) {
                 </div>
               </div>
 
-              {/* Sub-Section 2: System Direct Signals */}
               <div className="pt-4 border-t border-gray-100 space-y-4">
                 <div className="flex items-center gap-2 text-sm font-bold text-gray-800">
                   <svg className="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -420,7 +402,6 @@ export default function SystemSettings({ onBack }) {
             </div>
           )}
 
-          {/* ================= TAB 3: SECURITY SETTING COMPONENT ================= */}
           {activeTab === 'Security' && (
             <div className="space-y-6">
               <div className="flex items-center gap-2.5 pb-4 border-b border-gray-50">
@@ -433,7 +414,6 @@ export default function SystemSettings({ onBack }) {
                 </div>
               </div>
 
-              {/* Sub-Section 1: Identity Locks */}
               <div className="space-y-4">
                 <div className="flex items-center gap-2 text-sm font-bold text-gray-800">
                   <svg className="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -477,7 +457,6 @@ export default function SystemSettings({ onBack }) {
                 </div>
               </div>
 
-              {/* Sub-Section 2: Policy Directives */}
               <div className="pt-4 border-t border-gray-100 space-y-3">
                 <div className="text-sm font-bold text-gray-800">Password Policy</div>
                 
@@ -500,7 +479,6 @@ export default function SystemSettings({ onBack }) {
             </div>
           )}
 
-          {/* ================= TAB 4: APPEARANCE SETTING COMPONENT ================= */}
           {activeTab === 'Appearance' && (
             <div className="space-y-6">
               <div className="flex items-center gap-2.5 pb-4 border-b border-gray-50">
@@ -514,7 +492,6 @@ export default function SystemSettings({ onBack }) {
                 </div>
               </div>
 
-              {/* Sub-Section 1: Theme Blocks Choice */}
               <div className="space-y-4">
                 <div className="text-sm font-bold text-gray-800">Theme Preferences</div>
                 
@@ -557,7 +534,6 @@ export default function SystemSettings({ onBack }) {
                 </div>
               </div>
 
-              {/* Sub-Section 2: Color Palette Input Pickers */}
               <div className="pt-4 border-t border-gray-100 space-y-4">
                 <div className="text-sm font-bold text-gray-800">Color Palette</div>
 

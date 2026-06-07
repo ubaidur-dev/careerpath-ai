@@ -48,11 +48,9 @@ export default function AdminDashboard({ onLogout, onNavigateToResults }) {
   return (
     <div className="min-h-screen bg-[#fafbfc] flex flex-col font-sans text-[#111111] antialiased selection:bg-pink-200">
       
-      {/* ================= ONLY ONE MAIN TOP HEADER ================= */}
       <header className="sticky top-0 z-50 bg-white border-b border-gray-100 shadow-sm w-full">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           
-          {/* Left Side: Dynamic Logo Trigger */}
           <div 
             className="flex items-center select-none cursor-pointer" 
             onClick={() => setCurrentView('dashboard')}
@@ -64,7 +62,6 @@ export default function AdminDashboard({ onLogout, onNavigateToResults }) {
             />
           </div>
 
-          {/* Right Side: Header Actions */}
           <div className="flex items-center gap-4 sm:gap-6">
             <button 
               onClick={() => setCurrentView('dashboard')}
@@ -83,7 +80,6 @@ export default function AdminDashboard({ onLogout, onNavigateToResults }) {
               <span className="hidden sm:inline">Dashboard</span>
             </button>
             
-            {/* Admin Identity Box */}
             <div 
               className="flex items-center gap-2 text-gray-700 font-medium text-sm border-l border-r border-gray-200 px-4 cursor-pointer hover:text-[#bd24df] transition-colors"
               onClick={() => setCurrentView('settings')}
@@ -97,7 +93,6 @@ export default function AdminDashboard({ onLogout, onNavigateToResults }) {
               <span className="hidden sm:inline">Admin!</span>
             </div>
             
-            {/* Logout Link */}
             <button 
               onClick={onLogout} 
               className="flex items-center gap-1.5 text-gray-500 hover:text-red-600 text-sm font-medium transition cursor-pointer bg-transparent border-none p-0"
@@ -112,7 +107,6 @@ export default function AdminDashboard({ onLogout, onNavigateToResults }) {
           </div>
         </div>
       </header>
-      {/* ========================================================== */}
 
       <main className="max-w-[1440px] w-full mx-auto p-4 sm:p-8 space-y-8 flex-1">
         
@@ -337,7 +331,6 @@ export default function AdminDashboard({ onLogout, onNavigateToResults }) {
           </>
         )}
 
-        {/* Dynamic sections smoothly unique header ke niche load hongey */}
         {currentView === 'quiz' && (
           <ManageQuiz onBack={() => setCurrentView('dashboard')} />
         )}

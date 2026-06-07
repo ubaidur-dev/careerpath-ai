@@ -16,7 +16,6 @@ import {
 } from 'lucide-react';
 
 export default function UserProfile({ onNavigate, onLogout }) {
-  // Mock State for Profile Data
   const [profileData, setProfileData] = useState({
     fullName: "Ahmed Raza",
     email: "ahmed.r19@gmail.com",
@@ -33,10 +32,8 @@ export default function UserProfile({ onNavigate, onLogout }) {
 
   const [isEditing, setIsEditing] = useState(false);
   
-  // DYNAMIC IMAGE STATE (Null matlab default "AR" text dikhega)
   const [profileImage, setProfileImage] = useState(null);
   
-  // Hidden File Input Trigger Ref
   const fileInputRef = useRef(null);
 
   const handleInputChange = (e) => {
@@ -44,30 +41,27 @@ export default function UserProfile({ onNavigate, onLogout }) {
     setProfileData(prev => ({ ...prev, [name]: value }));
   };
 
-  // 1. Image Upload Handler
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setProfileImage(reader.result); // Base64 string save ho rhi h
+        setProfileImage(reader.result); 
       };
       reader.readAsDataURL(file);
     }
   };
 
-  // 2. Image Delete Handler
   const handleDeleteImage = (e) => {
-    e.stopPropagation(); // Click event bubble hone se rokne k liye
+    e.stopPropagation(); 
     setProfileImage(null);
     if (fileInputRef.current) {
-      fileInputRef.current.value = ''; // Input clear reset
+      fileInputRef.current.value = ''; 
     }
   };
 
   return (
     <div className="min-h-screen bg-[#fcf8fe] text-gray-800 font-sans antialiased">
-      {/* Poppins Import Stylesheet */}
       <style>
         {`
           @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
@@ -78,11 +72,9 @@ export default function UserProfile({ onNavigate, onLogout }) {
       </style>
 
       {}
-      {/* GLOBAL NAVBAR */}
       <header className="sticky top-0 z-50 bg-white border-b border-gray-100 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2 cursor-pointer" onClick={() => onNavigate('dashboard')}>
-            {/* REPLACED ¢ WITH logo.png */}
             <img src="logo.png" alt="Logo" className="w-8 h-8 object-contain" />
             <span className="font-bold text-xl tracking-tight text-gray-900">CareerPath<span className="text-[#bd24df]">AI</span></span>
           </div>
@@ -102,7 +94,6 @@ export default function UserProfile({ onNavigate, onLogout }) {
               <span className="hidden sm:inline">Ahmed!</span>
             </div>
             
-            {/* FIXED LOGOUT ACTION HOOKED UP TO PROPS */}
             <button 
               onClick={() => onLogout && onLogout()} 
               className="flex items-center gap-1.5 text-gray-500 hover:text-red-600 text-sm font-medium transition cursor-pointer"
@@ -115,10 +106,8 @@ export default function UserProfile({ onNavigate, onLogout }) {
       </header>
 
       {}
-      {/* BODY WRAPPER */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
         
-        {/* BACK TO DASHBOARD */}
         <div className="flex items-center justify-between">
           <button 
             onClick={() => onNavigate('dashboard')}
@@ -129,22 +118,17 @@ export default function UserProfile({ onNavigate, onLogout }) {
           </button>
         </div>
 
-        {/* HEADER TEXTS */}
         <div className="text-left space-y-1">
           <h1 className="text-3xl font-extrabold tracking-tight text-gray-900">Your Profile</h1>
           <p className="text-gray-500 text-sm">Manage your personal information and preferences</p>
         </div>
 
-        {/* GRID LAYOUT */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
           
-          {/* LEFT COLUMN: IMAGE AND QUICK STATS */}
           <div className="lg:col-span-4 space-y-6">
             
-            {/* AVATAR PRESENTATION CARD (With Image Upload/Delete Logic) */}
             <div className="bg-white border border-gray-100 rounded-3xl p-6 shadow-sm text-center flex flex-col items-center justify-center relative">
               
-              {/* HIDDEN FILE INPUT */}
               <input 
                 type="file"
                 ref={fileInputRef}
@@ -154,12 +138,10 @@ export default function UserProfile({ onNavigate, onLogout }) {
               />
 
               <div className="relative mt-4 group">
-                {/* Profile Display Box */}
                 <div className="w-28 h-28 rounded-full bg-[#fde8ff] text-[#bd24df] font-extrabold text-3xl flex items-center justify-center border-4 border-white shadow-md overflow-hidden relative">
                   {profileImage ? (
                     <>
                       <img src={profileImage} alt="Profile" className="w-full h-full object-cover" />
-                      {/* Hover Overlay to Delete Picture */}
                       <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-200">
                         <button 
                           type="button"
@@ -176,7 +158,6 @@ export default function UserProfile({ onNavigate, onLogout }) {
                   )}
                 </div>
 
-                {/* Upload Camera Button */}
                 {!profileImage && (
                   <button 
                     type="button"
@@ -196,7 +177,6 @@ export default function UserProfile({ onNavigate, onLogout }) {
 
               <div className="w-full border-t border-gray-100 my-5"></div>
 
-              {/* FLOATING METADATA */}
               <div className="w-full space-y-3.5 text-left text-xs font-semibold text-gray-600 px-2">
                 <div className="flex items-center gap-3">
                   <Mail size={16} className="text-gray-400 flex-shrink-0" />
@@ -213,7 +193,6 @@ export default function UserProfile({ onNavigate, onLogout }) {
               </div>
             </div>
 
-            {/* QUICK STATS */}
             <div className="bg-white border border-gray-100 rounded-3xl p-5 shadow-sm space-y-4 text-left">
               <h3 className="text-sm font-extrabold text-gray-900 uppercase tracking-wider">Quick Stats</h3>
               <div className="space-y-2.5">
@@ -237,7 +216,6 @@ export default function UserProfile({ onNavigate, onLogout }) {
           </div>
 
           {}
-          {/* RIGHT COLUMN: FORM PANELS */}
           <div className="lg:col-span-8 bg-white border border-gray-100 rounded-3xl shadow-sm p-6 sm:p-8 space-y-8">
             
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-gray-100 text-left">
@@ -260,7 +238,6 @@ export default function UserProfile({ onNavigate, onLogout }) {
 
             <form className="space-y-8 text-left" onSubmit={(e) => e.preventDefault()}>
               
-              {/* BASIC INFORMATION */}
               <div className="space-y-4">
                 <div className="flex items-center gap-2 text-sm font-extrabold text-gray-900 tracking-tight">
                   <User size={18} className="text-[#bd24df]" />
@@ -328,7 +305,6 @@ export default function UserProfile({ onNavigate, onLogout }) {
 
               <div className="w-full border-t border-gray-100 my-2"></div>
 
-              {/* EDUCATION */}
               <div className="space-y-4">
                 <div className="flex items-center gap-2 text-sm font-extrabold text-gray-900 tracking-tight">
                   <GraduationCap size={18} className="text-[#bd24df]" />
@@ -374,7 +350,6 @@ export default function UserProfile({ onNavigate, onLogout }) {
 
               <div className="w-full border-t border-gray-100 my-2"></div>
 
-              {/* CAREER INFORMATION */}
               <div className="space-y-4">
                 <div className="flex items-center gap-2 text-sm font-extrabold text-gray-900 tracking-tight">
                   <Briefcase size={18} className="text-[#bd24df]" />

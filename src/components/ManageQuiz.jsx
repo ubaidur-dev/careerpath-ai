@@ -16,7 +16,6 @@ import {
 } from 'lucide-react';
 
 const ManageQuiz = ({ onBack, onNavigate, onLogout, initialView = 'list' }) => {
-  // Main Questions State
   const [questions, setQuestions] = useState([
     {
       id: 1,
@@ -74,32 +73,26 @@ const ManageQuiz = ({ onBack, onNavigate, onLogout, initialView = 'list' }) => {
     }
   ]);
 
-  // Show Add Form either as a full page or toggle based on navigation
   const [showAddForm, setShowAddForm] = useState(initialView === 'add');
   
-  // Synchronize state if parent changes initialView prop dynamically
   useEffect(() => {
     setShowAddForm(initialView === 'add');
   }, [initialView]);
 
-  // Filters State
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [selectedType, setSelectedType] = useState('All');
   const [selectedStatus, setSelectedStatus] = useState('All');
   const [selectedWeight, setSelectedWeight] = useState('All');
   const [activeFilter, setActiveFilter] = useState('category');
   
-  // Edit State
   const [editingId, setEditingId] = useState(null);
   const [editFormData, setEditFormData] = useState({});
 
-  // Add New Question Form States
   const [newQuestionText, setNewQuestionText] = useState('');
   const [newCategory, setNewCategory] = useState('Technical Skills');
   const [newWeight, setNewWeight] = useState('Medium');
   const [newOptionsString, setNewOptionsString] = useState('');
 
-  // Custom UI Notifications / Alerts (Safe inside iframes!)
   const [toastMessage, setToastMessage] = useState('');
   const [showToast, setShowToast] = useState(false);
   const [deleteConfirmId, setDeleteConfirmId] = useState(null);
@@ -135,7 +128,6 @@ const ManageQuiz = ({ onBack, onNavigate, onLogout, initialView = 'list' }) => {
     triggerToast("Question details successfully updated!");
   };
 
-  // Add Question Core Pipeline
   const handleAddQuestionSubmit = (e) => {
     e.preventDefault();
     if (!newQuestionText.trim()) return;
@@ -144,7 +136,6 @@ const ManageQuiz = ({ onBack, onNavigate, onLogout, initialView = 'list' }) => {
       ? newOptionsString.split(',').map(o => o.trim()).filter(Boolean)
       : ['Yes, absolutely!', 'Somewhat', 'No, not really', 'No preference'];
 
-    // Generate continuous next sequential ID logic (Even if middle items deleted, it behaves gracefully)
     const nextId = questions.length > 0 ? Math.max(...questions.map(q => q.id)) + 1 : 1;
 
     const newQuestionObj = {
@@ -159,19 +150,16 @@ const ManageQuiz = ({ onBack, onNavigate, onLogout, initialView = 'list' }) => {
 
     setQuestions([...questions, newQuestionObj]);
     
-    // Reset Form Input states
     setNewQuestionText('');
     setNewOptionsString('');
     setNewCategory('Technical Skills');
     setNewWeight('Medium');
     
-    // Automatically close form to show the newly added question in the dashboard list
     setShowAddForm(false);
 
     triggerToast("New career question successfully saved!");
   };
 
-  // Delete Core Action
   const triggerDeleteConfirm = (id) => {
     setDeleteConfirmId(id);
   };
@@ -187,7 +175,6 @@ const ManageQuiz = ({ onBack, onNavigate, onLogout, initialView = 'list' }) => {
   return (
     <div className="w-full bg-transparent font-poppins text-gray-900 antialiased selection:bg-pink-200 min-h-screen">
       
-      {/* Styles to support fonts globally */}
       <style>
         {`
           @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
@@ -197,7 +184,6 @@ const ManageQuiz = ({ onBack, onNavigate, onLogout, initialView = 'list' }) => {
         `}
       </style>
 
-      {/* SUCCESS TOAST ALERTS */}
       {showToast && (
         <div className="fixed bottom-6 right-6 z-[100] bg-gray-950 text-white border border-white/10 px-5 py-3 rounded-2xl flex items-center gap-3 shadow-2xl animate-in slide-in-from-bottom duration-300">
           <div className="w-6 h-6 rounded-full bg-[#bd24df] flex items-center justify-center text-white text-xs">
@@ -207,7 +193,6 @@ const ManageQuiz = ({ onBack, onNavigate, onLogout, initialView = 'list' }) => {
         </div>
       )}
 
-      {/* CONFIRMATION DELETE MODAL */}
       {deleteConfirmId !== null && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4 backdrop-blur-xs animate-in fade-in duration-200">
           <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-sm w-full border border-gray-100 shadow-2xl space-y-6 text-center">
@@ -238,10 +223,8 @@ const ManageQuiz = ({ onBack, onNavigate, onLogout, initialView = 'list' }) => {
         </div>
       )}
 
-      {/* Main Container Wrapper */}
       <div className="max-w-7xl mx-auto py-4 space-y-8 animate-in fade-in duration-500">
         
-        {/* Navigation Row */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <button 
             onClick={onBack} 
@@ -250,7 +233,6 @@ const ManageQuiz = ({ onBack, onNavigate, onLogout, initialView = 'list' }) => {
             &larr; Back to Dashboard
           </button>
 
-          {/* Dynamic Switcher Button based on active mode */}
           <button 
             onClick={() => setShowAddForm(!showAddForm)}
             className="inline-flex items-center gap-2 bg-[#bd24df] hover:bg-[#a61fc4] text-white font-bold text-sm px-5 py-2.5 rounded-xl transition-all shadow-md hover:scale-[1.01] active:scale-95 cursor-pointer"
@@ -262,7 +244,6 @@ const ManageQuiz = ({ onBack, onNavigate, onLogout, initialView = 'list' }) => {
 
         {}
         {showAddForm ? (
-          /* DEDICATED HIGHLY ATTRACTIVE FOCUSED ADD QUESTION INTERFACE */
           <div 
             className="bg-white border border-purple-100 rounded-3xl p-6 sm:p-10 space-y-8 text-left animate-in slide-in-from-top duration-300 max-w-3xl mx-auto"
             style={{ boxShadow: '0 20px 45px -8px rgba(189, 36, 223, 0.08)' }}
@@ -280,7 +261,6 @@ const ManageQuiz = ({ onBack, onNavigate, onLogout, initialView = 'list' }) => {
             <form onSubmit={handleAddQuestionSubmit} className="space-y-6">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 
-                {/* Question Input */}
                 <div className="space-y-2 sm:col-span-2">
                   <label className="text-xs font-bold text-gray-500 uppercase tracking-wider block">Question Title / Text</label>
                   <input 
@@ -293,7 +273,6 @@ const ManageQuiz = ({ onBack, onNavigate, onLogout, initialView = 'list' }) => {
                   />
                 </div>
 
-                {/* Category Selection */}
                 <div className="space-y-2">
                   <label className="text-xs font-bold text-gray-500 uppercase tracking-wider block">Category Type</label>
                   <select 
@@ -307,7 +286,6 @@ const ManageQuiz = ({ onBack, onNavigate, onLogout, initialView = 'list' }) => {
                   </select>
                 </div>
 
-                {/* Weight selection */}
                 <div className="space-y-2">
                   <label className="text-xs font-bold text-gray-500 uppercase tracking-wider block">Evaluation Weight</label>
                   <select 
@@ -320,7 +298,6 @@ const ManageQuiz = ({ onBack, onNavigate, onLogout, initialView = 'list' }) => {
                   </select>
                 </div>
 
-                {/* Options Input */}
                 <div className="space-y-2 sm:col-span-2">
                   <label className="text-xs font-bold text-gray-500 uppercase tracking-wider block">Multiple Choice Options (Comma Separated)</label>
                   <input 
@@ -336,7 +313,6 @@ const ManageQuiz = ({ onBack, onNavigate, onLogout, initialView = 'list' }) => {
 
               </div>
 
-              {/* Form Action Row */}
               <div className="flex justify-end gap-3 pt-6 border-t border-gray-100">
                 <button 
                   type="button" 
@@ -357,16 +333,13 @@ const ManageQuiz = ({ onBack, onNavigate, onLogout, initialView = 'list' }) => {
             </form>
           </div>
         ) : (
-          /* MAIN QUESTION LIST & DATABASE WORKSPACE */
           <div className="space-y-8">
-            {/* Header Section */}
             <div className="space-y-1 text-left">
               <h2 className="text-xl font-bold text-gray-900 tracking-tight">Active Assessment Database</h2>
               <p className="text-gray-400 text-xs font-semibold">Monitor, filter, and modify live indicators</p>
             </div>
 
             {}
-            {/* 4 Analytics Counter Grid (Recalculating Live Based on State!) */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
               {[
                 { label: 'Total Questions', val: questions.length, icon: <HelpCircle className="text-[#bd24df]" size={24} />, bgColor: 'bg-purple-50' },
@@ -391,7 +364,6 @@ const ManageQuiz = ({ onBack, onNavigate, onLogout, initialView = 'list' }) => {
             </div>
 
             {}
-            {/* Control Filter Toolbar Panel */}
             <div 
               className="bg-white border border-gray-100 rounded-2xl p-4 sm:p-5"
               style={{ boxShadow: '0 12px 25px -4px rgba(0, 0, 0, 0.04), 0 8px 12px -6px rgba(0, 0, 0, 0.02)' }}
@@ -471,7 +443,6 @@ const ManageQuiz = ({ onBack, onNavigate, onLogout, initialView = 'list' }) => {
             </div>
 
             {}
-            {/* Main Database Render Pipeline */}
             <div className="space-y-5">
               {filteredQuestions.length > 0 ? (
                 filteredQuestions.map((q) => (
@@ -528,7 +499,6 @@ const ManageQuiz = ({ onBack, onNavigate, onLogout, initialView = 'list' }) => {
                       )}
                     </div>
 
-                    {/* Action buttons inside list */}
                     <div className="flex md:flex-col items-center justify-end gap-3 self-center pl-12.5 md:pl-0">
                       {editingId === q.id ? (
                         <button onClick={() => handleSave(q.id)} className="bg-[#bd24df] text-white font-bold text-sm px-5 py-2.5 rounded-xl shadow-sm hover:bg-[#a61fc4] transition-colors cursor-pointer">Save</button>
@@ -544,7 +514,6 @@ const ManageQuiz = ({ onBack, onNavigate, onLogout, initialView = 'list' }) => {
                   </div>
                 ))
               ) : (
-                /* Enterprise Level Pure English Fallback State Layout */
                 <div className="bg-white border border-gray-100 rounded-2xl p-12 text-center shadow-3xs">
                   <div className="text-4xl mb-3 select-none">🔍</div>
                   <h3 className="text-base font-semibold text-gray-800">No questions found matching the filter</h3>
