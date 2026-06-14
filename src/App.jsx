@@ -89,9 +89,12 @@ export default function App() {
       {currentScreen === 'browse-careers' && (
         <BrowseCareers 
           activeCareerId={selectedCareerId} 
+          onLogout={() => setCurrentScreen('home')}
           onNavigate={(target, data) => {
             if (target === 'dashboard') {
               setCurrentScreen('student-dash');
+            } else if (target === 'profile') {
+              setCurrentScreen('profile'); // Fixed: Ab Header se profile button click karne par transition chalegi!
             } else if (target === 'quiz') {
               setCurrentScreen('quiz'); 
             } else if (target === 'details') {
