@@ -1,9 +1,6 @@
 import React, { useEffect } from 'react';
 import Header from './Header';
 import { 
-  LayoutDashboard, 
-  User, 
-  LogOut, 
   Search, 
   Zap, 
   ArrowRight,
@@ -12,10 +9,9 @@ import {
   PenTool,
   Briefcase,
   TrendingUp,
-  CircleDot,
+  Target,
   Users,
   DollarSign,
-  Binary,
   Sparkles
 } from 'lucide-react';
 
@@ -41,8 +37,8 @@ const careers = [
     experience: "3-5 years",
     flexibility: "Remote OK",
     icon: Code2,
-    iconColor: "text-purple-600",
-    iconBg: "bg-purple-50",
+    iconColor: "text-[#FF2D55]",
+    iconBg: "bg-[#FFE7F2] border-[0.5px] border-[#FF00ED]",
     roadmap: [
       { title: "Learn Programming Fundamentals", duration: "2-3 months", desc: "Master the absolute basics of core programming syntax, control structures, loops, and functions using Python or JavaScript.", tags: ["Codecademy", "freeCodeCamp", "Python.org"] },
       { title: "Build Your First Projects", duration: "2 months", desc: "Create 3-5 structural full-stack projects using semantic markup and component layouts to showcase responsive logic.", tags: ["GitHub", "Personal Portfolio", "Open Source"] },
@@ -77,8 +73,8 @@ const careers = [
     experience: "1-3 years",
     flexibility: "Hybrid",
     icon: BarChart3,
-    iconColor: "text-purple-600",
-    iconBg: "bg-purple-50",
+    iconColor: "text-[#FF2D55]",
+    iconBg: "bg-[#FFE7F2] border-[0.5px] border-[#FF00ED]",
     roadmap: [
       { title: "Master Spreadsheet Software & Statistical Modeling", duration: "1-2 months", desc: "Learn conditional logic lookups, array metrics formulas, dynamic formatting, and multi-variable analytics models in Excel.", tags: ["Chandoo", "Coursera"] },
       { title: "Learn SQL Database Querying & Architecture", duration: "2 months", desc: "Write production relational schemas, multi-table joins, subqueries, and advanced window partition functions flawlessly.", tags: ["SQLZoo", "Mode Analytics"] },
@@ -113,8 +109,8 @@ const careers = [
     experience: "2-4 years",
     flexibility: "Remote OK",
     icon: PenTool,
-    iconColor: "text-purple-600",
-    iconBg: "bg-purple-50",
+    iconColor: "text-[#FF2D55]",
+    iconBg: "bg-[#FFE7F2] border-[0.5px] border-[#FF00ED]",
     roadmap: [
       { title: "Understand UX Design Principles & Psychology", duration: "1-2 months", desc: "Study core interaction structures, behavioral layout laws (Jakob's Law), cognitive patterns, and usability matrices.", tags: ["Interaction Design Org", "Medium"] },
       { title: "Master Figma UI Design & Systems Technology", duration: "2 months", desc: "Learn responsive design layout constraints, variant component sets, unified color tokens, and structural prototyping states.", tags: ["Figma YouTube", "Udemy"] },
@@ -148,8 +144,8 @@ const careers = [
     experience: "2-5 years",
     flexibility: "On-site",
     icon: Briefcase,
-    iconColor: "text-pink-600",
-    iconBg: "bg-pink-50",
+    iconColor: "text-[#FF2D55]",
+    iconBg: "bg-[#FFE7F2] border-[0.5px] border-[#FF00ED]",
     roadmap: [
       { title: "Business Analysis Fundamentals", duration: "1-2 months", desc: "Learn BA lifecycle core values, stakeholder matrix layouts, and requirements elicitation methodologies.", tags: ["IIBA Guide", "Udemy"] },
       { title: "Process Mapping & Documentation Standards", duration: "2 months", desc: "Master professional functional flowcharting protocols, process flow diagrams, and advanced BPMN notations.", tags: ["Lucidchart", "Visio"] },
@@ -183,8 +179,8 @@ const careers = [
     experience: "1-3 years",
     flexibility: "Remote OK",
     icon: TrendingUp,
-    iconColor: "text-pink-600",
-    iconBg: "bg-pink-50",
+    iconColor: "text-[#FF2D55]",
+    iconBg: "bg-[#FFE7F2] border-[0.5px] border-[#FF00ED]",
     roadmap: [
       { title: "SEO Fundamentals & Index Structuring", duration: "2 months", desc: "Learn semantic structural schema alterations, user intent index parameters, backend link profiling, and site performance tuning.", tags: ["HubSpot", "Moz"] },
       { title: "PPC & Paid Social Programmatic Ads Engines", duration: "2 months", desc: "Master target distribution matrices, audience tracking parameters, pixel deployment layers, and automated bid logic dashboards.", tags: ["Google Skillshop"] },
@@ -217,9 +213,9 @@ const careers = [
     openings: "15,000+",
     experience: "4-7 years",
     flexibility: "Hybrid",
-    icon: CircleDot,
-    iconColor: "text-pink-600",
-    iconBg: "bg-pink-50",
+    icon: Target,
+    iconColor: "text-[#FF2D55]",
+    iconBg: "bg-[#FFE7F2] border-[0.5px] border-[#FF00ED]",
     roadmap: [
       { title: "Product Discovery & Market Fit Mechanics", duration: "3 months", desc: "Evaluate target user retention cohorts, manage continuous discovery loops, model minimum viable concepts, and chart market analysis grids.", tags: ["Product School", "Medium"] },
       { title: "Product Roadmapping & Prioritization Matrix Engineering", duration: "2 months", desc: "Master RICE parameter configurations, coordinate dynamic value matrices, and configure multi-stage milestone tracking views.", tags: ["Jira Software", "Productboard Tool"] },
@@ -253,8 +249,8 @@ const careers = [
     experience: "1-4 years",
     flexibility: "On-site",
     icon: Users,
-    iconColor: "text-pink-600",
-    iconBg: "bg-pink-50",
+    iconColor: "text-[#FF2D55]",
+    iconBg: "bg-[#FFE7F2] border-[0.5px] border-[#FF00ED]",
     roadmap: [
       { title: "Talent Sourcing Systems & Boolean Queries", duration: "2 months", desc: "Master custom boolean matching strings execution over corporate directories, structure applicant profiles tracking pipelines, and verify interview parameters.", tags: ["SHRM", "LinkedIn"] },
       { title: "Employee Performance Operations & Feedback Frameworks", duration: "2-3 months", desc: "Configure key performance indicators blueprints, run organizational goal alignment evaluations, and organize systematic skill calibration matrices.", tags: ["BambooHR Tools", "Glint Analytics"] },
@@ -287,8 +283,8 @@ const careers = [
     experience: "2-5 years",
     flexibility: "Hybrid",
     icon: DollarSign,
-    iconColor: "text-pink-600",
-    iconBg: "bg-pink-50",
+    iconColor: "text-[#FF2D55]",
+    iconBg: "bg-[#FFE7F2] border-[0.5px] border-[#FF00ED]",
     roadmap: [
       { title: "Accounting Foundations & Multi-Statement Ledgering", duration: "3 months", desc: "Master the integration mechanics behind dynamic corporate cash statements, balance files auditing protocols, and performance spreadsheets.", tags: ["Investopedia", "CFI"] },
       { title: "Financial Valuation Systems & Dynamic Engineering", duration: "3-4 months", desc: "Construct comprehensive Discounted Cash Flow models, analyze transactional valuations arrays, and configure automated sensitivity analysis dashboards.", tags: ["Excel Macros", "WallStreetPrep"] },
@@ -314,15 +310,15 @@ const careers = [
       { name: "Technical Writing", value: 95 },
       { name: "Hypothesis Design", value: 88 }
     ],
-    salary: "$75,000 - $130,000",
+    salary: "$70,000 - $120,000",
     growth: "Medium",
     timeline: "24 - 36 months",
     openings: "8,000+",
     experience: "3-6 years",
     flexibility: "On-site Lab",
-    icon: Binary,
-    iconColor: "text-pink-600",
-    iconBg: "bg-pink-50",
+    icon: Search,
+    iconColor: "text-[#FF2D55]",
+    iconBg: "bg-[#FFE7F2] border-[0.5px] border-[#FF00ED]",
     roadmap: [
       { title: "Advanced Academic Methods & Double-Blind Frameworks", duration: "6 months", desc: "Formulate systematic analytical checks, handle complex control population samples data, and review statistical validations rules metrics.", tags: ["Nature", "MIT OpenCourseWare"] },
       { title: "Data Collection Procedures & Instrument Configurations", duration: "4-5 months", desc: "Integrate specialized physical diagnostic arrays pipelines, write sensor monitoring scripts logs, and store structured multi-variant data blocks cleanly.", tags: ["Lab Equipment", "MATLAB Analysis"] },
@@ -341,7 +337,6 @@ const careers = [
 export default function BrowseCareers({ onNavigate, onLogout, activeCareerId }) {
   
   useEffect(() => {
-    // Structural synchronization to handle any continuous target route transitions.
     if (activeCareerId && typeof activeCareerId === 'string') {
       const matchedCareer = careers.find(c => c.title === activeCareerId);
       if (matchedCareer) {
@@ -351,16 +346,11 @@ export default function BrowseCareers({ onNavigate, onLogout, activeCareerId }) 
   }, [activeCareerId, onNavigate]);
 
   return (
-    <div className="min-h-screen bg-[#fcf8fe] text-gray-800 font-['Poppins',sans-serif] antialiased">
-      {/* Header is fully functional and native here. 
-        When Header runs onNavigate('dashboard'), the state transitions exactly as requested!
-      */}
+    <div className="min-h-screen bg-[#fcf8fe] text-gray-800 font-['Inter',sans-serif] antialiased">
       <Header onNavigate={onNavigate} onLogout={onLogout} />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10 relative">
         
-        {/* --- Back To Dashboard Button --- */}
-        {/* Desktop Layout View */}
         <div className="absolute hidden lg:block top-6 left-8 z-40">
           <button 
             onClick={() => onNavigate('dashboard')} 
@@ -370,7 +360,6 @@ export default function BrowseCareers({ onNavigate, onLogout, activeCareerId }) 
           </button>
         </div>
 
-        {/* Mobile Layout View */}
         <div className="block lg:hidden w-full text-left mb-2">
           <button 
             onClick={() => onNavigate('dashboard')} 
@@ -379,7 +368,6 @@ export default function BrowseCareers({ onNavigate, onLogout, activeCareerId }) 
             &larr; Back To Dashboard
           </button>
         </div>
-        {/* -------------------------------- */}
 
         <div className="text-center space-y-3 max-w-2xl mx-auto">
           <div className="inline-flex items-center gap-1.5 border border-[#f2c6fa] text-[#bd24df] text-xs font-semibold px-3 py-1 rounded-full bg-white shadow-sm">
@@ -422,18 +410,25 @@ export default function BrowseCareers({ onNavigate, onLogout, activeCareerId }) 
                 
                 <div className="space-y-4">
                   <div className="flex items-start gap-4">
-                    <div className={`p-3 rounded-xl ${career.iconBg} flex-shrink-0`}><CareerCardIcon size={24} className={career.iconColor} /></div>
+                    <div className={`w-12 h-12 rounded-xl ${career.iconBg} flex items-center justify-center flex-shrink-0`}>
+                      <CareerCardIcon size={24} className={career.iconColor} />
+                    </div>
                     <div className="text-left space-y-1.5">
-                      <h3 className="font-bold text-gray-900 text-lg leading-snug">{career.title}</h3>
-                      <span className={`inline-block text-[11px] font-bold px-2.5 py-0.5 rounded-full border ${career.demandColor}`}>{career.demand}</span>
+                      <h3 className="font-semibold text-gray-900 text-lg leading-snug">{career.title}</h3>
+                      <span className={`inline-block text-[11px] font-medium px-2.5 py-0.5 rounded-full border ${career.demandColor}`}>
+                        {career.demand}
+                      </span>
                     </div>
                   </div>
                   <p className="text-gray-500 text-sm leading-relaxed min-h-[60px] text-left">{career.description}</p>
+                  
                   <div className="space-y-1.5 text-left">
                     <span className="text-xs font-bold text-gray-400 block">Key Skills:</span>
                     <div className="flex flex-wrap gap-1.5">
                       {career.skills.slice(0, 3).map((sk, sIdx) => (
-                        <span key={sIdx} className="text-xs font-medium text-gray-600 bg-gray-50 px-2.5 py-1 rounded-md border border-gray-100">{sk.name}</span>
+                        <span key={sIdx} className="text-xs font-medium text-gray-600 bg-gray-50 px-2.5 py-1 rounded-md border border-gray-100">
+                          {sk.name}
+                        </span>
                       ))}
                     </div>
                   </div>
@@ -443,21 +438,23 @@ export default function BrowseCareers({ onNavigate, onLogout, activeCareerId }) 
                   <div className="grid grid-cols-2 gap-3 bg-gray-50 p-3 rounded-xl border border-gray-100 text-left">
                     <div>
                       <span className="text-[10px] uppercase tracking-wider font-bold text-gray-400 block">Salary</span>
-                      <span className="text-xs font-bold text-gray-800">{career.salary}</span>
+                      <span className="text-xs font-semibold text-gray-800">{career.salary}</span>
                     </div>
                     <div>
                       <span className="text-[10px] uppercase tracking-wider font-bold text-gray-400 block">Growth</span>
-                      <span className="text-xs font-bold text-gray-800">{career.growth}</span>
+                      <span className="text-xs font-semibold text-gray-800">{career.growth}</span>
                     </div>
                   </div>
 
-                  <button 
-                    onClick={() => onNavigate('details', career)} 
-                    className="w-full inline-flex items-center justify-center gap-1.5 py-2.5 bg-white border border-[#f5dbfc] text-[#bd24df] font-bold text-xs rounded-xl hover:bg-[#fdf2ff] transition cursor-pointer shadow-sm"
-                  >
-                    View Career Details
-                    <ArrowRight size={14} />
-                  </button>
+                  <div className="w-full pt-2 text-center">
+                    <button 
+                      onClick={() => onNavigate('details', career)} 
+                      className="w-full inline-flex items-center justify-center gap-2 px-8 py-1.5 bg-[#FFE7F2] border-[0.5px] border-[#83047A] text-[#83047A] font-normal text-[15px] rounded-[15px] hover:opacity-90 transition cursor-pointer shadow-sm"
+                    >
+                      View Career Details
+                      <ArrowRight size={15} className="text-[#83047A]" />
+                    </button>
+                  </div>
                 </div>
 
               </div>
