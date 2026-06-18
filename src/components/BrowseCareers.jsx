@@ -446,13 +446,13 @@ export default function BrowseCareers({ onNavigate, onLogout, activeCareerId }) 
                     </div>
                   </div>
 
-                  <div className="w-full pt-2 text-center">
+                  <div className="w-55 h- pt-2 mx-auto text-center">
                     <button 
                       onClick={() => onNavigate('details', career)} 
-                      className="w-full inline-flex items-center justify-center gap-2 px-8 py-1.5 bg-[#FFE7F2] border-[0.5px] border-[#83047A] text-[#83047A] font-normal text-[15px] rounded-[15px] hover:opacity-90 transition cursor-pointer shadow-sm"
+                      className="w-full inline-flex items-center justify-center gap-2 px-8 py-1.5 bg-[#FFE7F2] border-[0.1px] border-[#83047A] text-[#83047A] font-inter text-[15px] rounded-[15px] hover:opacity-90 transition cursor-pointer shadow-sm"
                     >
                       View Career Details
-                      <ArrowRight size={15} className="text-[#83047A]" />
+                      <ArrowRight size={17} className="text-[#83047A]" />
                     </button>
                   </div>
                 </div>
