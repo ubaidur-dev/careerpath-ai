@@ -275,7 +275,7 @@ export default function StudentDashboard({ onLogout, onNavigate, isFirstTimeLogi
                 onClick={() => {
                   if(onNavigate) onNavigate('browse');
                 }} 
-                className="w-100 mx-auto text-center py-3 custom-recommendation-btn font-normal text-[17px] rounded-[15px] hover:bg-[#fdf2ff] transition block cursor-pointer"
+                className="w-full max-w-md mx-auto text-center py-3 custom-recommendation-btn font-normal text-[17px] rounded-[15px] hover:bg-[#fdf2ff] transition block cursor-pointer"
               >
                 View All Recommendations
               </button>
