@@ -12,6 +12,15 @@ export default function AuthPage({ mode, setMode, onSuccess, onBackHome }) {
     if (onSuccess) onSuccess(role);
   };
 
+  // Dynamic handler for the top navigation button
+  const handleBackAction = () => {
+    if (isLogin) {
+      if (onBackHome) onBackHome();
+    } else {
+      setMode('login');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-white flex flex-col lg:flex-row relative font-poppins overflow-hidden">
       
@@ -26,10 +35,10 @@ export default function AuthPage({ mode, setMode, onSuccess, onBackHome }) {
 
       <div className="absolute hidden lg:block top-6 left-6 z-50">
         <button 
-          onClick={onBackHome} 
+          onClick={handleBackAction} 
           className="flex items-center gap-2 px-4 py-2 border border-gray-200 bg-white hover:bg-gray-50 rounded-xl text-sm font-semibold text-gray-700 transition-colors shadow-sm cursor-pointer"
         >
-          &larr; Back To Home
+          {isLogin ? '← Back To Home' : '← Back To Login'}
         </button>
       </div>
 
@@ -38,10 +47,10 @@ export default function AuthPage({ mode, setMode, onSuccess, onBackHome }) {
           
           <div className="block lg:hidden w-full mb-2">
             <button 
-              onClick={onBackHome} 
+              onClick={handleBackAction} 
               className="inline-flex items-center gap-2 px-4 py-2 border border-gray-200 bg-white hover:bg-gray-50 rounded-xl text-sm font-semibold text-gray-700 transition-colors shadow-sm cursor-pointer"
             >
-              &larr; Back To Home
+              {isLogin ? '← Back To Home' : '← Back To Login'}
             </button>
           </div>
 
