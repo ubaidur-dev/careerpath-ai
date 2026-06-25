@@ -9,7 +9,7 @@ export default function AuthPage({ mode, setMode, onSuccess, onBackHome }) {
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
-    onSuccess(role);
+    if (onSuccess) onSuccess(role);
   };
 
   return (
@@ -17,7 +17,7 @@ export default function AuthPage({ mode, setMode, onSuccess, onBackHome }) {
       
       <style>
         {`
-          @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+          @import url('https://fonts.googleapis.com/css2?family=Poppins:wght=400;500;600;700&display=swap');
           .font-poppins {
             font-family: 'Poppins', sans-serif;
           }
@@ -61,7 +61,7 @@ export default function AuthPage({ mode, setMode, onSuccess, onBackHome }) {
                 onClick={() => setRole('student')}
                 className={`flex-1 py-2 text-sm font-bold rounded-full transition-all cursor-pointer ${
                   role === 'student' 
-                    ? 'bg-white text-gray-900 shadow-sm' 
+                    ? 'bg-white text-[#bd24df] shadow-sm' 
                     : 'text-gray-500 hover:text-gray-900'
                 }`}
               >
@@ -72,8 +72,8 @@ export default function AuthPage({ mode, setMode, onSuccess, onBackHome }) {
                 onClick={() => setRole('admin')}
                 className={`flex-1 py-2 text-sm font-bold rounded-full transition-all cursor-pointer ${
                   role === 'admin' 
-                    ? 'bg-white text-purple-700 shadow-sm' 
-                    : 'text-[#bd24df] hover:text-purple-900'
+                    ? 'bg-white text-[#bd24df] shadow-sm' 
+                    : 'text-gray-500 hover:text-gray-900'
                 }`}
               >
                 Admin
@@ -115,7 +115,7 @@ export default function AuthPage({ mode, setMode, onSuccess, onBackHome }) {
                 />
                 <button 
                   type="button" 
-                  onClick={() => setShowPass(!showPass)} 
+                  onClick={() => { setShowPass(!showPass); }} 
                   className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 cursor-pointer"
                 >
                   {showPass ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
@@ -169,7 +169,7 @@ export default function AuthPage({ mode, setMode, onSuccess, onBackHome }) {
 
           <button 
             type="button" 
-            onClick={() => onSuccess(role)} 
+            onClick={() => { if (onSuccess) onSuccess(role); }} 
             className="w-full border border-gray-200 bg-white hover:bg-gray-50 text-gray-700 py-3 rounded-full font-bold text-sm flex items-center justify-center gap-3 transition-all cursor-pointer shadow-sm"
           >
             <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" className="w-5 h-5" />
