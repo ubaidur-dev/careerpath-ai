@@ -347,6 +347,15 @@ export default function BrowseCareers({ onNavigate, onLogout, activeCareerId }) 
 
   return (
     <div className="min-h-screen bg-[#fcf8fe] text-gray-800 font-['Inter',sans-serif] antialiased">
+      
+      <style>
+        {`
+          .figma-personalized-box-shadow {
+            box-shadow: 4px 6px 6px 1px rgba(0, 0, 0, 0.25);
+          }
+        `}
+      </style>
+
       <Header onNavigate={onNavigate} onLogout={onLogout} />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10 relative">
@@ -380,7 +389,10 @@ export default function BrowseCareers({ onNavigate, onLogout, activeCareerId }) 
           </p>
         </div>
 
-        <div className="bg-[#8504a3] rounded-3xl p-8 text-center text-white shadow-xl max-w-4xl mx-auto relative overflow-hidden">
+        <div 
+          style={{ backgroundColor: '#83047A' }} 
+          className="rounded-[30px] border-[2.5px] border-[#FFD0F3] figma-personalized-box-shadow p-8 text-center text-white max-w-4xl mx-auto relative overflow-hidden"
+        >
           <div className="relative z-10 space-y-5">
             <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center mx-auto text-yellow-300">
               <Zap size={22} className="animate-pulse" />
@@ -391,7 +403,7 @@ export default function BrowseCareers({ onNavigate, onLogout, activeCareerId }) 
                 Take our AI-powered assessment to get careers matched to your unique profile
               </p>
             </div>
-            <button onClick={() => onNavigate('quiz')} className="inline-flex items-center gap-2 bg-white text-[#8504a3] hover:bg-purple-50 font-bold px-6 py-3 rounded-xl shadow-md transition text-sm cursor-pointer">
+            <button onClick={() => onNavigate('quiz')} className="inline-flex items-center gap-2 bg-white text-[#83047A] hover:bg-purple-50 font-bold px-6 py-3 rounded-xl shadow-md transition text-sm cursor-pointer">
               Take Career Assessment
               <ArrowRight size={16} />
             </button>
@@ -425,7 +437,7 @@ export default function BrowseCareers({ onNavigate, onLogout, activeCareerId }) 
                   <div className="space-y-1.5 text-left">
                     <span className="text-xs font-bold text-gray-400 block">Key Skills:</span>
                     <div className="flex flex-wrap gap-1.5">
-                      {career.skills.slice(0, 3).map((sk, sIdx) => (
+                      {careers[idx].skills.slice(0, 3).map((sk, sIdx) => (
                         <span key={sIdx} className="text-xs font-medium text-gray-600 bg-gray-50 px-2.5 py-1 rounded-md border border-gray-100">
                           {sk.name}
                         </span>
