@@ -74,7 +74,7 @@ const careers = [
     flexibility: "Hybrid",
     icon: BarChart3,
     iconColor: "text-[#FF2D55]",
-    iconBg: "bg-[#FFE7F2] border-[0.5px] border-[#FF00ED]",
+    iconBg: "bg-[#FFE7F2] border-[0.5px] border-[#FF00ED] ",
     roadmap: [
       { title: "Master Spreadsheet Software & Statistical Modeling", duration: "1-2 months", desc: "Learn conditional logic lookups, array metrics formulas, dynamic formatting, and multi-variable analytics models in Excel.", tags: ["Chandoo", "Coursera"] },
       { title: "Learn SQL Database Querying & Architecture", duration: "2 months", desc: "Write production relational schemas, multi-table joins, subqueries, and advanced window partition functions flawlessly.", tags: ["SQLZoo", "Mode Analytics"] },
@@ -353,6 +353,10 @@ export default function BrowseCareers({ onNavigate, onLogout, activeCareerId }) 
           .figma-personalized-box-shadow {
             box-shadow: 4px 6px 6px 1px rgba(0, 0, 0, 0.25);
           }
+          .figma-9-cards-prototype {
+            border: 1px solid #FFD2F7;
+            box-shadow: 1px 5px 5px 0.2px rgba(0, 0, 0, 0.25);
+          }
         `}
       </style>
 
@@ -363,7 +367,7 @@ export default function BrowseCareers({ onNavigate, onLogout, activeCareerId }) 
         <div className="absolute hidden lg:block top-6 left-8 z-40">
           <button 
             onClick={() => onNavigate('dashboard')} 
-            className="flex items-center gap-2 px-4 py-2 border border-gray-200 bg-white hover:bg-gray-50 rounded-xl text-sm font-semibold text-gray-700 transition-colors shadow-sm cursor-pointer"
+            className="flex items-center gap-2 px-4 py-2 border border-gray-200 bg-white hover:bg-gray-50 rounded-xl text-sm font-semibold text-gray-700 hover:scale-[1.02] hover:shadow-md active:scale-[0.98] transition-all duration-300 cursor-pointer"
           >
             &larr; Back To Dashboard
           </button>
@@ -372,19 +376,19 @@ export default function BrowseCareers({ onNavigate, onLogout, activeCareerId }) 
         <div className="block lg:hidden w-full text-left mb-2">
           <button 
             onClick={() => onNavigate('dashboard')} 
-            className="inline-flex items-center gap-2 px-4 py-2 border border-gray-200 bg-white hover:bg-gray-50 rounded-xl text-sm font-semibold text-gray-700 transition-colors shadow-sm cursor-pointer"
+            className="inline-flex items-center gap-2 px-4 py-2 border border-gray-200 bg-white hover:bg-gray-50 rounded-xl text-sm font-semibold text-gray-700 hover:scale-[1.02] hover:shadow-md active:scale-[0.98] transition-all duration-300 cursor-pointer"
           >
             &larr; Back To Dashboard
           </button>
         </div>
 
         <div className="text-center space-y-3 max-w-2xl mx-auto">
-          <div className="inline-flex items-center gap-1.5 border border-[#f2c6fa] text-[#bd24df] text-xs font-semibold px-3 py-1 rounded-full bg-white shadow-sm">
-            <Search size={12} />
+          <div className="inline-flex items-center gap-1.5 border border-[#f2c6fa] text-gray-950 font-light text-xs px-3 py-1 rounded-full bg-white shadow-sm">
+            <Search size={12} className="text-gray-950" />
             Explore Career Options
           </div>
           <h1 className="text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl">Browse Career Paths</h1>
-          <p className="text-gray-500 text-sm sm:text-base">
+          <p className="text-gray-500 text-sm sm:text-base font-light">
             Discover various career opportunities and find the path that matches your interests and goals
           </p>
         </div>
@@ -399,11 +403,15 @@ export default function BrowseCareers({ onNavigate, onLogout, activeCareerId }) 
             </div>
             <div className="space-y-2">
               <h2 className="text-xl sm:text-2xl font-bold">Want Personalized Career Recommendations?</h2>
-              <p className="text-purple-100 text-sm max-w-xl mx-auto">
+              <p className="text-purple-100 text-sm max-w-xl mx-auto font-light">
                 Take our AI-powered assessment to get careers matched to your unique profile
               </p>
             </div>
-            <button onClick={() => onNavigate('quiz')} className="inline-flex items-center gap-2 bg-white text-[#83047A] hover:bg-purple-50 font-bold px-6 py-3 rounded-xl shadow-md transition text-sm cursor-pointer">
+            <button 
+              onClick={() => onNavigate('quiz')} 
+              style={{ backgroundColor: '#FFDAF6' }}
+              className="inline-flex items-center gap-2 text-[#83047A] hover:opacity-95 font-bold px-6 py-3 rounded-xl shadow-md hover:scale-[1.02] hover:shadow-lg active:scale-[0.98] transition-all duration-300 text-sm cursor-pointer"
+            >
               Take Career Assessment
               <ArrowRight size={16} />
             </button>
@@ -418,7 +426,7 @@ export default function BrowseCareers({ onNavigate, onLogout, activeCareerId }) 
           {careers.map((career, idx) => {
             const CareerCardIcon = career.icon;
             return (
-              <div key={idx} className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6 flex flex-col justify-between transition-all hover:shadow-md hover:translate-y-[-2px]">
+              <div key={idx} className="bg-white rounded-[25px] figma-9-cards-prototype p-6 flex flex-col justify-between transition-all hover:translate-y-[-2px]">
                 
                 <div className="space-y-4">
                   <div className="flex items-start gap-4">
@@ -432,12 +440,12 @@ export default function BrowseCareers({ onNavigate, onLogout, activeCareerId }) 
                       </span>
                     </div>
                   </div>
-                  <p className="text-gray-500 text-sm leading-relaxed min-h-[60px] text-left">{career.description}</p>
+                  <p className="text-gray-500 text-sm leading-relaxed min-h-[60px] text-left font-light">{career.description}</p>
                   
                   <div className="space-y-1.5 text-left">
                     <span className="text-xs font-bold text-gray-400 block">Key Skills:</span>
                     <div className="flex flex-wrap gap-1.5">
-                      {careers[idx].skills.slice(0, 3).map((sk, sIdx) => (
+                      {career.skills.slice(0, 3).map((sk, sIdx) => (
                         <span key={sIdx} className="text-xs font-medium text-gray-600 bg-gray-50 px-2.5 py-1 rounded-md border border-gray-100">
                           {sk.name}
                         </span>
@@ -458,10 +466,10 @@ export default function BrowseCareers({ onNavigate, onLogout, activeCareerId }) 
                     </div>
                   </div>
 
-                  <div className="w-55 h- pt-2 mx-auto text-center">
+                  <div className="w-55 pt-2 mx-auto text-center">
                     <button 
                       onClick={() => onNavigate('details', career)} 
-                      className="w-full inline-flex items-center justify-center gap-2 px-8 py-1.5 bg-[#FFE7F2] border-[0.1px] border-[#83047A] text-[#83047A] font-inter text-[15px] rounded-[15px] hover:opacity-90 transition cursor-pointer shadow-sm"
+                      className="w-full inline-flex items-center justify-center gap-2 px-8 py-1.5 bg-[#FFE7F2] border-[0.1px] border-[#83047A] text-[#83047A] font-inter text-[15px] rounded-[15px] hover:scale-[1.02] hover:shadow-md active:scale-[0.98] transition-all duration-300 cursor-pointer shadow-sm"
                     >
                       View Career Details
                       <ArrowRight size={17} className="text-[#83047A]" />
@@ -475,26 +483,31 @@ export default function BrowseCareers({ onNavigate, onLogout, activeCareerId }) 
         </div>
 
         <div className="pt-10 border-t border-gray-100">
-          <div className="bg-white rounded-3xl border border-gray-100 p-8 max-w-4xl mx-auto shadow-sm flex flex-col sm:flex-row items-center justify-between gap-6 text-left">
-            <div className="space-y-2 max-w-xl">
-              <div className="flex items-center gap-1.5 text-xs font-extrabold text-gray-400 uppercase tracking-wider">
-                <Sparkles size={14} className="text-[#bd24df]" />
+          <div className="bg-white rounded-[25px] border border-gray-100 p-5 xs:p-6 sm:p-8 max-w-4xl mx-auto shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6 text-left">
+            
+            <div className="space-y-2.5 max-w-xl w-full">
+              <div className="flex items-center gap-2 text-[11px] font-extrabold text-gray-400 uppercase tracking-wider">
+                <Sparkles size={14} className="text-[#bd24df] flex-shrink-0" />
                 <span>Not sure which career is best for you?</span>
               </div>
-              <h3 className="text-xl font-extrabold text-gray-900 tracking-tight">
+              <h3 className="text-xl font-extrabold text-gray-900 tracking-tight sm:text-2xl leading-tight">
                 Get AI-Powered Career Suggestions
               </h3>
-              <p className="text-gray-500 text-sm leading-relaxed">
+              <p className="text-gray-500 text-xs sm:text-sm leading-relaxed font-light">
                 Answer a few quick behavioral questions about your premium technical skills, core personal strengths, and work environments to generate an absolute mapped vector report.
               </p>
             </div>
-            <button 
-              onClick={() => onNavigate('quiz')} 
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 bg-[#bd24df] text-white font-extrabold text-sm rounded-xl hover:bg-[#a61fc5] transition whitespace-nowrap shadow-md cursor-pointer"
-            >
-              <span>Get AI-Powered Career Suggestions</span>
-              <ArrowRight size={16} />
-            </button>
+            
+            <div className="w-full md:w-auto flex-shrink-0 pt-1 md:pt-0">
+              <button 
+                onClick={() => onNavigate('quiz')} 
+                className="w-full md:w-auto inline-flex items-center justify-center gap-2 px-6 py-4 bg-[#bd24df] text-white font-extrabold text-sm xs:text-base md:text-sm rounded-xl hover:bg-[#a61fc5] hover:scale-[1.02] hover:shadow-lg active:scale-[0.98] transition-all duration-300 whitespace-normal md:whitespace-nowrap shadow-md cursor-pointer text-center"
+              >
+                <span>Get AI-Powered Career Suggestions</span>
+                <ArrowRight size={16} className="flex-shrink-0" />
+              </button>
+            </div>
+
           </div>
         </div>
 
