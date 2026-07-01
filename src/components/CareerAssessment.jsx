@@ -11,7 +11,6 @@ import {
 
 export default function CareerAssessment({ onNavigate }) {
   const [currentStep, setCurrentStep] = useState(1);
-  
   const [error, setError] = useState('');
 
   const [answers, setAnswers] = useState({
@@ -85,38 +84,38 @@ export default function CareerAssessment({ onNavigate }) {
   };
 
   return (
-    <div className="min-h-screen bg-[#fcf8fe] text-gray-800 font-sans antialiased">
+    <div className="min-h-screen bg-[#fcf8fe] text-gray-800 font-['Inter',sans-serif] antialiased">
       
-      <header className="sticky top-0 z-50 bg-white border-b border-gray-100 shadow-sm">
+      <header className="sticky top-0 z-50 bg-white border-b border-gray-100 shadow-sm font-['Inter',sans-serif]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2 cursor-pointer" onClick={() => onNavigate('dashboard')}>
-            <div className="w-8 h-8 rounded-lg bg-[#bd24df] flex items-center justify-center text-white font-bold text-xl">¢</div>
-            <span className="font-bold text-xl tracking-tight text-gray-900">CareerPath<span className="text-[#bd24df]">AI</span></span>
+          <div className="flex items-center gap-2 cursor-pointer font-['Inter',sans-serif]" onClick={() => onNavigate('dashboard')}>
+            <div className="w-8 h-8 rounded-lg bg-[#bd24df] flex items-center justify-center text-white font-bold text-xl font-['Inter',sans-serif]">¢</div>
+            <span className="font-bold text-xl tracking-tight text-gray-900 font-['Inter',sans-serif]">CareerPath<span className="text-[#bd24df] font-['Inter',sans-serif]">AI</span></span>
           </div>
-          <div className="flex items-center gap-4 sm:gap-6">
-            <button onClick={() => onNavigate('dashboard')} className="flex items-center gap-2 text-gray-600 hover:text-[#bd24df] px-4 py-2 rounded-xl text-sm font-semibold transition cursor-pointer">
+          <div className="flex items-center gap-4 sm:gap-6 font-['Inter',sans-serif]">
+            <button onClick={() => onNavigate('dashboard')} className="flex items-center gap-2 text-gray-600 hover:text-[#bd24df] px-4 py-2 rounded-xl text-sm font-semibold transition cursor-pointer font-['Inter',sans-serif]">
               <LayoutDashboard size={18} />
-              <span className="hidden sm:inline">Dashboard</span>
+              <span className="hidden sm:inline font-['Inter',sans-serif]">Dashboard</span>
             </button>
-            <div className="flex items-center gap-2 text-[#bd24df] font-semibold text-sm border-l border-r border-gray-200 px-4 bg-purple-50/50 py-2 rounded-lg cursor-pointer" onClick={() => onNavigate('profile')}>
+            <div className="flex items-center gap-2 text-[#bd24df] font-semibold text-sm border-l border-r border-gray-200 px-4 bg-purple-50/50 py-2 rounded-lg cursor-pointer font-['Inter',sans-serif]" onClick={() => onNavigate('profile')}>
               <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden border border-[#f2c6fa]">
                 <User size={18} className="text-[#bd24df]" />
               </div>
-              <span className="hidden sm:inline">Ahmed!</span>
+              <span className="hidden sm:inline font-['Inter',sans-serif]">Ahmed!</span>
             </div>
-            <button onClick={() => onNavigate('home')} className="flex items-center gap-1.5 text-gray-500 hover:text-red-600 text-sm font-medium transition cursor-pointer">
+            <button onClick={() => onNavigate('home')} className="flex items-center gap-1.5 text-gray-500 hover:text-red-600 text-sm font-medium transition cursor-pointer font-['Inter',sans-serif]">
               <LogOut size={18} />
-              <span className="hidden sm:inline">Logout</span>
+              <span className="hidden sm:inline font-['Inter',sans-serif]">Logout</span>
             </button>
           </div>
         </div>
       </header>
 
-      <main className="max-w-4xl mx-auto px-4 py-8 space-y-6">
+      <main className="max-w-4xl mx-auto px-4 py-8 space-y-6 font-['Inter',sans-serif]">
         
-        <div className="flex justify-between items-center text-sm font-bold text-gray-600 px-1">
-          <span>{getQuestionsAnsweredText()}</span>
-          <span className="text-[#bd24df]">{getProgressPercentage()} Complete</span>
+        <div className="flex justify-between items-center text-sm font-bold text-gray-600 px-1 font-['Inter',sans-serif]">
+          <span className="font-['Inter',sans-serif]">{getQuestionsAnsweredText()}</span>
+          <span className="text-[#bd24df] font-['Inter',sans-serif]">{getProgressPercentage()} Complete</span>
         </div>
 
         <div className="w-full h-2.5 bg-gray-200 rounded-full overflow-hidden shadow-inner">
@@ -126,18 +125,18 @@ export default function CareerAssessment({ onNavigate }) {
           ></div>
         </div>
 
-        <div className="text-center space-y-2 pt-4">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-white border border-purple-200 rounded-full shadow-sm text-xs font-bold text-[#bd24df]">
-            <Sparkles size={12} />
+        <div className="text-center space-y-2 pt-4 font-['Inter',sans-serif]">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-white border-[0.5px] border-[#FF00ED] rounded-full shadow-sm text-xs font-normal text-black font-['Inter',sans-serif]">
+            <Sparkles size={12} className="text-[#6366f1]" />
             AI Career Assessment Form
           </div>
-          <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">Your Top Career Matches</h1>
-          <p className="text-gray-500 text-sm max-w-xl mx-auto font-medium">
+          <h1 className="text-3xl font-semibold text-[#000000] tracking-tight font-['Inter',sans-serif]">Your Top Career Matches</h1>
+          <p className="text-[#525252] text-sm max-w-xl mx-auto font-normal font-['Inter',sans-serif]">
             Complete this form and our AI will analyze your profile to suggest the best career matches
           </p>
         </div>
 
-        <div className="flex items-center justify-center max-w-xs mx-auto py-4 relative">
+        <div className="flex items-center justify-center max-w-xs mx-auto py-4 relative font-['Inter',sans-serif]">
           {[1, 2, 3, 4].map((step, idx) => (
             <React.Fragment key={step}>
               <button 
@@ -151,9 +150,9 @@ export default function CareerAssessment({ onNavigate }) {
                     validateCurrentStep();
                   }
                 }}
-                className="relative z-10 focus:outline-none transition transform active:scale-95 cursor-pointer"
+                className="relative z-10 focus:outline-none transition transform active:scale-95 cursor-pointer font-['Inter',sans-serif]"
               >
-                <div className={`w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm border-2 shadow-sm transition-all duration-300 ${
+                <div className={`w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm border-2 shadow-sm transition-all duration-300 font-['Inter',sans-serif] ${
                   currentStep === step 
                     ? 'bg-[#fde8ff] border-[#bd24df] text-[#bd24df]' 
                     : currentStep > step 
@@ -176,55 +175,55 @@ export default function CareerAssessment({ onNavigate }) {
         </div>
 
         {error && (
-          <div className="bg-red-50 border border-red-200 rounded-2xl p-4 flex items-center gap-3 text-red-700 text-sm font-semibold shadow-sm animate-fade-in text-left">
+          <div className="bg-red-50 border border-red-200 rounded-2xl p-4 flex items-center gap-3 text-red-700 text-sm font-semibold shadow-sm animate-fade-in text-left font-['Inter',sans-serif]">
             <AlertCircle size={20} className="text-red-500 flex-shrink-0" />
-            <span>{error}</span>
+            <span className="font-['Inter',sans-serif]">{error}</span>
           </div>
         )}
 
-        <div className={`bg-white border shadow-md rounded-3xl p-6 sm:p-8 space-y-6 text-left transition-all duration-300 ${error ? 'border-red-300 ring-4 ring-red-50' : 'border-gray-100'}`}>
+        <div className={`bg-white border shadow-md rounded-3xl p-6 sm:p-8 space-y-6 text-left transition-all duration-300 font-['Inter',sans-serif] ${error ? 'border-red-300 ring-4 ring-red-50' : 'border-gray-100'}`}>
           
           {currentStep === 1 && (
-            <div className="space-y-6">
+            <div className="space-y-6 font-['Inter',sans-serif]">
               <div>
-                <h2 className="text-xl font-extrabold text-gray-900 tracking-tight">Technical Interests</h2>
-                <p className="text-xs font-bold text-gray-400 mt-0.5">Step 1 of 4</p>
+                <h2 className="text-xl font-extrabold text-gray-900 tracking-tight font-['Inter',sans-serif]">Technical Interests</h2>
+                <p className="text-xs font-bold text-gray-400 mt-0.5 font-['Inter',sans-serif]">Step 1 of 4</p>
               </div>
 
-              <div className="space-y-3">
-                <p className="text-sm font-bold text-gray-700">1. Do you enjoy programming or working with code?</p>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="space-y-3 font-['Inter',sans-serif]">
+                <p className="text-sm font-bold text-gray-700 font-['Inter',sans-serif]">1. Do you enjoy programming or working with code?</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 font-['Inter',sans-serif]">
                   {['Yes, I love it!', 'Somewhat interested', 'Not really!', 'No preference'].map((opt) => (
                     <button
                       key={opt}
                       onClick={() => handleOptionSelect('q1', opt)}
-                      className={`w-full flex items-center justify-between text-left text-sm font-semibold px-4 py-3 rounded-xl border transition cursor-pointer ${
+                      className={`w-full flex items-center justify-between text-left text-sm font-semibold px-4 py-3 rounded-xl border transition cursor-pointer font-['Inter',sans-serif] ${
                         answers.q1 === opt 
                           ? 'bg-[#fdf2ff] border-[#bd24df] text-[#bd24df]' 
                           : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'
                       }`}
                     >
-                      <span>{opt}</span>
+                      <span className="font-['Inter',sans-serif]">{opt}</span>
                       {answers.q1 === opt && <div className="w-4 h-4 rounded-full border-4 border-[#bd24df] bg-white flex-shrink-0" />}
                     </button>
                   ))}
                 </div>
               </div>
 
-              <div className="space-y-3">
-                <p className="text-sm font-bold text-gray-700">2. How comfortable are you with learning new technologies?</p>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="space-y-3 font-['Inter',sans-serif]">
+                <p className="text-sm font-bold text-gray-700 font-['Inter',sans-serif]">2. How comfortable are you with learning new technologies?</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 font-['Inter',sans-serif]">
                   {['Very comfortable', 'Somewhat comfortable', 'Prefer familiar tools', 'Need guidance'].map((opt) => (
                     <button
                       key={opt}
                       onClick={() => handleOptionSelect('q2', opt)}
-                      className={`w-full flex items-center justify-between text-left text-sm font-semibold px-4 py-3 rounded-xl border transition cursor-pointer ${
+                      className={`w-full flex items-center justify-between text-left text-sm font-semibold px-4 py-3 rounded-xl border transition cursor-pointer font-['Inter',sans-serif] ${
                         answers.q2 === opt 
                           ? 'bg-[#fdf2ff] border-[#bd24df] text-[#bd24df]' 
                           : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'
                       }`}
                     >
-                      <span>{opt}</span>
+                      <span className="font-['Inter',sans-serif]">{opt}</span>
                       {answers.q2 === opt && <div className="w-4 h-4 rounded-full border-4 border-[#bd24df] bg-white flex-shrink-0" />}
                     </button>
                   ))}
@@ -234,46 +233,46 @@ export default function CareerAssessment({ onNavigate }) {
           )}
 
           {currentStep === 2 && (
-            <div className="space-y-6">
+            <div className="space-y-6 font-['Inter',sans-serif]">
               <div>
-                <h2 className="text-xl font-extrabold text-gray-900 tracking-tight">Work Preferences</h2>
-                <p className="text-xs font-bold text-gray-400 mt-0.5">Step 2 of 4</p>
+                <h2 className="text-xl font-extrabold text-gray-900 tracking-tight font-['Inter',sans-serif]">Work Preferences</h2>
+                <p className="text-xs font-bold text-gray-400 mt-0.5 font-['Inter',sans-serif]">Step 2 of 4</p>
               </div>
 
-              <div className="space-y-3">
-                <p className="text-sm font-bold text-gray-700">1. Do you prefer working with people or independently?</p>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="space-y-3 font-['Inter',sans-serif]">
+                <p className="text-sm font-bold text-gray-700 font-['Inter',sans-serif]">1. Do you prefer working with people or independently?</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 font-['Inter',sans-serif]">
                   {['With People', 'Independently', 'Hybrid approach', 'Flexible'].map((opt) => (
                     <button
                       key={opt}
                       onClick={() => handleOptionSelect('q3', opt)}
-                      className={`w-full flex items-center justify-between text-left text-sm font-semibold px-4 py-3 rounded-xl border transition cursor-pointer ${
+                      className={`w-full flex items-center justify-between text-left text-sm font-semibold px-4 py-3 rounded-xl border transition cursor-pointer font-['Inter',sans-serif] ${
                         answers.q3 === opt 
                           ? 'bg-[#fdf2ff] border-[#bd24df] text-[#bd24df]' 
                           : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'
                       }`}
                     >
-                      <span>{opt}</span>
+                      <span className="font-['Inter',sans-serif]">{opt}</span>
                       {answers.q3 === opt && <div className="w-4 h-4 rounded-full border-4 border-[#bd24df] bg-white flex-shrink-0" />}
                     </button>
                   ))}
                 </div>
               </div>
 
-              <div className="space-y-3">
-                <p className="text-sm font-bold text-gray-700">2. What type of work environment do you prefer?</p>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="space-y-3 font-['Inter',sans-serif]">
+                <p className="text-sm font-bold text-gray-700 font-['Inter',sans-serif]">2. What type of work environment do you prefer?</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 font-['Inter',sans-serif]">
                   {['Fast-paced startup', 'Structured corporate', 'Creative agency', 'Flexible remote'].map((opt) => (
                     <button
                       key={opt}
                       onClick={() => handleOptionSelect('q4', opt)}
-                      className={`w-full flex items-center justify-between text-left text-sm font-semibold px-4 py-3 rounded-xl border transition cursor-pointer ${
+                      className={`w-full flex items-center justify-between text-left text-sm font-semibold px-4 py-3 rounded-xl border transition cursor-pointer font-['Inter',sans-serif] ${
                         answers.q4 === opt 
                           ? 'bg-[#fdf2ff] border-[#bd24df] text-[#bd24df]' 
                           : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'
                       }`}
                     >
-                      <span>{opt}</span>
+                      <span className="font-['Inter',sans-serif]">{opt}</span>
                       {answers.q4 === opt && <div className="w-4 h-4 rounded-full border-4 border-[#bd24df] bg-white flex-shrink-0" />}
                     </button>
                   ))}
@@ -283,66 +282,66 @@ export default function CareerAssessment({ onNavigate }) {
           )}
 
           {currentStep === 3 && (
-            <div className="space-y-6">
+            <div className="space-y-6 font-['Inter',sans-serif]">
               <div>
-                <h2 className="text-xl font-extrabold text-gray-900 tracking-tight">Skills & Abilities</h2>
-                <p className="text-xs font-bold text-gray-400 mt-0.5">Step 3 of 4</p>
+                <h2 className="text-xl font-extrabold text-gray-900 tracking-tight font-['Inter',sans-serif]">Skills & Abilities</h2>
+                <p className="text-xs font-bold text-gray-400 mt-0.5 font-['Inter',sans-serif]">Step 3 of 4</p>
               </div>
 
-              <div className="space-y-3">
-                <p className="text-sm font-bold text-gray-700">1. Are you more interested in creative work or analytical tasks?</p>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="space-y-3 font-['Inter',sans-serif]">
+                <p className="text-sm font-bold text-gray-700 font-['Inter',sans-serif]">1. Are you more interested in creative work or analytical tasks?</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 font-['Inter',sans-serif]">
                   {['Creative work', 'Analytical tasks', 'Both equally', 'Task-dependent'].map((opt) => (
                     <button
                       key={opt}
                       onClick={() => handleOptionSelect('q5', opt)}
-                      className={`w-full flex items-center justify-between text-left text-sm font-semibold px-4 py-3 rounded-xl border transition cursor-pointer ${
+                      className={`w-full flex items-center justify-between text-left text-sm font-semibold px-4 py-3 rounded-xl border transition cursor-pointer font-['Inter',sans-serif] ${
                         answers.q5 === opt 
                           ? 'bg-[#fdf2ff] border-[#bd24df] text-[#bd24df]' 
                           : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'
                       }`}
                     >
-                      <span>{opt}</span>
+                      <span className="font-['Inter',sans-serif]">{opt}</span>
                       {answers.q5 === opt && <div className="w-4 h-4 rounded-full border-4 border-[#bd24df] bg-white flex-shrink-0" />}
                     </button>
                   ))}
                 </div>
               </div>
 
-              <div className="space-y-3">
-                <p className="text-sm font-bold text-gray-700">2. How comfortable are you with math and statistics?</p>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="space-y-3 font-['Inter',sans-serif]">
+                <p className="text-sm font-bold text-gray-700 font-['Inter',sans-serif]">2. How comfortable are you with math and statistics?</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 font-['Inter',sans-serif]">
                   {['Very comfortable', 'Somewhat comfortable', 'Not comfortable', 'Willing to learn'].map((opt) => (
                     <button
                       key={opt}
                       onClick={() => handleOptionSelect('q6', opt)}
-                      className={`w-full flex items-center justify-between text-left text-sm font-semibold px-4 py-3 rounded-xl border transition cursor-pointer ${
+                      className={`w-full flex items-center justify-between text-left text-sm font-semibold px-4 py-3 rounded-xl border transition cursor-pointer font-['Inter',sans-serif] ${
                         answers.q6 === opt 
                           ? 'bg-[#fdf2ff] border-[#bd24df] text-[#bd24df]' 
                           : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'
                       }`}
                     >
-                      <span>{opt}</span>
+                      <span className="font-['Inter',sans-serif]">{opt}</span>
                       {answers.q6 === opt && <div className="w-4 h-4 rounded-full border-4 border-[#bd24df] bg-white flex-shrink-0" />}
                     </button>
                   ))}
                 </div>
               </div>
 
-              <div className="space-y-3">
-                <p className="text-sm font-bold text-gray-700">3. Do you enjoy solving complex problems and puzzles?</p>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="space-y-3 font-['Inter',sans-serif]">
+                <p className="text-sm font-bold text-gray-700 font-['Inter',sans-serif]">3. Do you enjoy solving complex problems and puzzles?</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 font-['Inter',sans-serif]">
                   {['Absolutely love it!', 'Yes, most of the time', 'Sometimes', 'Not, particularly'].map((opt) => (
                     <button
                       key={opt}
                       onClick={() => handleOptionSelect('q7', opt)}
-                      className={`w-full flex items-center justify-between text-left text-sm font-semibold px-4 py-3 rounded-xl border transition cursor-pointer ${
+                      className={`w-full flex items-center justify-between text-left text-sm font-semibold px-4 py-3 rounded-xl border transition cursor-pointer font-['Inter',sans-serif] ${
                         answers.q7 === opt 
                           ? 'bg-[#fdf2ff] border-[#bd24df] text-[#bd24df]' 
                           : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'
                       }`}
                     >
-                      <span>{opt}</span>
+                      <span className="font-['Inter',sans-serif]">{opt}</span>
                       {answers.q7 === opt && <div className="w-4 h-4 rounded-full border-4 border-[#bd24df] bg-white flex-shrink-0" />}
                     </button>
                   ))}
@@ -352,66 +351,66 @@ export default function CareerAssessment({ onNavigate }) {
           )}
 
           {currentStep === 4 && (
-            <div className="space-y-6">
+            <div className="space-y-6 font-['Inter',sans-serif]">
               <div>
-                <h2 className="text-xl font-extrabold text-gray-900 tracking-tight">Communication & Goals</h2>
-                <p className="text-xs font-bold text-gray-400 mt-0.5">Step 4 of 4</p>
+                <h2 className="text-xl font-extrabold text-gray-900 tracking-tight font-['Inter',sans-serif]">Communication & Goals</h2>
+                <p className="text-xs font-bold text-gray-400 mt-0.5 font-['Inter',sans-serif]">Step 4 of 4</p>
               </div>
 
-              <div className="space-y-3">
-                <p className="text-sm font-bold text-gray-700">1. How would you rate your communication skills?</p>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="space-y-3 font-['Inter',sans-serif]">
+                <p className="text-sm font-bold text-gray-700 font-['Inter',sans-serif]">1. How would you rate your communication skills?</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 font-['Inter',sans-serif]">
                   {['Excellent', 'Good', 'Average', 'Need improvement'].map((opt) => (
                     <button
                       key={opt}
                       onClick={() => handleOptionSelect('q8', opt)}
-                      className={`w-full flex items-center justify-between text-left text-sm font-semibold px-4 py-3 rounded-xl border transition cursor-pointer ${
+                      className={`w-full flex items-center justify-between text-left text-sm font-semibold px-4 py-3 rounded-xl border transition cursor-pointer font-['Inter',sans-serif] ${
                         answers.q8 === opt 
                           ? 'bg-[#fdf2ff] border-[#bd24df] text-[#bd24df]' 
                           : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'
                       }`}
                     >
-                      <span>{opt}</span>
+                      <span className="font-['Inter',sans-serif]">{opt}</span>
                       {answers.q8 === opt && <div className="w-4 h-4 rounded-full border-4 border-[#bd24df] bg-white flex-shrink-0" />}
                     </button>
                   ))}
                 </div>
               </div>
 
-              <div className="space-y-3">
-                <p className="text-sm font-bold text-gray-700">2. What is your preferred learning style?</p>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="space-y-3 font-['Inter',sans-serif]">
+                <p className="text-sm font-bold text-gray-700 font-['Inter',sans-serif]">2. What is your preferred learning style?</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 font-['Inter',sans-serif]">
                   {['Hands-on practice', 'Reading & research', 'Video tutorials', 'Mentorship'].map((opt) => (
                     <button
                       key={opt}
                       onClick={() => handleOptionSelect('q9', opt)}
-                      className={`w-full flex items-center justify-between text-left text-sm font-semibold px-4 py-3 rounded-xl border transition cursor-pointer ${
+                      className={`w-full flex items-center justify-between text-left text-sm font-semibold px-4 py-3 rounded-xl border transition cursor-pointer font-['Inter',sans-serif] ${
                         answers.q9 === opt 
                           ? 'bg-[#fdf2ff] border-[#bd24df] text-[#bd24df]' 
                           : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'
                       }`}
                     >
-                      <span>{opt}</span>
+                      <span className="font-['Inter',sans-serif]">{opt}</span>
                       {answers.q9 === opt && <div className="w-4 h-4 rounded-full border-4 border-[#bd24df] bg-white flex-shrink-0" />}
                     </button>
                   ))}
                 </div>
               </div>
 
-              <div className="space-y-3">
-                <p className="text-sm font-bold text-gray-700">3. What is your primary career goal?</p>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="space-y-3 font-['Inter',sans-serif]">
+                <p className="text-sm font-bold text-gray-700 font-['Inter',sans-serif]">3. What is your primary career goal?</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 font-['Inter',sans-serif]">
                   {['High salary', 'Work-life balance', 'Making an impact', 'Continuous learning'].map((opt) => (
                     <button
                       key={opt}
                       onClick={() => handleOptionSelect('q10', opt)}
-                      className={`w-full flex items-center justify-between text-left text-sm font-semibold px-4 py-3 rounded-xl border transition cursor-pointer ${
+                      className={`w-full flex items-center justify-between text-left text-sm font-semibold px-4 py-3 rounded-xl border transition cursor-pointer font-['Inter',sans-serif] ${
                         answers.q10 === opt 
                           ? 'bg-[#fdf2ff] border-[#bd24df] text-[#bd24df]' 
                           : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'
                       }`}
                     >
-                      <span>{opt}</span>
+                      <span className="font-['Inter',sans-serif]">{opt}</span>
                       {answers.q10 === opt && <div className="w-4 h-4 rounded-full border-4 border-[#bd24df] bg-white flex-shrink-0" />}
                     </button>
                   ))}
@@ -420,11 +419,11 @@ export default function CareerAssessment({ onNavigate }) {
             </div>
           )}
 
-          <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+          <div className="flex items-center justify-between pt-4 border-t border-gray-100 font-['Inter',sans-serif]">
             <button
               onClick={handlePrevious}
               disabled={currentStep === 1}
-              className="px-5 py-2.5 bg-white border border-gray-200 text-gray-600 font-bold text-xs rounded-xl shadow-sm hover:bg-gray-50 transition disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+              className="px-5 py-2.5 bg-white border border-gray-200 text-gray-600 font-bold text-xs rounded-xl shadow-sm hover:bg-gray-50 transition disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer font-['Inter',sans-serif]"
             >
               Previous
             </button>
@@ -432,7 +431,7 @@ export default function CareerAssessment({ onNavigate }) {
             {currentStep < 4 ? (
               <button
                 onClick={handleNext}
-                className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-white border border-[#f5dbfc] text-[#bd24df] font-bold text-xs rounded-xl shadow-sm hover:bg-[#fdf2ff] transition cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-white border border-[#f5dbfc] text-[#bd24df] font-bold text-xs rounded-xl shadow-sm hover:bg-[#fdf2ff] transition cursor-pointer font-['Inter',sans-serif]"
               >
                 Next
                 <ChevronRight size={14} />
@@ -440,7 +439,7 @@ export default function CareerAssessment({ onNavigate }) {
             ) : (
               <button
                 onClick={handleNext}
-                className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-[#bd24df] text-white font-bold text-xs rounded-xl shadow-md hover:bg-[#a61fc5] transition cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-[#bd24df] text-white font-bold text-xs rounded-xl shadow-md hover:bg-[#a61fc5] transition cursor-pointer font-['Inter',sans-serif]"
               >
                 Get Career Suggestions
                 <ChevronRight size={14} />
