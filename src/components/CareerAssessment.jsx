@@ -188,8 +188,8 @@ export default function CareerAssessment({ onNavigate }) {
             {currentStep === 1 && (
               <div className="space-y-6 font-['Inter',sans-serif]">
                 <div>
-                  <h2 className="text-xl font-extrabold text-gray-900 tracking-tight font-['Inter',sans-serif]">Technical Interests</h2>
-                  <p className="text-xs font-bold text-gray-400 mt-0.5 font-['Inter',sans-serif]">Step 1 of 4</p>
+                  <h2 className="text-xl font-semibold text-black tracking-tight font-['Inter',sans-serif]">Technical Interests</h2>
+                  <p className="text-xs font-normal text-[#303030] mt-0.5 font-['Inter',sans-serif]">Step 1 of 4</p>
                 </div>
 
                 <div className="space-y-3 font-['Inter',sans-serif]">
@@ -237,8 +237,8 @@ export default function CareerAssessment({ onNavigate }) {
             {currentStep === 2 && (
               <div className="space-y-6 font-['Inter',sans-serif]">
                 <div>
-                  <h2 className="text-xl font-extrabold text-gray-900 tracking-tight font-['Inter',sans-serif]">Work Preferences</h2>
-                  <p className="text-xs font-bold text-gray-400 mt-0.5 font-['Inter',sans-serif]">Step 2 of 4</p>
+                  <h2 className="text-xl font-semibold text-black tracking-tight font-['Inter',sans-serif]">Work Preferences</h2>
+                  <p className="text-xs font-normal text-[#303030] mt-0.5 font-['Inter',sans-serif]">Step 2 of 4</p>
                 </div>
 
                 <div className="space-y-3 font-['Inter',sans-serif]">
@@ -286,8 +286,8 @@ export default function CareerAssessment({ onNavigate }) {
             {currentStep === 3 && (
               <div className="space-y-6 font-['Inter',sans-serif]">
                 <div>
-                  <h2 className="text-xl font-extrabold text-gray-900 tracking-tight font-['Inter',sans-serif]">Skills & Abilities</h2>
-                  <p className="text-xs font-bold text-gray-400 mt-0.5 font-['Inter',sans-serif]">Step 3 of 4</p>
+                  <h2 className="text-xl font-semibold text-black tracking-tight font-['Inter',sans-serif]">Skills & Abilities</h2>
+                  <p className="text-xs font-normal text-[#303030] mt-0.5 font-['Inter',sans-serif]">Step 3 of 4</p>
                 </div>
 
                 <div className="space-y-3 font-['Inter',sans-serif]">
@@ -355,8 +355,8 @@ export default function CareerAssessment({ onNavigate }) {
             {currentStep === 4 && (
               <div className="space-y-6 font-['Inter',sans-serif]">
                 <div>
-                  <h2 className="text-xl font-extrabold text-gray-900 tracking-tight font-['Inter',sans-serif]">Communication & Goals</h2>
-                  <p className="text-xs font-bold text-gray-400 mt-0.5 font-['Inter',sans-serif]">Step 4 of 4</p>
+                  <h2 className="text-xl font-semibold text-black tracking-tight font-['Inter',sans-serif]">Communication & Goals</h2>
+                  <p className="text-xs font-normal text-[#303030] mt-0.5 font-['Inter',sans-serif]">Step 4 of 4</p>
                 </div>
 
                 <div className="space-y-3 font-['Inter',sans-serif]">
