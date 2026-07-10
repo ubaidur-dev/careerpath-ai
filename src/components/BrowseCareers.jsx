@@ -12,7 +12,8 @@ import {
   Target,
   Users,
   DollarSign,
-  Sparkles
+  Sparkles,
+  Search as SearchIcon
 } from 'lucide-react';
 
 const careers = [
@@ -74,7 +75,7 @@ const careers = [
     flexibility: "Hybrid",
     icon: BarChart3,
     iconColor: "text-[#FF2D55]",
-    iconBg: "bg-[#FFE7F2] border-[0.5px] border-[#FF00ED] ",
+    iconBg: "bg-[#FFE7F2] border-[0.5px] border-[#FF00ED]",
     roadmap: [
       { title: "Master Spreadsheet Software & Statistical Modeling", duration: "1-2 months", desc: "Learn conditional logic lookups, array metrics formulas, dynamic formatting, and multi-variable analytics models in Excel.", tags: ["Chandoo", "Coursera"] },
       { title: "Learn SQL Database Querying & Architecture", duration: "2 months", desc: "Write production relational schemas, multi-table joins, subqueries, and advanced window partition functions flawlessly.", tags: ["SQLZoo", "Mode Analytics"] },
@@ -316,7 +317,7 @@ const careers = [
     openings: "8,000+",
     experience: "3-6 years",
     flexibility: "On-site Lab",
-    icon: Search,
+    icon: SearchIcon,
     iconColor: "text-[#FF2D55]",
     iconBg: "bg-[#FFE7F2] border-[0.5px] border-[#FF00ED]",
     roadmap: [
@@ -430,10 +431,10 @@ export default function BrowseCareers({ onNavigate, onLogout, activeCareerId }) 
                 
                 <div className="space-y-4">
                   <div className="flex items-start gap-4">
-                    <div className={`w-12 h-12 rounded-xl ${career.iconBg} flex items-center justify-center flex-shrink-0`}>
-                      <CareerCardIcon size={24} className={career.iconColor} />
+                    <div className={`w-14 h-14 rounded-[20px] ${career.iconBg} flex items-center justify-center flex-shrink-0 shadow-sm`}>
+                      <CareerCardIcon size={30} className={career.iconColor} />
                     </div>
-                    <div className="text-left space-y-1.5">
+                    <div className="text-left space-y-1.5 pt-0.5">
                       <h3 className="font-semibold text-gray-900 text-lg leading-snug">{career.title}</h3>
                       <span className={`inline-block text-[11px] font-medium px-2.5 py-0.5 rounded-full border ${career.demandColor}`}>
                         {career.demand}
@@ -466,13 +467,13 @@ export default function BrowseCareers({ onNavigate, onLogout, activeCareerId }) 
                     </div>
                   </div>
 
-                  <div className="w-55 pt-2 mx-auto text-center">
+                  <div className="pt-2 flex justify-center w-full">
                     <button 
                       onClick={() => onNavigate('details', career)} 
-                      className="w-full inline-flex items-center justify-center gap-2 px-8 py-1.5 bg-[#FFE7F2] border-[0.1px] border-[#83047A] text-[#83047A] font-inter text-[15px] rounded-[15px] hover:scale-[1.02] hover:shadow-md active:scale-[0.98] transition-all duration-300 cursor-pointer shadow-sm"
+                      className="w-full sm:w-[250px] h-[45px] inline-flex items-center justify-center gap-2 bg-[#FFE7F2] border-[0.5px] border-[#83047A] text-[#83047A] font-inter text-[17px] font-medium rounded-[17px] hover:scale-[1.02] hover:shadow-md active:scale-[0.98] transition-all duration-300 cursor-pointer shadow-sm px-4"
                     >
-                      View Career Details
-                      <ArrowRight size={17} className="text-[#83047A]" />
+                      <span>View Career Details</span>
+                      <ArrowRight size={23} className="text-[#83047A] flex-shrink-0" />
                     </button>
                   </div>
                 </div>
