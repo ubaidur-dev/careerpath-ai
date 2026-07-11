@@ -389,9 +389,11 @@ export default function BrowseCareers({ onNavigate, onLogout, activeCareerId }) 
             Explore Career Options
           </div>
           <h1 className="text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl">Browse Career Paths</h1>
-          <p className="text-gray-500 text-sm sm:text-base font-light">
-            Discover various career opportunities and find the path that matches your interests and goals
-          </p>
+          <p 
+          style={{ fontSize: '19px' }} 
+          className="text-gray-500 max-w-xl mx-auto font-light">
+          Discover various career opportunities and find the path that matches your interests and goals
+        </p>
         </div>
 
         <div 
