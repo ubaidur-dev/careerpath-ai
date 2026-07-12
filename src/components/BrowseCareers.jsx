@@ -383,41 +383,48 @@ export default function BrowseCareers({ onNavigate, onLogout, activeCareerId }) 
           </button>
         </div>
 
-        <div className="text-center space-y-3 max-w-2xl mx-auto">
-          <div className="inline-flex items-center gap-1.5 border border-[#f2c6fa] text-gray-950 font-light text-xs px-3 py-1 rounded-full bg-white shadow-sm">
-            <Search size={12} className="text-gray-950" />
+        <div className="text-center space-y-4 max-w-2xl mx-auto">
+          <div 
+            style={{ borderColor: '#FF00ED' }}
+            className="fontsize inline-flex items-center gap-1.5 border text-gray-800 font-light text-xs px-10 py-2 rounded-full bg-white shadow-sm"
+          >
+            <Search size={12} style={{ color: '#83047A' }} />
             Explore Career Options
           </div>
           <h1 className="text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl">Browse Career Paths</h1>
           <p 
-          style={{ fontSize: '19px' }} 
-          className="text-gray-500 max-w-xl mx-auto font-light">
-          Discover various career opportunities and find the path that matches your interests and goals
-        </p>
+            style={{ fontSize: '19px' }} 
+            className="text-gray-500 max-w-xl mx-auto font-light"
+          >
+            Discover various career opportunities and find the path that matches your interests and goals
+          </p>
         </div>
 
         <div 
-          style={{ backgroundColor: '#83047A' }} 
-          className="rounded-[30px] border-[2.5px] border-[#FFD0F3] figma-personalized-box-shadow p-8 text-center text-white max-w-4xl mx-auto relative overflow-hidden"
+        style={{ backgroundColor: '#83047A', width: '800px', minHeight: '60px' }} 
+        className="rounded-[30px] border-[2.5px] border-[#FFD0F3] figma-personalized-box-shadow p-8 text-center text-white max-w-4xl mx-auto my-auto relative overflow-hidden left-0 right-0"
         >
           <div className="relative z-10 space-y-5">
             <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center mx-auto text-yellow-300">
-              <Zap size={22} className="animate-pulse" />
+              <Zap size={25} className="animate-pulse" />
             </div>
             <div className="space-y-2">
               <h2 className="text-xl sm:text-2xl font-bold">Want Personalized Career Recommendations?</h2>
-              <p className="text-purple-100 text-sm max-w-xl mx-auto font-light">
-                Take our AI-powered assessment to get careers matched to your unique profile
-              </p>
+              <p 
+              style={{ fontSize: '20.5px' }} 
+              className="text-purple-100 max-w-none whitespace-nowrap mx-auto font-light"
+              >
+              Take our AI-powered assessment to get careers matched to your unique profile
+            </p>
             </div>
             <button 
-              onClick={() => onNavigate('quiz')} 
-              style={{ backgroundColor: '#FFDAF6' }}
-              className="inline-flex items-center gap-2 text-[#83047A] hover:opacity-95 font-bold px-6 py-3 rounded-xl shadow-md hover:scale-[1.02] hover:shadow-lg active:scale-[0.98] transition-all duration-300 text-sm cursor-pointer"
+            onClick={() => onNavigate('quiz')} 
+            style={{ backgroundColor: '#FFDAF6', width: '310px', height: '48px', fontSize: '21px' }}
+            className="inline-flex items-center justify-center gap-2 text-[#83047A] hover:opacity-95 font-normal rounded-xl shadow-md hover:scale-[1.02] hover:shadow-lg active:scale-[0.98] transition-all duration-300 cursor-pointer mx-auto"
             >
-              Take Career Assessment
-              <ArrowRight size={16} />
-            </button>
+            <span>Take Career Assessment</span>
+            <ArrowRight size={18} className="flex-shrink-0" />
+          </button>
           </div>
         </div>
 
