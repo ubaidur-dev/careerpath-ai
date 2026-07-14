@@ -21,7 +21,7 @@ const careers = [
     title: "Software Developer",
     match: "92% Match",
     demand: "Very High Demand",
-    demandColor: "text-emerald-600 bg-emerald-50 border-emerald-100",
+    demandColor: "text-emerald-600 bg-emerald-50",
     description: "Design, build, and deploy production-grade applications. Break down complex business logic into scalable code, handle databases, and optimize software systems.",
     skills: [
       { name: "JavaScript/Python", value: 90 },
@@ -57,7 +57,7 @@ const careers = [
     title: "Data Analyst",
     match: "87% Match",
     demand: "High Demand",
-    demandColor: "text-blue-600 bg-blue-50 border-blue-100",
+    demandColor: "text-blue-600 bg-blue-50",
     description: "Transform raw organizational database payloads into actionable corporate intelligence. Audit pipelines and engineer premium executive dashboards.",
     skills: [
       { name: "SQL Data Queries", value: 88 },
@@ -93,7 +93,7 @@ const careers = [
     title: "UX Designer",
     match: "82% Match",
     demand: "High Demand",
-    demandColor: "text-blue-600 bg-blue-50 border-blue-100",
+    demandColor: "text-blue-600 bg-blue-50",
     description: "Architect flawless user interactions and interface behaviors for cross-platform products using cognitive psychology maps and prototype flows.",
     skills: [
       { name: "Figma/Adobe XD", value: 95 },
@@ -129,7 +129,7 @@ const careers = [
     title: "Business Analyst",
     match: "78% Match",
     demand: "Medium Demand",
-    demandColor: "text-amber-600 bg-amber-50 border-amber-100",
+    demandColor: "text-amber-600 bg-amber-50",
     description: "Translate company needs into explicit engineering user stories, business charts, systemic flowcharts, and functional specifications.",
     skills: [
       { name: "Requirements Gathering", value: 92 },
@@ -164,7 +164,7 @@ const careers = [
     title: "Digital Marketing Specialist",
     match: "75% Match",
     demand: "High Demand",
-    demandColor: "text-blue-600 bg-blue-50 border-blue-100",
+    demandColor: "text-blue-600 bg-blue-50",
     description: "Configure programmatic tracking networks, search engine index parameters, digital ads funnels, and performance conversion pixels.",
     skills: [
       { name: "SEO Optimization", value: 88 },
@@ -199,7 +199,7 @@ const careers = [
     title: "Product Manager",
     match: "85% Match",
     demand: "High Demand",
-    demandColor: "text-blue-600 bg-blue-50 border-blue-100",
+    demandColor: "text-blue-600 bg-blue-50",
     description: "Own product lifecycle frameworks. Govern development constraints across design, engineering, and sales squads to launch viable software models.",
     skills: [
       { name: "Product Strategy", value: 92 },
@@ -234,7 +234,7 @@ const careers = [
     title: "Human Resources Specialist",
     match: "70% Match",
     demand: "Medium Demand",
-    demandColor: "text-amber-600 bg-amber-50 border-amber-100",
+    demandColor: "text-amber-600 bg-amber-50",
     description: "Govern company employment loops, structural candidate screening protocols, workforce metrics, and labor legal compliance catalogs.",
     skills: [
       { name: "Talent Acquisition", value: 90 },
@@ -269,7 +269,7 @@ const careers = [
     title: "Financial Analyst",
     match: "74% Match",
     demand: "Medium Demand",
-    demandColor: "text-amber-600 bg-amber-50 border-amber-100",
+    demandColor: "text-amber-600 bg-amber-50",
     description: "Build systematic financial ledger equations and multi-statement cash projections to audit capital parameters and forecast investment returns.",
     skills: [
       { name: "Financial Modeling", value: 92 },
@@ -303,7 +303,7 @@ const careers = [
     title: "Research Scientist",
     match: "81% Match",
     demand: "Medium Demand",
-    demandColor: "text-amber-600 bg-amber-50 border-amber-100",
+    demandColor: "text-amber-600 bg-amber-50",
     description: "Design rigorous experimental loops and mathematical hypothesis arrays to isolate structural variances and publish industrial innovations.",
     skills: [
       { name: "Data Analytics", value: 85 },
@@ -358,6 +358,11 @@ export default function BrowseCareers({ onNavigate, onLogout, activeCareerId }) 
             border: 1px solid #FFD2F7;
             box-shadow: 1px 5px 5px 0.2px rgba(0, 0, 0, 0.25);
           }
+          .figma-assessment-btn-prototype {
+            border: 1px solid #83047A;
+            background-color: #FFE7F2;
+            color: #83047A;
+          }
         `}
       </style>
 
@@ -386,10 +391,19 @@ export default function BrowseCareers({ onNavigate, onLogout, activeCareerId }) 
         <div className="text-center space-y-4 max-w-2xl mx-auto">
           <div 
             style={{ borderColor: '#FF00ED' }}
-            className="fontsize inline-flex items-center gap-1.5 border text-gray-800 font-light text-xs px-10 py-2 rounded-full bg-white shadow-sm"
+            className="inline-flex items-center gap-2 border text-gray-800 font-light px-5 py-1.5 rounded-full bg-white shadow-sm"
           >
-            <Search size={12} style={{ color: '#83047A' }} />
-            Explore Career Options
+            <Search 
+              size={16}
+              style={{ color: '#83047A' }} 
+              className="flex-shrink-0" 
+            />
+            <span 
+              style={{ fontSize: '16px' }} 
+              className="leading-3 flex items-center"
+            >
+              Explore Career Options
+            </span>
           </div>
           <h1 className="text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl">Browse Career Paths</h1>
           <p 
@@ -401,8 +415,8 @@ export default function BrowseCareers({ onNavigate, onLogout, activeCareerId }) 
         </div>
 
         <div 
-        style={{ backgroundColor: '#83047A', width: '800px', minHeight: '60px' }} 
-        className="rounded-[30px] border-[2.5px] border-[#FFD0F3] figma-personalized-box-shadow p-8 text-center text-white max-w-4xl mx-auto my-auto relative overflow-hidden left-0 right-0"
+          style={{ backgroundColor: '#83047A', width: '800px', minHeight: '60px' }} 
+          className="rounded-[30px] border-[2.5px] border-[#FFD0F3] figma-personalized-box-shadow p-8 text-center text-white max-w-4xl mx-auto my-auto relative overflow-hidden left-0 right-0 mb-9"
         >
           <div className="relative z-10 space-y-5">
             <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center mx-auto text-yellow-300">
@@ -411,32 +425,41 @@ export default function BrowseCareers({ onNavigate, onLogout, activeCareerId }) 
             <div className="space-y-2">
               <h2 className="text-xl sm:text-2xl font-bold">Want Personalized Career Recommendations?</h2>
               <p 
-              style={{ fontSize: '20.5px' }} 
-              className="text-purple-100 max-w-none whitespace-nowrap mx-auto font-light"
+                style={{ fontSize: '20.5px' }} 
+                className="text-purple-100 max-w-none whitespace-nowrap mx-auto font-light"
               >
-              Take our AI-powered assessment to get careers matched to your unique profile
-            </p>
+                Take our AI-powered assessment to get careers matched to your unique profile
+              </p>
             </div>
             <button 
-            onClick={() => onNavigate('quiz')} 
-            style={{ backgroundColor: '#FFDAF6', width: '310px', height: '48px', fontSize: '21px' }}
-            className="inline-flex items-center justify-center gap-2 text-[#83047A] hover:opacity-95 font-normal rounded-xl shadow-md hover:scale-[1.02] hover:shadow-lg active:scale-[0.98] transition-all duration-300 cursor-pointer mx-auto"
+              onClick={() => onNavigate('quiz')} 
+              style={{ backgroundColor: '#FFDAF6', width: '310px', height: '48px', fontSize: '21px' }}
+              className="inline-flex items-center justify-center gap-2 text-[#83047A] hover:opacity-95 font-normal rounded-xl shadow-md hover:scale-[1.02] hover:shadow-lg active:scale-[0.98] transition-all duration-300 cursor-pointer mx-auto"
             >
-            <span>Take Career Assessment</span>
-            <ArrowRight size={18} className="flex-shrink-0" />
-          </button>
+              <span>Take Career Assessment</span>
+              <ArrowRight size={18} className="flex-shrink-0" />
+            </button>
           </div>
         </div>
 
-        <div className="pt-4 border-t border-gray-100 text-left">
+        <div className="pt-2 text-left">
           <p className="text-sm font-bold text-gray-500">Showing {careers.length} careers</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-2">
           {careers.map((career, idx) => {
             const CareerCardIcon = career.icon;
+            
+            let demandBadgeStroke = '#FFD2F7'; 
+            if (career.demand === "Medium Demand") demandBadgeStroke = '#CF7900';
+            else if (career.demand === "High Demand") demandBadgeStroke = '#000ACF';
+            else if (career.demand === "Very High Demand") demandBadgeStroke = '#00CF56';
+
             return (
-              <div key={idx} className="bg-white rounded-[25px] figma-9-cards-prototype p-6 flex flex-col justify-between transition-all hover:translate-y-[-2px]">
+              <div 
+                key={idx} 
+                className="bg-white rounded-[25px] figma-9-cards-prototype p-6 flex flex-col justify-between transition-all hover:translate-y-[-2px]"
+              >
                 
                 <div className="space-y-4">
                   <div className="flex items-start gap-4">
@@ -445,34 +468,47 @@ export default function BrowseCareers({ onNavigate, onLogout, activeCareerId }) 
                     </div>
                     <div className="text-left space-y-1.5 pt-0.5">
                       <h3 className="font-semibold text-gray-900 text-lg leading-snug">{career.title}</h3>
-                      <span className={`inline-block text-[11px] font-medium px-2.5 py-0.5 rounded-full border ${career.demandColor}`}>
+                      <span 
+                        style={{ border: `0.5px solid ${demandBadgeStroke}` }}
+                        className={`inline-block text-[11px] font-medium px-2.5 py-0.5 rounded-full ${career.demandColor}`}
+                      >
                         {career.demand}
                       </span>
                     </div>
                   </div>
-                  <p className="text-gray-500 text-sm leading-relaxed min-h-[60px] text-left font-light">{career.description}</p>
+                  <p className="text-[#525252] text-sm leading-relaxed min-h-[60px] text-left font-normal">{career.description}</p>
                   
-                  <div className="space-y-1.5 text-left">
-                    <span className="text-xs font-bold text-gray-400 block">Key Skills:</span>
-                    <div className="flex flex-wrap gap-1.5">
+                  <div className="space-y-2 text-left">
+                    <span className="text-[13px] font-bold text-[#525252] block">Key Skills:</span>
+                    <div className="flex flex-wrap gap-1 items-center whitespace-nowrap overflow-hidden">
                       {career.skills.slice(0, 3).map((sk, sIdx) => (
-                        <span key={sIdx} className="text-xs font-medium text-gray-600 bg-gray-50 px-2.5 py-1 rounded-md border border-gray-100">
+                        <span 
+                          key={sIdx} 
+                          style={{ border: '0.5px solid #A3A3A3', fontSize: '11.5px' }}
+                          className="font-normal text-[#525252] bg-[#A3A3A3]/10 px-2 py-0.5 rounded-[18px]"
+                        >
                           {sk.name}
                         </span>
                       ))}
+                      <span 
+                        style={{ border: '0.5px solid #A3A3A3', fontSize: '11.5px' }}
+                        className="font-normal text-[#525252] bg-[#A3A3A3]/10 px-2 py-0.5 rounded-[18px]"
+                      >
+                        +1
+                      </span>
                     </div>
                   </div>
                 </div>
 
                 <div className="mt-6 space-y-4">
-                  <div className="grid grid-cols-2 gap-3 bg-gray-50 p-3 rounded-xl border border-gray-100 text-left">
-                    <div>
-                      <span className="text-[10px] uppercase tracking-wider font-bold text-gray-400 block">Salary</span>
-                      <span className="text-xs font-semibold text-gray-800">{career.salary}</span>
+                  <div className="grid grid-cols-2 gap-3 text-left">
+                    <div className="bg-[#F9F9F9] px-3 py-1.5 rounded-xl border border-gray-100 flex flex-col justify-center min-h-[45px]">
+                      <span className="text-[13px] font-normal text-[#525252] block leading-tight mb-0.5">Salary</span>
+                      <span className="text-[13px] font-bold text-gray-800 leading-tight">{career.salary}</span>
                     </div>
-                    <div>
-                      <span className="text-[10px] uppercase tracking-wider font-bold text-gray-400 block">Growth</span>
-                      <span className="text-xs font-semibold text-gray-800">{career.growth}</span>
+                    <div className="bg-[#F9F9F9] px-3 py-1.5 rounded-xl border border-gray-100 flex flex-col justify-center min-h-[45px]">
+                      <span className="text-[13px] font-normal text-[#525252] block leading-tight mb-0.5">Growth</span>
+                      <span className="text-[13px] font-bold text-gray-800 leading-tight">{career.growth}</span>
                     </div>
                   </div>
 
@@ -492,33 +528,30 @@ export default function BrowseCareers({ onNavigate, onLogout, activeCareerId }) 
           })}
         </div>
 
-        <div className="pt-10 border-t border-gray-100">
-          <div className="bg-white rounded-[25px] border border-gray-100 p-5 xs:p-6 sm:p-8 max-w-4xl mx-auto shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6 text-left">
-            
-            <div className="space-y-2.5 max-w-xl w-full">
-              <div className="flex items-center gap-2 text-[11px] font-extrabold text-gray-400 uppercase tracking-wider">
-                <Sparkles size={14} className="text-[#bd24df] flex-shrink-0" />
-                <span>Not sure which career is best for you?</span>
-              </div>
-              <h3 className="text-xl font-extrabold text-gray-900 tracking-tight sm:text-2xl leading-tight">
-                Get AI-Powered Career Suggestions
-              </h3>
-              <p className="text-gray-500 text-xs sm:text-sm leading-relaxed font-light">
-                Answer a few quick behavioral questions about your premium technical skills, core personal strengths, and work environments to generate an absolute mapped vector report.
-              </p>
-            </div>
-            
-            <div className="w-full md:w-auto flex-shrink-0 pt-1 md:pt-0">
-              <button 
-                onClick={() => onNavigate('quiz')} 
-                className="w-full md:w-auto inline-flex items-center justify-center gap-2 px-6 py-4 bg-[#bd24df] text-white font-extrabold text-sm xs:text-base md:text-sm rounded-xl hover:bg-[#a61fc5] hover:scale-[1.02] hover:shadow-lg active:scale-[0.98] transition-all duration-300 whitespace-normal md:whitespace-nowrap shadow-md cursor-pointer text-center"
-              >
-                <span>Get AI-Powered Career Suggestions</span>
-                <ArrowRight size={16} className="flex-shrink-0" />
-              </button>
-            </div>
-
+        <div className="pt-12 border-t border-gray-100 w-full flex flex-col items-center justify-center text-center space-y-4">
+          
+          <h3 
+            style={{ fontSize: '20.5px' }} 
+            className="text-gray-900 font-normal font-['Inter',sans-serif] tracking-normal px-4"
+          >
+            Not sure which career is right for you?
+          </h3>
+          
+          <div className="w-full px-4 flex justify-center items-center">
+            <button 
+              onClick={() => onNavigate('quiz')} 
+              style={{ 
+                fontSize: '22.5px',
+                maxWidth: '500px',
+                height: '60px' 
+              }} 
+              className="w-full xs:w-auto px-8 inline-flex items-center justify-center gap-3 figma-assessment-btn-prototype rounded-[22px] font-medium font-['Inter',sans-serif] tracking-wide shadow-sm hover:scale-[1.02] hover:shadow-md active:scale-[0.98] transition-all duration-300 cursor-pointer"
+            >
+              <span>Get AI-Powered Career Suggestions</span>
+              <ArrowRight size={24} className="text-[#83047A] flex-shrink-0" />
+            </button>
           </div>
+
         </div>
 
       </main>
