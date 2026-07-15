@@ -446,7 +446,7 @@ export default function BrowseCareers({ onNavigate, onLogout, activeCareerId }) 
           <p className="text-sm font-bold text-gray-500">Showing {careers.length} careers</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-2">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-9 px-2">
           {careers.map((career, idx) => {
             const CareerCardIcon = career.icon;
             
@@ -458,19 +458,19 @@ export default function BrowseCareers({ onNavigate, onLogout, activeCareerId }) 
             return (
               <div 
                 key={idx} 
-                className="bg-white rounded-[25px] figma-9-cards-prototype p-6 flex flex-col justify-between transition-all hover:translate-y-[-2px]"
+                className="bg-white rounded-[20px] figma-9-cards-prototype p-6 flex flex-col justify-between transition-all hover:translate-y-[-2px]"
               >
                 
                 <div className="space-y-4">
                   <div className="flex items-start gap-4">
-                    <div className={`w-14 h-14 rounded-[20px] ${career.iconBg} flex items-center justify-center flex-shrink-0 shadow-sm`}>
+                    <div className={`w-14 h-14 rounded-[17px] ${career.iconBg} flex items-center justify-center flex-shrink-0 shadow-sm`}>
                       <CareerCardIcon size={30} className={career.iconColor} />
                     </div>
                     <div className="text-left space-y-1.5 pt-0.5">
                       <h3 className="font-semibold text-gray-900 text-lg leading-snug">{career.title}</h3>
                       <span 
-                        style={{ border: `0.5px solid ${demandBadgeStroke}` }}
-                        className={`inline-block text-[11px] font-medium px-2.5 py-0.5 rounded-full ${career.demandColor}`}
+                        style={{ border: `0.3px solid ${demandBadgeStroke}` }}
+                        className={`inline-block text-[11px] font-medium px-2.5 py-0.5 rounded-[12px] border border-[0.1px] ${career.demandColor}`}
                       >
                         {career.demand}
                       </span>
@@ -484,15 +484,15 @@ export default function BrowseCareers({ onNavigate, onLogout, activeCareerId }) 
                       {career.skills.slice(0, 3).map((sk, sIdx) => (
                         <span 
                           key={sIdx} 
-                          style={{ border: '0.5px solid #A3A3A3', fontSize: '11.5px' }}
-                          className="font-normal text-[#525252] bg-[#A3A3A3]/10 px-2 py-0.5 rounded-[18px]"
+                          style={{ border: '0.3px solid #A3A3A3', fontSize: '11.5px' }}
+                          className="font-normal text-[#525252] bg-[#A3A3A3]/10 px-2 py-0.2 rounded-[11px]"
                         >
                           {sk.name}
                         </span>
                       ))}
                       <span 
-                        style={{ border: '0.5px solid #A3A3A3', fontSize: '11.5px' }}
-                        className="font-normal text-[#525252] bg-[#A3A3A3]/10 px-2 py-0.5 rounded-[18px]"
+                        style={{ border: '0.3px solid #A3A3A3', fontSize: '11.5px' }}
+                        className="font-normal text-[#525252] bg-[#A3A3A3]/10 px-2 py-0.2 rounded-[15px]"
                       >
                         +1
                       </span>
@@ -528,33 +528,33 @@ export default function BrowseCareers({ onNavigate, onLogout, activeCareerId }) 
           })}
         </div>
 
-        <div className="pt-12 border-t border-gray-100 w-full flex flex-col items-center justify-center text-center space-y-4">
+                <div className="pt-12 border-t border-gray-100 w-full flex flex-col items-center justify-center text-center">
           
-          <h3 
-            style={{ fontSize: '20.5px' }} 
-            className="text-gray-900 font-normal font-['Inter',sans-serif] tracking-normal px-4"
-          >
-            Not sure which career is right for you?
-          </h3>
-          
-          <div className="w-full px-4 flex justify-center items-center">
-            <button 
-              onClick={() => onNavigate('quiz')} 
-              style={{ 
-                fontSize: '22.5px',
-                maxWidth: '500px',
-                height: '60px' 
-              }} 
-              className="w-full xs:w-auto px-8 inline-flex items-center justify-center gap-3 figma-assessment-btn-prototype rounded-[22px] font-medium font-['Inter',sans-serif] tracking-wide shadow-sm hover:scale-[1.02] hover:shadow-md active:scale-[0.98] transition-all duration-300 cursor-pointer"
-            >
-              <span>Get AI-Powered Career Suggestions</span>
-              <ArrowRight size={24} className="text-[#83047A] flex-shrink-0" />
-            </button>
-          </div>
+                  <h3 
+                    style={{ fontSize: '17.3px', marginBottom: '26px', marginTop: '-5px' }} 
+                    className="text-black-900 font-regular font-['Inter',sans-serif] tracking-normal px-4"
+                  >
+                    Not sure which career is right for you?
+                  </h3>
+                  
+                  <div className="w-full px-4 flex justify-center items-center">
+                    <button 
+                      onClick={() => onNavigate('quiz')} 
+                      style={{ 
+                        fontSize: '18.5px',
+                        maxWidth: '420px',
+                        height: '56px' 
+                      }} 
+                      className="w-full xs:w-auto px-8 inline-flex items-center justify-center gap-3 figma-assessment-btn-prototype rounded-[20px] font-medium font-['Inter',sans-serif] tracking-wide shadow-sm hover:scale-[1.02] hover:shadow-md active:scale-[0.98] transition-all duration-300 cursor-pointer"
+                    >
+                      <span>Get AI-Powered Career Suggestions</span>
+                      <ArrowRight size={17} className="text-[#83047A] flex-shrink-0" />
+                    </button>
+                  </div>
 
-        </div>
+                </div>
 
-      </main>
+      </main> 
     </div>
   );
 }
