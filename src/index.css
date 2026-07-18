@@ -2,13 +2,11 @@
 
 @layer base {
   body {
-    /* Direct premium web system typography specification */
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-family: 'Inter', sans-serif;
     @apply bg-[#030A16] text-[#1A1D20] antialiased m-0 p-0 tracking-tight;
   }
 }
 
-/* Custom premium elements spacing */
 .tech-glow-card {
   background: rgba(15, 23, 42, 0.45);
   backdrop-filter: blur(20px);
