@@ -13,6 +13,7 @@ import {
   BookOpen, 
   RefreshCw, 
   ChevronRight,
+  ArrowRight,
   Code2, 
   BarChart3, 
   PenTool 
@@ -75,9 +76,9 @@ export default function StudentDashboard({ onLogout, onNavigate, isFirstTimeLogi
   };
 
   const careerMatches = [
-    { title: 'Software Developer', match: '92%', iconKey: 'Software Developer', bgColor: 'bg-purple-50' },
-    { title: 'Data Analyst', match: '87%', iconKey: 'Data Analyst', bgColor: 'bg-purple-50' },
-    { title: 'UX Designer', match: '82%', iconKey: 'UX Designer', bgColor: 'bg-purple-50' },
+    { title: 'Software Developer', match: '92%', iconKey: 'Software Developer' },
+    { title: 'Data Analyst', match: '87%', iconKey: 'Data Analyst' },
+    { title: 'UX Designer', match: '82%', iconKey: 'UX Designer' },
   ];
 
   const recentActivity = [
@@ -106,17 +107,10 @@ export default function StudentDashboard({ onLogout, onNavigate, isFirstTimeLogi
             color: #890080;
           }
           
-          /* Figma Exact Drop Shadow Specs from image_20b8a0.png: X:0 Y:4 Blur:4 25% black */
-          .figma-exact-shadow {
-            box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-          }
-
-          /* Other Sections Box Custom Shadow: Y:3 Blur:3 25% black */
           .figma-section-shadow {
             box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.25);
           }
           
-          /* Full Screen Overlay Hand Wave Animation */
           @keyframes overlayWave {
             0% { transform: rotate( 0.0deg) }
             15% { transform: rotate(14.0deg) }
@@ -131,7 +125,6 @@ export default function StudentDashboard({ onLogout, onNavigate, isFirstTimeLogi
             transform-origin: 70% 70%;
           }
 
-          /* Smooth CSS Loading Strip Bar Animation */
           @keyframes loadStrip {
             0% { width: 0%; }
             100% { width: 100%; }
@@ -180,12 +173,14 @@ export default function StudentDashboard({ onLogout, onNavigate, isFirstTimeLogi
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
         
-        <div className="space-y-4 text-left">
-          <div className="space-y-1">
-            <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-gray-900 inline-flex items-center gap-2">
+        <div className="pt-4 space-y-7 text-left">
+          <div className="space-y-2"> 
+            <h1 className="text-4xl font-bold tracking-tight text-gray-900 inline-flex items-center gap-2">
               Hello, Ahmed! <span className="select-none">👋🏼</span>
             </h1>
-            <p className="text-[#000000] text-base sm:text-lg font-light">Ready to take the next step in your career journey?</p>
+            <p className="text-[#000000] font-light text-[21.3px] mt-[5px] mb-[15px]">
+              Ready to take the next step in your career journey?
+            </p>
           </div>
           
           <button 
@@ -194,28 +189,32 @@ export default function StudentDashboard({ onLogout, onNavigate, isFirstTimeLogi
               if(onNavigate) onNavigate('quiz');
             }}
             style={{ backgroundColor: '#FFD7FC', color: '#890080' }}
-            className="inline-flex items-center justify-center font-medium text-xl px-5 py-2 rounded-full cursor-pointer custom-quiz-border transition-all duration-300 transform hover:scale-105 hover:shadow-lg active:scale-95 shadow-sm max-w-xs sm:max-w-none text-center"
+            className="inline-flex items-center justify-center font-medium text-[22px] px-6 py-3 rounded-full cursor-pointer custom-quiz-border transition-all duration-300 transform hover:scale-105 hover:shadow-lg active:scale-95 shadow-sm max-w-xs sm:max-w-none text-center"
           >
-            <span className="mr-1.5 text-2xl filter drop-shadow-sm flex-shrink-0">🎯</span> 
+            <span className="mr-2 text-3xl filter drop-shadow-sm flex-shrink-0">🎯</span> 
             <span className="leading-none">Start Career Quiz</span>
           </button>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {stats.map((stat) => {
-            return (
-              <div key={stat.id} className="bg-white py-8 px-6 rounded-[25px] prototype-card-border figma-exact-shadow flex items-center gap-5 text-left">
-                <div className="text-5xl select-none flex-shrink-0 filter drop-shadow-sm">
-                  {stat.emoji}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 justify-items-center">
+            {stats.map((stat) => {
+              return (
+                <div 
+                  key={stat.id} 
+                  className="bg-white h-[145px] w-full max-w-[303px] px-[25px] rounded-[25px] prototype-card-border shadow-[0px_5px_5px_rgba(0,0,0,0.25)] flex items-center gap-[16px] text-left"
+                >
+                  <div className="text-[45px] select-none flex-shrink-0 filter drop-shadow-sm flex items-center justify-center">
+                    {stat.emoji}
+                  </div>
+                  
+                  <div className="flex flex-col justify-center">
+                    <div className="text-[36px] font-bold text-gray-900 tracking-tight leading-tight">{stat.value}</div>
+                    <div className="text-[15px] font-normal text-[#545454] mt-[2px]">{stat.label}</div>
+                  </div>
                 </div>
-                <div>
-                  <div className="text-4xl font-bold text-gray-900 tracking-tight">{stat.value}</div>
-                  <div className="text-base font-normal text-[#545454] mt-1">{stat.label}</div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
           <div className="lg:col-span-2 space-y-6">
@@ -255,7 +254,9 @@ export default function StudentDashboard({ onLogout, onNavigate, isFirstTimeLogi
                   return (
                     <div key={index} className="flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 rounded-xl transition cursor-pointer group border border-gray-100">
                       <div className="flex items-center gap-4">
-                        <div className={`p-3 rounded-xl ${career.bgColor}`}><CareerIcon size={26} className="text-purple-600" /></div>
+                        <div className="flex items-center justify-center">
+                          <CareerIcon size={32} className="text-purple-600" />
+                        </div>
                         <div>
                           <div style={{ color: '#BE007F' }} className="font-semibold text-base">{career.title}</div>
                           <div className="text-sm text-black mt-0.5">
@@ -264,7 +265,7 @@ export default function StudentDashboard({ onLogout, onNavigate, isFirstTimeLogi
                           </div>
                         </div>
                       </div>
-                      <ChevronRight size={18} className="text-gray-400 group-hover:text-[#bd24df]" />
+                      <ArrowRight size={20} className="text-indigo-600 group-hover:text-indigo-700 transition-colors" />
                     </div>
                   );
                 })}
@@ -292,7 +293,7 @@ export default function StudentDashboard({ onLogout, onNavigate, isFirstTimeLogi
                   return (
                     <div key={activity.id} className="flex gap-4 relative items-start">
                       <div className="bg-white rounded-full p-0.5 z-10 text-indigo-600 mt-0.5">
-                        <ActivityIcon size={20} className="fill-white" />
+                        <ActivityIcon size={28} className="fill-white" />
                       </div>
                       <div className="space-y-0.5">
                         <p className="text-m font-normal text-gray-800 leading-snug">{activity.text}</p>
