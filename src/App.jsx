@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import LandingPage from './components/LandingPage';
 import AuthPage from './components/AuthPage';
 import StudentDashboard from "./components/StudentDashboard";
@@ -21,6 +21,10 @@ export default function App() {
     q1: null, q2: null, q3: null, q4: null, q5: null,
     q6: null, q7: null, q8: null, q9: null, q10: null
   });
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, [currentScreen, authMode]);
 
   return (
     <div className="min-h-screen bg-[#fafafa] text-[#111111]">
@@ -94,7 +98,7 @@ export default function App() {
             if (target === 'dashboard') {
               setCurrentScreen('student-dash');
             } else if (target === 'profile') {
-              setCurrentScreen('profile'); // Fixed: Ab Header se profile button click karne par transition chalegi!
+              setCurrentScreen('profile'); 
             } else if (target === 'quiz') {
               setCurrentScreen('quiz'); 
             } else if (target === 'details') {
