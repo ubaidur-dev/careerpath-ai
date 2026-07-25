@@ -196,7 +196,7 @@ export default function LandingPage({ onNavigate }) {
             <div className="lg:col-span-7 space-y-6">
               <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">About Us</h2>
               <p className="text-gray-300 text-base sm:text-lg leading-relaxed">
-                CareerPath AI Careers is a pioneering platform dedicated to revolutionizing professional development through advanced artificial intelligence and predictive analytics. Founded by industry experts and AI researchers, our goal is to eliminate career ambiguity by pairing individuals with global career pathways in real-time. By combining hyper-personalized career planning, live mentoring curves, and market-driven insights, we empower students, career switchers, and seasoned professionals to achieve their ultimate career ambitions with absolute precision.
+                CareerPath AI is built to take the guesswork out of professional growth and bridge the gap between where you are and where you want to be. Instead of navigating blind career moves, we analyze real-time market demands and match them directly with your personal strengths to create a clear, execution-ready roadmap. Whether you are a student starting out, a professional planning a transition, or an expert targeting leadership, our platform delivers precise guidance, eliminating confusion and turning ambition into actual career achievement.
               </p>
             </div>
             
