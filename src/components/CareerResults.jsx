@@ -8,7 +8,8 @@ import {
   Palette, 
   ArrowRight, 
   CheckCircle2,
-  Sparkles
+  Sparkles,
+  Search 
 } from 'lucide-react';
 
 export default function CareerResults({ onNavigate, answers = {} }) {
@@ -128,7 +129,7 @@ export default function CareerResults({ onNavigate, answers = {} }) {
   }, [answers]);
 
   return (
-    <div className="min-h-screen bg-[#fcf8fe] text-gray-800 font-sans antialiased pb-12">
+    <div className="min-h-screen bg-[#fcf8fe] text-gray-800 antialiased pb-12">
       
       <header className="sticky top-0 z-50 bg-white border-b border-gray-100 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
@@ -157,30 +158,58 @@ export default function CareerResults({ onNavigate, answers = {} }) {
 
       <main className="max-w-6xl mx-auto px-4 py-8 space-y-8">
         
-        <div className="text-center space-y-3">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-white border border-purple-200 rounded-full shadow-sm text-xs font-bold text-[#bd24df]">
-            <Sparkles size={14} />
-            AI Career Assessment Form
+        <div className="text-center space-y-4 max-w-2xl mx-auto">
+          <div 
+            className="inline-flex items-center gap-2 border border-[#FF00ED] text-gray-800 font-light px-5 py-1.5 rounded-full bg-white shadow-sm"
+          >
+            <Sparkles 
+              size={16}
+              className="flex-shrink-0 text-[#83047A]" 
+            />
+            <span 
+              className="text-base leading-3 flex items-center"
+            >
+              AI Career Assessment Form
+            </span>
           </div>
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 tracking-tight">Your Top Career Matches</h1>
-          <p className="text-gray-500 text-base max-w-2xl mx-auto font-medium">
+          <h1 className="text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl">
+            Your Top Career Matches
+          </h1>
+          <p 
+            className="text-gray-500 max-w-xl mx-auto font-light text-xl"
+          >
             Our AI has analyzed your skills, interests, and personality to find careers that perfectly match your unique profile.
           </p>
         </div>
 
-        <div className="w-full bg-[#840094] rounded-2xl p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between text-white shadow-md relative overflow-hidden gap-4">
+        <div 
+          className="w-full bg-[#840094] rounded-2xl p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between text-white shadow-md relative overflow-hidden gap-4"
+          style={{ height: '104px', width: '100%' }}
+        >
           <div>
-            <h2 className="text-xl font-bold tracking-tight">Assessment Complete! 🎉</h2>
-            <p className="text-purple-100 text-sm font-medium mt-1">We've analyzed your responses and found your ideal match</p>
+            <h2 style={{ fontSize: '26px', fontWeight: 'semi-bold', color: '#FFFFFF', lineHeight: '24px' }}>
+              Assessment Complete! 🎉
+            </h2>
+            <p style={{ fontSize: '19px', fontWeight: '500', color: '#E9D5FF', lineHeight: '20px', marginTop: '4px' }}>
+              We've analyzed your responses and found your ideal match
+            </p>
           </div>
           <div className="flex items-center gap-8 w-full sm:w-auto justify-between sm:justify-end border-t sm:border-t-0 pt-3 sm:pt-0 border-purple-400/30">
             <div className="text-center sm:text-right">
-              <div className="text-3xl font-bold text-[#4ade80]">{matchedCareer.matchPercentage}%</div>
-              <div className="text-xs uppercase tracking-wider text-purple-200 font-bold mt-1">Best Match</div>
+              <div style={{ fontSize: '30px', fontWeight: '700', color: '#4ade80', lineHeight: '36px' }}>
+                {matchedCareer.matchPercentage}%
+              </div>
+              <div style={{ fontSize: '12px', fontWeight: '700', color: '#D8B4FE', lineHeight: '16px', textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: '4px' }}>
+                Best Match
+              </div>
             </div>
             <div className="text-center sm:text-right">
-              <div className="text-3xl font-bold text-[#fbcfe8]">Top 1</div>
-              <div className="text-xs uppercase tracking-wider text-purple-200 font-bold mt-1">Recommendation</div>
+              <div style={{ fontSize: '30px', fontWeight: '700', color: '#FBCFE8', lineHeight: '36px' }}>
+                Top 1
+              </div>
+              <div style={{ fontSize: '12px', fontWeight: '700', color: '#D8B4FE', lineHeight: '16px', textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: '4px' }}>
+                Recommendation
+              </div>
             </div>
           </div>
         </div>
@@ -204,7 +233,7 @@ export default function CareerResults({ onNavigate, answers = {} }) {
                 <div className="flex flex-wrap items-center gap-4 pt-3">
                   <span className="text-sm font-bold text-gray-400">Key Skills:</span>
                   {matchedCareer.skills.map((skill) => (
-                    <span key={skill} className="inline-flex items-center gap-1.5 text-sm font-semibold text-gray-700 bg-gray-50 border border-gray-200 px-3 py-1.5 rounded-lg">
+                    <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-gray-700 bg-gray-50 border border-gray-200 px-3 py-1.5 rounded-lg" key={skill}>
                       <CheckCircle2 size={14} className="text-purple-600" />
                       {skill}
                     </span>
@@ -246,7 +275,7 @@ export default function CareerResults({ onNavigate, answers = {} }) {
               
               <ul className="space-y-4 text-left text-base font-medium text-gray-700">
                 {matchedCareer.whyRecommendPoints.map((point, index) => (
-                  <li key={index} className="flex items-start gap-4 leading-relaxed">
+                  <li className="flex items-start gap-4 leading-relaxed" key={index}>
                     <span className="flex-shrink-0 w-6 h-6 rounded-full bg-[#bd24df] text-white flex items-center justify-center text-xs font-bold mt-0.5 shadow-sm">
                       {index + 1}
                     </span>
