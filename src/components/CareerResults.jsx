@@ -182,32 +182,29 @@ export default function CareerResults({ onNavigate, answers = {} }) {
           </p>
         </div>
 
-        <div 
-          className="w-full bg-[#840094] rounded-2xl p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between text-white shadow-md relative overflow-hidden gap-4"
-          style={{ height: '104px', width: '100%' }}
-        >
+        <div className="w-full h-[104px] bg-[#840094] rounded-2xl p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between text-white relative overflow-hidden gap-4 shadow-[5px_5px_5px_rgba(0,0,0,0.35)] ring-[3px] ring-inset ring-[#FFD0F3]">
           <div>
-            <h2 style={{ fontSize: '26px', fontWeight: 'semi-bold', color: '#FFFFFF', lineHeight: '24px' }}>
+            <h2 style={{ fontSize: '26px', fontWeight: '700', color: '#FFFFFF', lineHeight: '24px' }}>
               Assessment Complete! 🎉
             </h2>
-            <p style={{ fontSize: '19px', fontWeight: '500', color: '#E9D5FF', lineHeight: '20px', marginTop: '4px' }}>
+            <p style={{ fontSize: '19px', fontWeight: '500', color: '#FFFFFF', lineHeight: '20px', marginTop: '15px' }}>
               We've analyzed your responses and found your ideal match
             </p>
           </div>
           <div className="flex items-center gap-8 w-full sm:w-auto justify-between sm:justify-end border-t sm:border-t-0 pt-3 sm:pt-0 border-purple-400/30">
             <div className="text-center sm:text-right">
-              <div style={{ fontSize: '30px', fontWeight: '700', color: '#4ade80', lineHeight: '36px' }}>
+              <div style={{ fontSize: '28px', fontWeight: '700', color: '#4ade80', lineHeight: '36px' }}>
                 {matchedCareer.matchPercentage}%
               </div>
-              <div style={{ fontSize: '12px', fontWeight: '700', color: '#D8B4FE', lineHeight: '16px', textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: '4px' }}>
+              <div style={{ fontSize: '20.5px', fontWeight: '600', color: '#D8B4FE', lineHeight: '16px', marginTop: '4px' }}>
                 Best Match
               </div>
             </div>
             <div className="text-center sm:text-right">
-              <div style={{ fontSize: '30px', fontWeight: '700', color: '#FBCFE8', lineHeight: '36px' }}>
+              <div style={{ fontSize: '28px', fontWeight: '700', color: '#FBCFE8', lineHeight: '36px' }}>
                 Top 1
               </div>
-              <div style={{ fontSize: '12px', fontWeight: '700', color: '#D8B4FE', lineHeight: '16px', textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: '4px' }}>
+              <div style={{ fontSize: '20.5px', fontWeight: '600', color: '#D8B4FE', lineHeight: '16px', marginTop: '4px' }}>
                 Recommendation
               </div>
             </div>
