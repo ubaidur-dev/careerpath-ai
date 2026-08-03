@@ -9,7 +9,10 @@ import {
   ArrowRight, 
   CheckCircle2,
   Sparkles,
-  Search 
+  Award,
+  Percent,
+  TrendingUp,
+  Search
 } from 'lucide-react';
 
 export default function CareerResults({ onNavigate, answers = {} }) {
@@ -215,11 +218,13 @@ export default function CareerResults({ onNavigate, answers = {} }) {
                 <div className="flex flex-col justify-center">
                   <div className="flex flex-wrap items-center gap-3">
                     <h3 className="text-[26px] md:text-[26px] mt-1 font-bold text-gray-900 leading-none">{matchedCareer.title}</h3>
-                    <div className="flex items-center gap-2">
-                      <span className="px-3 py-0.5 bg-[#fff8e6] text-[#d97706] border border-[#fcd34d] rounded-full text-[11px] font-bold tracking-wide">
+                    <div className="flex items-center gap-2.5 -top-2 relative ml-1.5">
+                      <span className="inline-flex items-center justify-between px-2.5 w-[100px] h-[19px] bg-[#FBFFBC] text-[#CF7900] border-[1px] border-[#CF7900] rounded-[25px] text-[12px] font-medium tracking-wide">
+                        <Award size={11} strokeWidth={2.5} className="text-[#CF7900]" />
                         {matchedCareer.tag}
                       </span>
-                      <span className="px-3 py-0.5 bg-[#ecfdf5] text-[#16a34a] border border-[#86efac] rounded-full text-[11px] font-bold tracking-wide">
+                      <span className="inline-flex items-center justify-between px-2.5 w-[110px] h-[19px] bg-[#E2FFE2] text-[#00B14A] border-[1px] border-[#00D057] rounded-[25px] text-[12px] font-medium tracking-wide">
+                        <TrendingUp size={11} strokeWidth={2.5} className="text-[#00B14A]" />
                         {matchedCareer.matchPercentage}% Match
                       </span>
                     </div>
@@ -241,12 +246,12 @@ export default function CareerResults({ onNavigate, answers = {} }) {
 
               <div className="flex flex-col sm:flex-row gap-4">
                 <div className="w-full sm:w-[360px] h-[60px] bg-[#F7F7F7] rounded-[16px] px-5 py-2 flex flex-col justify-center">
-                  <div className="text-[12px] font-normal text-[#5E5E5E] mb-0.5">Salary Range</div>
-                  <div className="text-[14px] font-semibold text-[#111827]">{matchedCareer.salary}</div>
+                  <div className="text-[12px] font-regular text-[#5E5E5E] mb-0.5">Salary Range</div>
+                  <div className="text-[13px] font-medium text-[#000000]">{matchedCareer.salary}</div>
                 </div>
                 <div className="w-full sm:w-[360px] h-[60px] bg-[#F7F7F7] rounded-[13px] px-5 py-2 flex flex-col justify-center">
-                  <div className="text-[12px] font-normal text-[#5E5E5E] mb-0.5">Job Growth</div>
-                  <div className="text-[14px] font-semibold text-[#111827]">{matchedCareer.growth}</div>
+                  <div className="text-[12px] font-regular text-[#5E5E5E] mb-0.5">Job Growth</div>
+                  <div className="text-[13px] font-medium text-[#000000]">{matchedCareer.growth}</div>
                 </div>
               </div>
 
@@ -283,18 +288,18 @@ export default function CareerResults({ onNavigate, answers = {} }) {
                   <path d="M8 22l4-4 4 4" />
                 </svg>
               </div>
-              <h4 className="text-[22px] font-bold text-gray-900 tracking-tight">Why AI Recommends This Career</h4>
+              <h4 className="text-[21px] font-semibold text-gray-900 tracking-tight">Why AI Recommends This Career</h4>
             </div>
 
-            <div className="bg-[#fdf7ff] border border-[#f3e8ff] rounded-[24px] p-6 md:p-8">
-              <p className="text-[14.5px] font-medium text-gray-800 mb-6">
+            <div className="bg-[#FCF5FF] border-[1px] border-[#EEC9FF] shadow-[0px_2px_3px_0.5px_rgba(0,0,0,0.25)] rounded-[25px] p-6 md:p-8">
+              <p className="text-[14.5px] font-regular text-[#000000] mb-6">
                 Based on our comprehensive AI analysis of your assessment responses:
               </p>
               <ul className="space-y-4">
                 {matchedCareer.whyRecommendPoints.map((point, index) => (
                   <li key={index} className="flex items-start gap-3">
-                    <span className="text-[#FF00ED] font-bold mt-0.5">{index + 1}.</span>
-                    <span className="text-[14.5px] text-gray-700 leading-relaxed font-medium">
+                    <span className="text-[14.5px] text-[#F30092] font-medium mt-0.5">{index + 1}.</span>
+                    <span className="text-[14.5px] text-[#000000] leading-relaxed font-regular">
                       {point}
                     </span>
                   </li>
@@ -303,13 +308,13 @@ export default function CareerResults({ onNavigate, answers = {} }) {
             </div>
           </div>
 
-          <div className="flex justify-end pt-6">
+          <div className="flex justify-end pt-13">
             <button
-              onClick={() => onNavigate('roadmap-detail', { careerId: matchedCareer.slug })}
-              className="inline-flex items-center gap-2 px-6 py-2.5 bg-[#fdf4ff] border border-[#FF00ED] text-[#d110b9] font-bold text-[15px] rounded-full hover:bg-pink-50 transition-all duration-200 cursor-pointer"
+              onClick={() => onNavigate('career-details', { careerData: matchedCareer })}
+              className="flex items-center justify-between px-5 w-[248px] h-[47px] rounded-[15px] text-[18px] font-regular bg-[#FFD0F3] text-[#83047A] border-[0.3px] border-[#83047A] hover:bg-[#fbcfe8] hover:-translate-y-1 transition-all duration-300 cursor-pointer"
             >
-              Get Career Roadmap
-              <ArrowRight size={18} strokeWidth={2.5} />
+              <span>Get Career Roadmap</span>
+              <ArrowRight size={19} strokeWidth={2.5} />
             </button>
           </div>
 
