@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import Header from './Header'; 
 import ManageQuiz from './ManageQuiz';
 import SystemSettings from './SystemSettings';
+import { Plus } from 'lucide-react'; 
 
 export default function AdminDashboard({ onLogout, onNavigateToResults }) {
   const [currentView, setCurrentView] = useState('dashboard');
@@ -46,151 +48,109 @@ export default function AdminDashboard({ onLogout, onNavigateToResults }) {
   };
 
   return (
-    <div className="min-h-screen bg-[#fafbfc] flex flex-col font-['Inter',sans-serif] text-[#111111] antialiased selection:bg-pink-200">
+    <div className="relative min-h-screen bg-[#fcf8fe] text-gray-800 antialiased selection:bg-pink-200">
       
-      <header className="sticky top-0 z-50 bg-white border-b border-gray-100 shadow-sm w-full font-['Inter',sans-serif]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          
-          <div 
-            className="flex items-center select-none cursor-pointer" 
-            onClick={() => setCurrentView('dashboard')}
-          >
-            <img 
-              src="/logoo.png" 
-              alt="CareerPath AI Logo" 
-              className="h-12 sm:h-14 w-auto object-contain transition-transform hover:scale-105" 
-            />
-          </div>
+      <style>
+        {`
+          .custom-quiz-border {
+            border: 0.7px solid #FF00D3;
+          }
+          .prototype-card-border {
+            border: 0.5px solid #FFD2F7;
+          }
+        `}
+      </style>
 
-          <div className="flex items-center gap-4 sm:gap-6 font-['Inter',sans-serif]">
-            <button 
-              onClick={() => setCurrentView('dashboard')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold border cursor-pointer transition-colors font-['Inter',sans-serif] ${
-                currentView === 'dashboard'
-                  ? 'bg-[#fdf2ff] text-[#bd24df] border-[#f5dbfc]'
-                  : 'bg-transparent text-gray-600 border-transparent hover:bg-gray-50'
-              }`}
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <rect x="3" y="3" width="7" height="9" rx="1" />
-                <rect x="14" y="3" width="7" height="5" rx="1" />
-                <rect x="14" y="12" width="7" height="9" rx="1" />
-                <rect x="3" y="16" width="7" height="5" rx="1" />
-              </svg>
-              <span className="hidden sm:inline font-['Inter',sans-serif]">Dashboard</span>
-            </button>
-            
-            <div 
-              className="flex items-center gap-2 text-gray-700 font-medium text-sm border-l border-r border-gray-200 px-4 cursor-pointer hover:text-[#bd24df] transition-colors font-['Inter',sans-serif]"
-              onClick={() => setCurrentView('settings')}
-            >
-              <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
-                <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                  <circle cx="12" cy="7" r="4" />
-                </svg>
-              </div>
-              <span className="hidden sm:inline font-['Inter',sans-serif]">Admin!</span>
-            </div>
-            
-            <button 
-              onClick={onLogout} 
-              className="flex items-center gap-1.5 text-gray-500 hover:text-red-600 text-sm font-medium transition cursor-pointer bg-transparent border-none p-0 font-['Inter',sans-serif]"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-                <polyline points="16 17 21 12 16 7" />
-                <line x1="21" y1="12" x2="9" y2="12" />
-              </svg>
-              <span className="hidden sm:inline font-['Inter',sans-serif]">Logout</span>
-            </button>
-          </div>
-        </div>
-      </header>
+      <Header onLogout={onLogout} />
 
-      <main className="max-w-[1440px] w-full mx-auto p-4 sm:p-8 space-y-8 flex-1 font-['Inter',sans-serif]">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
         
         {currentView === 'dashboard' && (
           <>
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-100 pb-5 font-['Inter',sans-serif]">
-              <div className="space-y-1 font-['Inter',sans-serif]">
-                <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-gray-900 font-['Inter',sans-serif]">
+            <div className="pt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-6 text-left">
+              <div className="space-y-2"> 
+                <h1 className="text-4xl font-bold tracking-tight text-gray-900 inline-flex items-center gap-2">
                   Admin Dashboard
                 </h1>
-                <p className="text-xs sm:text-sm text-gray-500 font-medium font-['Inter',sans-serif]">Manage your AI Career Advisor platform</p>
+                <p className="text-[#000000] font-light text-[21.3px] mt-[5px] mb-[15px]">
+                  Manage your AI Career Advisor platform
+                </p>
               </div>
               
               <button 
+                type="button"
                 onClick={() => setCurrentView('quiz')}
-                className="bg-[#fff5fa] text-[#bd24df] border border-[#ff2299] px-7 py-3 rounded-full text-sm font-extrabold tracking-wide transition-all shadow-2xs hover:bg-[#fdecf7] flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap sm:self-center font-['Inter',sans-serif]"
+                style={{ backgroundColor: '#FFD7FC', color: '#890080' }}
+                className="inline-flex items-center justify-center font-medium text-[22px] px-6 py-3 rounded-[15px] cursor-pointer custom-quiz-border transition-all duration-300 transform hover:scale-105 hover:shadow-lg active:scale-95 shadow-sm max-w-xs sm:max-w-none text-center sm:self-center"
               >
-                <svg className="w-4 h-4 text-[#bd24df]" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-                </svg>
-                  Add New Question
+                <Plus size={26} strokeWidth={2.5} className="mr-2 flex-shrink-0" />
+                <span className="leading-none">Add New Question</span>
               </button>
             </div>
 
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-5 font-['Inter',sans-serif]">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 justify-items-center">
               {[
-                { title: 'Total Students', metric: '10,482', change: '12.5%', icon: '👥' },
-                { title: 'Career Profiles', metric: '52', change: '+3', icon: '💼' },
-                { title: 'Quiz Questions', metric: '245', change: '+15', icon: '📝' },
-                { title: 'Assessments Today', metric: '127', change: '8.2%', icon: '📅' },
-              ].map((card, key) => (
-                <div key={key} className="bg-white border border-gray-100 p-5 sm:p-6 rounded-2xl relative shadow-xs flex items-center gap-5 transition-transform hover:translate-y-[-2px] font-['Inter',sans-serif]">
-                  <span className="text-3xl sm:text-4xl filter drop-shadow-sm select-none">{card.icon}</span>
-                  <div className="font-['Inter',sans-serif]">
-                    <div className="text-2xl sm:text-3xl font-bold text-gray-900 leading-none flex items-center gap-2 font-['Inter',sans-serif]">
-                      {card.metric}
-                      <span className="text-[10px] font-bold bg-green-50 text-green-600 px-1.5 py-0.5 rounded-md font-['Inter',sans-serif]">{card.change}</span>
-                    </div>
-                    <div className="text-xs font-bold text-gray-400 mt-1.5 tracking-wide uppercase font-['Inter',sans-serif]">{card.title}</div>
+                { id: 1, label: 'Total Students', value: '10,482', emoji: '👥' },
+                { id: 2, label: 'Career Profiles', value: '52', emoji: '💼' },
+                { id: 3, label: 'Quiz Questions', value: '245', emoji: '📝' },
+                { id: 4, label: 'Assessments Today', value: '127', emoji: '📅' },
+              ].map((stat) => (
+                <div 
+                  key={stat.id} 
+                  className="bg-white h-[145px] w-full max-w-[303px] px-[25px] rounded-[25px] prototype-card-border shadow-[0px_5px_5px_rgba(0,0,0,0.25)] flex items-center gap-[16px] text-left"
+                >
+                  <div className="text-[45px] select-none flex-shrink-0 filter drop-shadow-sm flex items-center justify-center">
+                    {stat.emoji}
+                  </div>
+                  
+                  <div className="flex flex-col justify-center">
+                    <div className="text-[36px] font-bold text-gray-900 tracking-tight leading-tight">{stat.value}</div>
+                    <div className="text-[15px] font-normal text-[#545454] mt-[2px]">{stat.label}</div>
                   </div>
                 </div>
               ))}
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 font-['Inter',sans-serif]">
-              <div className="lg:col-span-2 bg-white border border-gray-100 rounded-2xl p-6 space-y-5 shadow-xs font-['Inter',sans-serif]">
-                <div className="flex items-center justify-between border-b border-gray-50 pb-3 font-['Inter',sans-serif]">
-                  <h3 className="text-sm sm:text-base font-bold text-gray-800 uppercase tracking-tight font-['Inter',sans-serif]">Recent Student Activity</h3>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-2 bg-white border border-gray-100 rounded-2xl p-6 space-y-5 shadow-xs">
+                <div className="flex items-center justify-between border-b border-gray-50 pb-3">
+                  <h3 className="text-sm sm:text-base font-bold text-gray-800 uppercase tracking-tight">Recent Student Activity</h3>
                   <button 
                     onClick={() => setShowAllStudents(!showAllStudents)} 
-                    className="bg-[#fff5fa] border-[0.2px] border-[#ff2299] text-[#bd24df] hover:bg-[#fdecf7] px-4 py-1.5 rounded-full text-xs font-extrabold tracking-wide transition-all cursor-pointer whitespace-nowrap font-['Inter',sans-serif]"
+                    className="bg-[#fff5fa] border-[0.2px] border-[#ff2299] text-[#bd24df] hover:bg-[#fdecf7] px-4 py-1.5 rounded-full text-xs font-extrabold tracking-wide transition-all cursor-pointer whitespace-nowrap"
                   >
                     {showAllStudents ? 'View Less' : 'View All'}
                   </button>
                 </div>
                 
-                <div className="overflow-x-auto font-['Inter',sans-serif]">
-                  <table className="w-full text-left text-xs border-collapse font-['Inter',sans-serif]">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs border-collapse">
                     <thead>
-                      <tr className="border-b border-gray-100 text-gray-400 font-bold uppercase tracking-wider text-[11px] font-['Inter',sans-serif]">
-                        <th className="pb-3.5 font-semibold font-['Inter',sans-serif]">Student</th>
-                        <th className="pb-3.5 font-semibold text-center font-['Inter',sans-serif]">Score</th>
-                        <th className="pb-3.5 font-semibold text-center font-['Inter',sans-serif]">Status</th>
-                        <th className="pb-3.5 font-semibold text-right font-['Inter',sans-serif]">Time</th>
+                      <tr className="border-b border-gray-100 text-gray-400 font-bold uppercase tracking-wider text-[11px]">
+                        <th className="pb-3.5 font-semibold">Student</th>
+                        <th className="pb-3.5 font-semibold text-center">Score</th>
+                        <th className="pb-3.5 font-semibold text-center">Status</th>
+                        <th className="pb-3.5 font-semibold text-right">Time</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-50 font-medium font-['Inter',sans-serif]">
+                    <tbody className="divide-y divide-gray-50 font-medium">
                       {displayedStudents.map((row, idx) => {
                         const ruleConfig = getStatusDetails(row.score);
                         return (
-                          <tr key={idx} className="text-gray-700 hover:bg-gray-50/40 transition-colors font-['Inter',sans-serif]">
-                            <td className="py-4 font-['Inter',sans-serif]">
-                              <div className="font-bold text-gray-900 text-base font-['Inter',sans-serif]">{row.name}</div>
-                              <div className="text-xs text-gray-400 font-normal mt-0.5 font-['Inter',sans-serif]">{row.email}</div>
+                          <tr key={idx} className="text-gray-700 hover:bg-gray-50/40 transition-colors">
+                            <td className="py-4">
+                              <div className="font-bold text-gray-900 text-base">{row.name}</div>
+                              <div className="text-xs text-gray-400 font-normal mt-0.5">{row.email}</div>
                             </td>
-                            <td className={`py-4 text-center font-black text-base transition-colors font-['Inter',sans-serif] ${ruleConfig.classes.split(' ')[0]}`}>
+                            <td className={`py-4 text-center font-black text-base transition-colors ${ruleConfig.classes.split(' ')[0]}`}>
                               {row.score}%
                             </td>
-                            <td className="py-4 text-center font-['Inter',sans-serif]">
-                              <span className={`px-3 py-1 rounded-full text-[10px] font-black tracking-wide border border-transparent transition-all font-['Inter',sans-serif] ${ruleConfig.classes}`}>
+                            <td className="py-4 text-center">
+                              <span className={`px-3 py-1 rounded-full text-[10px] font-black tracking-wide border border-transparent transition-all ${ruleConfig.classes}`}>
                                 {ruleConfig.status}
                               </span>
                             </td>
-                            <td className="py-4 text-right text-gray-400 font-normal text-sm font-['Inter',sans-serif]">{row.time}</td>
+                            <td className="py-4 text-right text-gray-400 font-normal text-sm">{row.time}</td>
                           </tr>
                         );
                       })}
@@ -199,21 +159,21 @@ export default function AdminDashboard({ onLogout, onNavigateToResults }) {
                 </div>
               </div>
 
-              <div className="space-y-6 font-['Inter',sans-serif]">
-                <div className="bg-white border border-gray-100 rounded-2xl p-5 space-y-4 shadow-2xs font-['Inter',sans-serif]">
-                  <h3 className="text-base font-bold text-gray-950 tracking-tight px-1 font-['Inter',sans-serif]">Quick Actions</h3>
-                  <div className="space-y-1 text-sm font-medium font-['Inter',sans-serif]">
+              <div className="space-y-6">
+                <div className="bg-white border border-gray-100 rounded-2xl p-5 space-y-4 shadow-2xs">
+                  <h3 className="text-base font-bold text-gray-950 tracking-tight px-1">Quick Actions</h3>
+                  <div className="space-y-1 text-sm font-medium">
                     
-                    <button className="w-full bg-transparent hover:bg-[#fff0fa]/50 text-gray-600 hover:text-[#bd24df] py-2.5 px-4 rounded-xl text-left font-semibold flex items-center gap-3.5 transition-all duration-200 cursor-pointer group font-['Inter',sans-serif]">
+                    <button className="w-full bg-transparent hover:bg-[#fff0fa]/50 text-gray-600 hover:text-[#bd24df] py-2.5 px-4 rounded-xl text-left font-semibold flex items-center gap-3.5 transition-all duration-200 cursor-pointer group">
                       <svg className="w-[18px] h-[18px] text-gray-400 group-hover:text-[#bd24df] transition-colors" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M20 7h-3V5a2 2 0 00-2-2H9a2 2 0 00-2-2v2H4a2 2 0 00-2-2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z" />
                       </svg>
-                      <span className="font-['Inter',sans-serif]">Manage Careers</span>
+                      <span>Manage Careers</span>
                     </button>
 
                     <button 
                       onClick={() => setCurrentView('quiz')}
-                      className={`w-full py-2.5 px-4 rounded-xl text-left flex items-center gap-3.5 transition-all duration-200 cursor-pointer group font-['Inter',sans-serif] ${
+                      className={`w-full py-2.5 px-4 rounded-xl text-left flex items-center gap-3.5 transition-all duration-200 cursor-pointer group ${
                         currentView === 'quiz'
                           ? 'bg-[#fff0fa] text-[#bd24df] font-bold'
                           : 'bg-transparent text-gray-600 hover:bg-[#fff0fa]/50 hover:text-[#bd24df] font-semibold'
@@ -222,22 +182,22 @@ export default function AdminDashboard({ onLogout, onNavigateToResults }) {
                       <svg className={`w-[18px] h-[18px] transition-colors ${currentView === 'quiz' ? 'text-[#bd24df]' : 'text-gray-400 group-hover:text-[#bd24df]'}`} fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2-2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                       </svg>
-                      <span className="font-['Inter',sans-serif]">Manage Quiz</span>
+                      <span>Manage Quiz</span>
                     </button>
 
                     <button 
                       onClick={onNavigateToResults} 
-                      className="w-full bg-transparent hover:bg-[#fff0fa]/50 text-gray-600 hover:text-[#bd24df] py-2.5 px-4 rounded-xl text-left font-semibold flex items-center gap-3.5 transition-all duration-200 cursor-pointer group font-['Inter',sans-serif]"
+                      className="w-full bg-transparent hover:bg-[#fff0fa]/50 text-gray-600 hover:text-[#bd24df] py-2.5 px-4 rounded-xl text-left font-semibold flex items-center gap-3.5 transition-all duration-200 cursor-pointer group"
                     >
                       <svg className="w-[18px] h-[18px] text-gray-400 group-hover:text-[#bd24df] transition-colors" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                       </svg>
-                      <span className="font-['Inter',sans-serif]">Students Results</span>
+                      <span>Students Results</span>
                     </button>
 
                     <button 
                       onClick={() => setCurrentView('settings')}
-                      className={`w-full py-2.5 px-4 rounded-xl text-left flex items-center gap-3.5 transition-all duration-200 cursor-pointer group font-['Inter',sans-serif] ${
+                      className={`w-full py-2.5 px-4 rounded-xl text-left flex items-center gap-3.5 transition-all duration-200 cursor-pointer group ${
                         currentView === 'settings'
                           ? 'bg-[#fff0fa] text-[#bd24df] font-bold'
                           : 'bg-transparent text-gray-600 hover:bg-[#fff0fa]/50 hover:text-[#bd24df] font-semibold'
@@ -247,7 +207,7 @@ export default function AdminDashboard({ onLogout, onNavigateToResults }) {
                         <path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                         <circle cx="12" cy="12" r="3" />
                       </svg>
-                      <span className="font-['Inter',sans-serif]">Settings</span>
+                      <span>Settings</span>
                     </button>
 
                   </div>
@@ -255,10 +215,10 @@ export default function AdminDashboard({ onLogout, onNavigateToResults }) {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 font-['Inter',sans-serif]">
-              <div className="lg:col-span-2 bg-white border border-gray-100 rounded-2xl p-6 space-y-4.5 shadow-xs font-['Inter',sans-serif]">
-                <div className="flex items-center justify-between font-['Inter',sans-serif]">
-                  <h3 className="text-sm sm:text-base font-bold text-gray-800 uppercase tracking-tight font-['Inter',sans-serif]">Most Popular Careers</h3>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-2 bg-white border border-gray-100 rounded-2xl p-6 space-y-4.5 shadow-xs">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-sm sm:text-base font-bold text-gray-800 uppercase tracking-tight">Most Popular Careers</h3>
                   <svg className="w-5 h-5 text-blue-700" fill="currentColor" viewBox="0 0 24 24">
                     <rect x="3" y="16" width="3" height="4" rx="0.5" />
                     <rect x="8" y="12" width="3" height="8" rx="0.5" />
@@ -267,7 +227,7 @@ export default function AdminDashboard({ onLogout, onNavigateToResults }) {
                   </svg>
                 </div>
 
-                <div className="space-y-4.5 font-['Inter',sans-serif]">
+                <div className="space-y-4.5">
                   {[
                     { name: 'Software Developer', count: '3245 students', width: '90%' },
                     { name: 'Data Analyst', count: '2156 students', width: '68%' },
@@ -278,12 +238,12 @@ export default function AdminDashboard({ onLogout, onNavigateToResults }) {
                     { name: 'Cybersecurity Analyst', count: '1195 students', width: '35%' },
                     { name: 'Cloud Architect', count: '980 students', width: '28%' }
                   ].map((bar, i) => (
-                    <div key={i} className="space-y-1.5 text-xs font-['Inter',sans-serif]">
-                      <div className="flex justify-between font-bold text-gray-700 font-['Inter',sans-serif]">
-                        <span className="font-bold text-sm sm:text-base text-gray-800 font-['Inter',sans-serif]">{bar.name}</span>
-                        <span className="text-gray-400 font-normal text-xs sm:text-sm font-['Inter',sans-serif]">{bar.count}</span>
+                    <div key={i} className="space-y-1.5 text-xs">
+                      <div className="flex justify-between font-bold text-gray-700">
+                        <span className="font-bold text-sm sm:text-base text-gray-800">{bar.name}</span>
+                        <span className="text-gray-400 font-normal text-xs sm:text-sm">{bar.count}</span>
                       </div>
-                      <div className="w-full bg-gray-100 h-2.5 rounded-full overflow-hidden font-['Inter',sans-serif]">
+                      <div className="w-full bg-gray-100 h-2.5 rounded-full overflow-hidden">
                         <div className="bg-[#f45ee4] h-full rounded-full transition-all duration-500" style={{ width: bar.width }}></div>
                       </div>
                     </div>
@@ -291,38 +251,38 @@ export default function AdminDashboard({ onLogout, onNavigateToResults }) {
                 </div>
               </div>
 
-              <div className="space-y-6 font-['Inter',sans-serif]">
-                <div className="bg-white border border-gray-100 rounded-2xl p-6 space-y-4 shadow-xs font-['Inter',sans-serif]">
-                  <h3 className="text-sm font-bold text-gray-800 uppercase tracking-tight font-['Inter',sans-serif]">System Health</h3>
-                  <div className="bg-green-50 border border-green-100 p-4 rounded-xl font-['Inter',sans-serif]">
-                    <div className="text-xs text-green-700 font-bold flex items-center gap-1.5 uppercase tracking-wider font-['Inter',sans-serif]">
+              <div className="space-y-6">
+                <div className="bg-white border border-gray-100 rounded-2xl p-6 space-y-4 shadow-xs">
+                  <h3 className="text-sm font-bold text-gray-800 uppercase tracking-tight">System Health</h3>
+                  <div className="bg-green-50 border border-green-100 p-4 rounded-xl">
+                    <div className="text-xs text-green-700 font-bold flex items-center gap-1.5 uppercase tracking-wider">
                       <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> System Status
                     </div>
-                    <div className="text-xl font-black text-green-900 mt-1 font-['Inter',sans-serif]">Online</div>
+                    <div className="text-xl font-black text-green-900 mt-1">Online</div>
                   </div>
-                  <div className="grid grid-cols-2 gap-3 text-xs font-bold font-['Inter',sans-serif]">
-                    <div className="bg-blue-50/50 p-3.5 rounded-xl border border-blue-100/30 font-['Inter',sans-serif]">
-                      <div className="text-gray-400 font-semibold uppercase text-[10px] font-['Inter',sans-serif]">Uptime</div>
-                      <div className="text-base sm:text-lg font-black text-blue-900 mt-0.5 font-['Inter',sans-serif]">99.9%</div>
+                  <div className="grid grid-cols-2 gap-3 text-xs font-bold">
+                    <div className="bg-blue-50/50 p-3.5 rounded-xl border border-blue-100/30">
+                      <div className="text-gray-400 font-semibold uppercase text-[10px]">Uptime</div>
+                      <div className="text-base sm:text-lg font-black text-blue-900 mt-0.5">99.9%</div>
                     </div>
-                    <div className="bg-purple-50/50 p-3.5 rounded-xl border border-purple-100/30 font-['Inter',sans-serif]">
-                      <div className="text-gray-400 font-semibold uppercase text-[10px] font-['Inter',sans-serif]">Response</div>
-                      <div className="text-base sm:text-lg font-black text-purple-900 mt-0.5 font-['Inter',sans-serif]">245ms</div>
+                    <div className="bg-purple-50/50 p-3.5 rounded-xl border border-purple-100/30">
+                      <div className="text-gray-400 font-semibold uppercase text-[10px]">Response</div>
+                      <div className="text-base sm:text-lg font-black text-purple-900 mt-0.5">245ms</div>
                     </div>
                   </div>
                 </div>
 
-                <div className="bg-white border border-gray-100 rounded-2xl p-6 space-y-4 text-xs font-medium shadow-xs font-['Inter',sans-serif]">
-                  <h3 className="text-sm font-bold text-gray-800 uppercase tracking-tight pb-1 border-b border-gray-50 font-['Inter',sans-serif]">This Month</h3>
+                <div className="bg-white border border-gray-100 rounded-2xl p-6 space-y-4 text-xs font-medium shadow-xs">
+                  <h3 className="text-sm font-bold text-gray-800 uppercase tracking-tight pb-1 border-b border-gray-50">This Month</h3>
                   {[
                     { name: 'New Students', total: '1,234' },
                     { name: 'Assessments', total: '3,456' },
                     { name: 'Avg. Score', total: '84%' },
                     { name: 'Completion Rate', total: '92%' },
                   ].map((m, i) => (
-                    <div key={i} className="flex justify-between items-center py-1 text-sm font-['Inter',sans-serif]">
-                      <span className="text-gray-500 font-medium font-['Inter',sans-serif]">{m.name}</span>
-                      <span className="font-extrabold text-gray-900 font-['Inter',sans-serif]">{m.total}</span>
+                    <div key={i} className="flex justify-between items-center py-1 text-sm">
+                      <span className="text-gray-500 font-medium">{m.name}</span>
+                      <span className="font-extrabold text-gray-900">{m.total}</span>
                     </div>
                   ))}
                 </div>
