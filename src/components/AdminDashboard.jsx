@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Header from './Header'; 
 import ManageQuiz from './ManageQuiz';
 import SystemSettings from './SystemSettings';
-import { Plus } from 'lucide-react'; 
+import { Plus, Briefcase, ClipboardList, FileText, Settings, BarChart2 } from 'lucide-react'; 
 
 export default function AdminDashboard({ onLogout, onNavigateToResults }) {
   const [currentView, setCurrentView] = useState('dashboard');
@@ -12,13 +12,11 @@ export default function AdminDashboard({ onLogout, onNavigateToResults }) {
     { name: 'Sarah Johnson', email: 'sarah.j@gmail.com', score: 92, time: '5 min ago' },
     { name: 'Michael Chen', email: 'michael.c@email.com', score: 87, time: '12 min ago' },
     { name: 'Emma Williams', email: 'emma.w@email.com', score: 95, time: '25 min ago' },
-    { name: 'Zain Ahmed', email: 'zain.ahmed@outlook.com', score: 82, time: '34 min ago' },
-    { name: 'Fatima Ali', email: 'fatima.ali@gmail.com', score: 72, time: '41 min ago' },
+    { name: 'James Brown', email: 'james.b@gmail.com', score: 78, time: '35 min ago' },
+    { name: 'Olivia Davis', email: 'olivia.d@gmail.com', score: 89, time: '1 hour ago' },
     { name: 'David Miller', email: 'david.m@yahoo.com', score: 61, time: '55 min ago' },
     { name: 'Ayesha Khan', email: 'ayesha.k@hotmail.com', score: 97, time: '1 hr ago' },
-    { name: 'James Wilson', email: 'james.w@gmail.com', score: 84, time: '2 hr ago' },
     { name: 'Omar Farooq', email: 'omar.f@gmail.com', score: 75, time: '3 hr ago' },
-    { name: 'Ryan Garcia', email: 'ryan.g@tech.com', score: 65, time: '4 hr ago' },
   ];
 
   const displayedStudents = showAllStudents ? studentsData : studentsData.slice(0, 5);
@@ -27,22 +25,26 @@ export default function AdminDashboard({ onLogout, onNavigateToResults }) {
     if (score >= 90) {
       return { 
         status: 'Completed', 
-        classes: 'text-green-600 bg-green-50 border-green-200/40' 
+        scoreColor: 'text-[#05A660]',
+        pillClasses: 'text-[#05A660] bg-[#E3F6ED]' 
       };
     } else if (score >= 80) {
       return { 
         status: 'Completed', 
-        classes: 'text-[#9a6a16] bg-[#fdf8eb] border-[#f5e6c4]/50' 
+        scoreColor: 'text-[#84CC16]', 
+        pillClasses: 'text-[#05A660] bg-[#E3F6ED]' 
       };
     } else if (score >= 70) {
       return { 
         status: 'In Progress', 
-        classes: 'text-[#1d4ed8] bg-[#eff6ff] border-[#bfdbfe]/50' 
+        scoreColor: 'text-[#0047FF]', 
+        pillClasses: 'text-[#E88B00] bg-[#FFF2E0]' 
       };
     } else {
       return { 
         status: 'Error', 
-        classes: 'text-[#dc2626] bg-[#fef2f2] border-[#fecaca]/50' 
+        scoreColor: 'text-red-500',
+        pillClasses: 'text-red-600 bg-red-50' 
       };
     }
   };
@@ -57,6 +59,10 @@ export default function AdminDashboard({ onLogout, onNavigateToResults }) {
           }
           .prototype-card-border {
             border: 0.5px solid #FFD2F7;
+          }
+          /* Custom soft shadow matching the Figma/Image design */
+          .custom-card-shadow {
+            box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.04);
           }
         `}
       </style>
@@ -90,202 +96,192 @@ export default function AdminDashboard({ onLogout, onNavigateToResults }) {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 justify-items-center">
               {[
-                { id: 1, label: 'Total Students', value: '10,482', emoji: '👥' },
-                { id: 2, label: 'Career Profiles', value: '52', emoji: '💼' },
-                { id: 3, label: 'Quiz Questions', value: '245', emoji: '📝' },
-                { id: 4, label: 'Assessments Today', value: '127', emoji: '📅' },
+                { id: 1, label: 'Total Students', value: '10,482', emoji: '👥', trend: '+12%' },
+                { id: 2, label: 'Career Profiles', value: '52', emoji: '💼', trend: '+5%' },
+                { id: 3, label: 'Quiz Questions', value: '245', emoji: '📝', trend: '+18%' },
+                { id: 4, label: 'Assessments Today', value: '127', emoji: '📅', trend: '+8%' },
               ].map((stat) => (
                 <div 
                   key={stat.id} 
-                  className="bg-white h-[145px] w-full max-w-[303px] px-[25px] rounded-[25px] prototype-card-border shadow-[0px_5px_5px_rgba(0,0,0,0.25)] flex items-center gap-[16px] text-left"
+                  className="relative bg-white h-[145px] w-full max-w-[303px] px-[25px] rounded-[25px] prototype-card-border shadow-[0px_5px_5px_rgba(0,0,0,0.25)] flex items-center gap-[16px] text-left"
                 >
+                  <div className="absolute top-5 right-5 text-[#05A660] bg-[#E3F6ED] px-2.5 py-1 rounded-md text-xs font-bold tracking-wide">
+                    {stat.trend}
+                  </div>
+
                   <div className="text-[45px] select-none flex-shrink-0 filter drop-shadow-sm flex items-center justify-center">
                     {stat.emoji}
                   </div>
                   
-                  <div className="flex flex-col justify-center">
+                  <div className="flex flex-col justify-center mt-2">
                     <div className="text-[36px] font-bold text-gray-900 tracking-tight leading-tight">{stat.value}</div>
                     <div className="text-[15px] font-normal text-[#545454] mt-[2px]">{stat.label}</div>
                   </div>
                 </div>
               ))}
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <div className="lg:col-span-2 bg-white border border-gray-100 rounded-2xl p-6 space-y-5 shadow-xs">
-                <div className="flex items-center justify-between border-b border-gray-50 pb-3">
-                  <h3 className="text-sm sm:text-base font-bold text-gray-800 uppercase tracking-tight">Recent Student Activity</h3>
-                  <button 
-                    onClick={() => setShowAllStudents(!showAllStudents)} 
-                    className="bg-[#fff5fa] border-[0.2px] border-[#ff2299] text-[#bd24df] hover:bg-[#fdecf7] px-4 py-1.5 rounded-full text-xs font-extrabold tracking-wide transition-all cursor-pointer whitespace-nowrap"
-                  >
-                    {showAllStudents ? 'View Less' : 'View All'}
-                  </button>
-                </div>
+            </div>            
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mt-10">
+              
+              <div className="lg:col-span-7 xl:col-span-8 space-y-8">
                 
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs border-collapse">
-                    <thead>
-                      <tr className="border-b border-gray-100 text-gray-400 font-bold uppercase tracking-wider text-[11px]">
-                        <th className="pb-3.5 font-semibold">Student</th>
-                        <th className="pb-3.5 font-semibold text-center">Score</th>
-                        <th className="pb-3.5 font-semibold text-center">Status</th>
-                        <th className="pb-3.5 font-semibold text-right">Time</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-50 font-medium">
-                      {displayedStudents.map((row, idx) => {
-                        const ruleConfig = getStatusDetails(row.score);
-                        return (
-                          <tr key={idx} className="text-gray-700 hover:bg-gray-50/40 transition-colors">
-                            <td className="py-4">
-                              <div className="font-bold text-gray-900 text-base">{row.name}</div>
-                              <div className="text-xs text-gray-400 font-normal mt-0.5">{row.email}</div>
-                            </td>
-                            <td className={`py-4 text-center font-black text-base transition-colors ${ruleConfig.classes.split(' ')[0]}`}>
-                              {row.score}%
-                            </td>
-                            <td className="py-4 text-center">
-                              <span className={`px-3 py-1 rounded-full text-[10px] font-black tracking-wide border border-transparent transition-all ${ruleConfig.classes}`}>
-                                {ruleConfig.status}
-                              </span>
-                            </td>
-                            <td className="py-4 text-right text-gray-400 font-normal text-sm">{row.time}</td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
+                <div className="bg-white rounded-[25px] p-7 sm:p-9 prototype-card-border custom-card-shadow">
+                  <div className="flex items-center justify-between mb-8">
+                    <h2 className="text-[26px] font-medium text-gray-900 tracking-tight">Recent Student Activity</h2>
+                    <button 
+                      onClick={() => setShowAllStudents(!showAllStudents)} 
+                      className="border border-[#F45EE4]/40 bg-[#FDF2FA] text-[#C200B2] hover:bg-[#fae6f4] px-5 py-1.5 rounded-xl text-sm font-medium transition-all cursor-pointer whitespace-nowrap"
+                    >
+                      {showAllStudents ? 'View Less' : 'View All'}
+                    </button>
+                  </div>
+                  
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left">
+                      <thead>
+                        <tr className="border-b border-gray-100">
+                          <th className="pb-4 text-gray-500 font-normal text-sm w-[40%]">Student</th>
+                          <th className="pb-4 text-gray-500 font-normal text-sm w-[20%] text-center">Score</th>
+                          <th className="pb-4 text-gray-500 font-normal text-sm w-[20%] text-center">Status</th>
+                          <th className="pb-4 text-gray-500 font-normal text-sm w-[20%] text-right">Time</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {displayedStudents.map((row, idx) => {
+                          const ruleConfig = getStatusDetails(row.score);
+                          return (
+                            <tr key={idx} className="border-b border-gray-50 last:border-0 hover:bg-gray-50/30 transition-colors">
+                              <td className="py-5">
+                                <div className="font-medium text-gray-900 text-[15px]">{row.name}</div>
+                                <div className="text-[13px] text-gray-500 mt-0.5">{row.email}</div>
+                              </td>
+                              <td className="py-5 text-center">
+                                <span className={`font-bold text-lg ${ruleConfig.scoreColor}`}>
+                                  {row.score}%
+                                </span>
+                              </td>
+                              <td className="py-5 text-center">
+                                <span className={`px-4 py-1.5 rounded-full text-xs font-medium tracking-wide ${ruleConfig.pillClasses}`}>
+                                  {ruleConfig.status}
+                                </span>
+                              </td>
+                              <td className="py-5 text-right text-gray-500 text-[13px]">
+                                {row.time}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-[25px] p-7 sm:p-9 prototype-card-border custom-card-shadow">
+                  <div className="flex items-center justify-between mb-8">
+                    <h2 className="text-[26px] font-medium text-gray-900 tracking-tight">Most Popular Careers</h2>
+                    <BarChart2 className="w-7 h-7 text-[#0047FF]" />
+                  </div>
+
+                  <div className="space-y-6">
+                    {[
+                      { name: 'Software Developer', count: '3245 students', width: '90%' },
+                      { name: 'Data Analyst', count: '2156 students', width: '65%' },
+                      { name: 'UX Designer', count: '1834 students', width: '55%' },
+                      { name: 'Business Analyst', count: '1523 students', width: '45%' },
+                      { name: 'Digital Marketer', count: '1724 students', width: '50%' }
+                    ].map((bar, i) => (
+                      <div key={i} className="space-y-2">
+                        <div className="flex justify-between items-center text-[15px]">
+                          <span className="font-medium text-gray-900">{bar.name}</span>
+                          <span className="text-gray-500">{bar.count}</span>
+                        </div>
+                        <div className="w-full bg-[#D9D9D9] h-3.5 rounded-full overflow-hidden">
+                          <div className="bg-[#F45EE4] h-full rounded-full" style={{ width: bar.width }}></div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
 
-              <div className="space-y-6">
-                <div className="bg-white border border-gray-100 rounded-2xl p-5 space-y-4 shadow-2xs">
-                  <h3 className="text-base font-bold text-gray-950 tracking-tight px-1">Quick Actions</h3>
-                  <div className="space-y-1 text-sm font-medium">
+              <div className="lg:col-span-5 xl:col-span-4 space-y-8">
+                
+                <div className="bg-white rounded-[25px] p-7 sm:p-9 prototype-card-border custom-card-shadow">
+                  <h2 className="text-[26px] font-medium text-gray-900 tracking-tight mb-6">Quick Actions</h2>
+                  <div className="space-y-2">
                     
-                    <button className="w-full bg-transparent hover:bg-[#fff0fa]/50 text-gray-600 hover:text-[#bd24df] py-2.5 px-4 rounded-xl text-left font-semibold flex items-center gap-3.5 transition-all duration-200 cursor-pointer group">
-                      <svg className="w-[18px] h-[18px] text-gray-400 group-hover:text-[#bd24df] transition-colors" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M20 7h-3V5a2 2 0 00-2-2H9a2 2 0 00-2-2v2H4a2 2 0 00-2-2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z" />
-                      </svg>
-                      <span>Manage Careers</span>
+                    <button className="w-full bg-[#FDF2FA] text-[#C200B2] py-3.5 px-5 rounded-2xl text-left font-medium flex items-center gap-4 transition-all cursor-pointer">
+                      <Briefcase size={20} strokeWidth={2.2} />
+                      <span className="text-[17px]">Manage Careers</span>
                     </button>
 
                     <button 
                       onClick={() => setCurrentView('quiz')}
-                      className={`w-full py-2.5 px-4 rounded-xl text-left flex items-center gap-3.5 transition-all duration-200 cursor-pointer group ${
-                        currentView === 'quiz'
-                          ? 'bg-[#fff0fa] text-[#bd24df] font-bold'
-                          : 'bg-transparent text-gray-600 hover:bg-[#fff0fa]/50 hover:text-[#bd24df] font-semibold'
-                      }`}
+                      className="w-full bg-transparent hover:bg-gray-50 text-gray-900 py-3.5 px-5 rounded-2xl text-left font-medium flex items-center gap-4 transition-all cursor-pointer"
                     >
-                      <svg className={`w-[18px] h-[18px] transition-colors ${currentView === 'quiz' ? 'text-[#bd24df]' : 'text-gray-400 group-hover:text-[#bd24df]'}`} fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2-2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                      </svg>
-                      <span>Manage Quiz</span>
+                      <ClipboardList size={20} strokeWidth={2.2} />
+                      <span className="text-[17px]">Manage Quiz</span>
                     </button>
 
                     <button 
                       onClick={onNavigateToResults} 
-                      className="w-full bg-transparent hover:bg-[#fff0fa]/50 text-gray-600 hover:text-[#bd24df] py-2.5 px-4 rounded-xl text-left font-semibold flex items-center gap-3.5 transition-all duration-200 cursor-pointer group"
+                      className="w-full bg-transparent hover:bg-gray-50 text-gray-900 py-3.5 px-5 rounded-2xl text-left font-medium flex items-center gap-4 transition-all cursor-pointer"
                     >
-                      <svg className="w-[18px] h-[18px] text-gray-400 group-hover:text-[#bd24df] transition-colors" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                      </svg>
-                      <span>Students Results</span>
+                      <FileText size={20} strokeWidth={2.2} />
+                      <span className="text-[17px]">Students Results</span>
                     </button>
 
                     <button 
                       onClick={() => setCurrentView('settings')}
-                      className={`w-full py-2.5 px-4 rounded-xl text-left flex items-center gap-3.5 transition-all duration-200 cursor-pointer group ${
-                        currentView === 'settings'
-                          ? 'bg-[#fff0fa] text-[#bd24df] font-bold'
-                          : 'bg-transparent text-gray-600 hover:bg-[#fff0fa]/50 hover:text-[#bd24df] font-semibold'
-                      }`}
+                      className="w-full bg-transparent hover:bg-gray-50 text-gray-900 py-3.5 px-5 rounded-2xl text-left font-medium flex items-center gap-4 transition-all cursor-pointer"
                     >
-                      <svg className={`w-[18px] h-[18px] transition-colors ${currentView === 'settings' ? 'text-[#bd24df]' : 'text-gray-400 group-hover:text-[#bd24df]'}`} fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                        <circle cx="12" cy="12" r="3" />
-                      </svg>
-                      <span>Settings</span>
+                      <Settings size={20} strokeWidth={2.2} />
+                      <span className="text-[17px]">Settings</span>
                     </button>
 
                   </div>
                 </div>
-              </div>
-            </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <div className="lg:col-span-2 bg-white border border-gray-100 rounded-2xl p-6 space-y-4.5 shadow-xs">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-sm sm:text-base font-bold text-gray-800 uppercase tracking-tight">Most Popular Careers</h3>
-                  <svg className="w-5 h-5 text-blue-700" fill="currentColor" viewBox="0 0 24 24">
-                    <rect x="3" y="16" width="3" height="4" rx="0.5" />
-                    <rect x="8" y="12" width="3" height="8" rx="0.5" />
-                    <rect x="13" y="8" width="3" height="12" rx="0.5" />
-                    <rect x="18" y="3" width="3" height="17" rx="0.5" />
-                  </svg>
-                </div>
-
-                <div className="space-y-4.5">
-                  {[
-                    { name: 'Software Developer', count: '3245 students', width: '90%' },
-                    { name: 'Data Analyst', count: '2156 students', width: '68%' },
-                    { name: 'UX Designer', count: '1834 students', width: '55%' },
-                    { name: 'Business Analyst', count: '1523 students', width: '45%' },
-                    { name: 'Digital Marketer', count: '1724 students', width: '50%' },
-                    { name: 'AI / Machine Learning Engineer', count: '1412 students', width: '42%' },
-                    { name: 'Cybersecurity Analyst', count: '1195 students', width: '35%' },
-                    { name: 'Cloud Architect', count: '980 students', width: '28%' }
-                  ].map((bar, i) => (
-                    <div key={i} className="space-y-1.5 text-xs">
-                      <div className="flex justify-between font-bold text-gray-700">
-                        <span className="font-bold text-sm sm:text-base text-gray-800">{bar.name}</span>
-                        <span className="text-gray-400 font-normal text-xs sm:text-sm">{bar.count}</span>
+                <div className="bg-white rounded-[25px] p-7 sm:p-9 prototype-card-border custom-card-shadow">
+                  <h2 className="text-[26px] font-medium text-gray-900 tracking-tight mb-6">System Health</h2>
+                  
+                  <div className="space-y-4">
+                    <div className="bg-[#EAFBF3] p-5 rounded-2xl">
+                      <div className="text-[#05A660] font-medium text-sm flex items-center gap-2 mb-1">
+                        <div className="w-2.5 h-2.5 rounded-full bg-[#05A660]"></div> 
+                        System Status
                       </div>
-                      <div className="w-full bg-gray-100 h-2.5 rounded-full overflow-hidden">
-                        <div className="bg-[#f45ee4] h-full rounded-full transition-all duration-500" style={{ width: bar.width }}></div>
-                      </div>
+                      <div className="text-[22px] font-semibold text-[#05A660]">Online</div>
                     </div>
-                  ))}
-                </div>
-              </div>
 
-              <div className="space-y-6">
-                <div className="bg-white border border-gray-100 rounded-2xl p-6 space-y-4 shadow-xs">
-                  <h3 className="text-sm font-bold text-gray-800 uppercase tracking-tight">System Health</h3>
-                  <div className="bg-green-50 border border-green-100 p-4 rounded-xl">
-                    <div className="text-xs text-green-700 font-bold flex items-center gap-1.5 uppercase tracking-wider">
-                      <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> System Status
+                    <div className="bg-[#F0F5FF] p-5 rounded-2xl">
+                      <div className="text-gray-800 font-medium text-sm mb-1">Uptime</div>
+                      <div className="text-[22px] font-semibold text-[#0047FF]">99.9%</div>
                     </div>
-                    <div className="text-xl font-black text-green-900 mt-1">Online</div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-3 text-xs font-bold">
-                    <div className="bg-blue-50/50 p-3.5 rounded-xl border border-blue-100/30">
-                      <div className="text-gray-400 font-semibold uppercase text-[10px]">Uptime</div>
-                      <div className="text-base sm:text-lg font-black text-blue-900 mt-0.5">99.9%</div>
-                    </div>
-                    <div className="bg-purple-50/50 p-3.5 rounded-xl border border-purple-100/30">
-                      <div className="text-gray-400 font-semibold uppercase text-[10px]">Response</div>
-                      <div className="text-base sm:text-lg font-black text-purple-900 mt-0.5">245ms</div>
+
+                    <div className="bg-[#F9F0FF] p-5 rounded-2xl">
+                      <div className="text-gray-800 font-medium text-sm mb-1">Response Time</div>
+                      <div className="text-[22px] font-semibold text-[#A600FF]">245ms</div>
                     </div>
                   </div>
                 </div>
 
-                <div className="bg-white border border-gray-100 rounded-2xl p-6 space-y-4 text-xs font-medium shadow-xs">
-                  <h3 className="text-sm font-bold text-gray-800 uppercase tracking-tight pb-1 border-b border-gray-50">This Month</h3>
-                  {[
-                    { name: 'New Students', total: '1,234' },
-                    { name: 'Assessments', total: '3,456' },
-                    { name: 'Avg. Score', total: '84%' },
-                    { name: 'Completion Rate', total: '92%' },
-                  ].map((m, i) => (
-                    <div key={i} className="flex justify-between items-center py-1 text-sm">
-                      <span className="text-gray-500 font-medium">{m.name}</span>
-                      <span className="font-extrabold text-gray-900">{m.total}</span>
-                    </div>
-                  ))}
+                <div className="bg-white rounded-[25px] p-7 sm:p-9 prototype-card-border custom-card-shadow">
+                  <h2 className="text-[26px] font-medium text-gray-900 tracking-tight mb-6">This Month</h2>
+                  <div className="space-y-5">
+                    {[
+                      { name: 'New Students', total: '1,234' },
+                      { name: 'Assessments', total: '3,456' },
+                      { name: 'Avg. Score', total: '84%' },
+                      { name: 'Completion Rate', total: '92%' },
+                    ].map((m, i) => (
+                      <div key={i} className="flex justify-between items-center text-[15.5px]">
+                        <span className="text-gray-600 font-medium">{m.name}</span>
+                        <span className="font-bold text-gray-900">{m.total}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
+
               </div>
             </div>
           </>
