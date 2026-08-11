@@ -1,6 +1,7 @@
 import React from 'react';
-import { ArrowUpRight, LogIn, Mail, MapPin, Phone, Lock } from 'lucide-react';
+import { LogIn, Mail, MapPin, Phone, Lock } from 'lucide-react';
 import HomeImage from '../assets/Home.png'; 
+import { TrendingUp } from 'lucide-react';
 
 export default function LandingPage({ onNavigate }) {
   const scrollToSection = (sectionId) => {
@@ -62,7 +63,7 @@ export default function LandingPage({ onNavigate }) {
             alt="Futuristic Robot Matrix Backdrop" 
             className="w-full h-full object-cover object-center brightness-[0.8]"
           />
-          <div className="absolute inset-0 bg-black/60"></div>
+          <div className="absolute inset-0 bg-black/15"></div>
         </div>
 
         <div className="absolute top-[-5%] left-[-5%] w-[50%] h-[40%] bg-blue-500/10 blur-[130px] rounded-full pointer-events-none z-10"></div>
@@ -107,7 +108,7 @@ export default function LandingPage({ onNavigate }) {
 
             <button 
               onClick={() => onNavigate('login')} 
-              className="flex items-center gap-2 px-7 py-3 rounded-full text-base lg:text-lg font-bold bg-[#f08fe7] hover:bg-[#fa9eed] text-gray-950 shadow-[0_0_25px_rgba(240,143,231,0.5)] transition cursor-pointer hover:scale-105"
+              className="flex items-center gap-2 px-7 py-3 rounded-[20px] text-base lg:text-lg font-bold bg-[#f08fe7] hover:bg-[#fa9eed] text-gray-950 shadow-[0_0_25px_rgba(240,143,231,0.5)] transition cursor-pointer hover:scale-105"
             >
               <LogIn size={20} />
               <span>Login</span>
@@ -118,21 +119,21 @@ export default function LandingPage({ onNavigate }) {
         <div className="w-full max-w-7xl mx-auto px-6 sm:px-12 lg:px-16 pt-6 pb-20 space-y-20 relative z-20">
           
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-            <div className="col-span-1 lg:col-span-7 xl:col-span-6">
-              <div className="w-full bg-black/40 backdrop-blur-md border border-white/10 rounded-[32px] p-8 sm:p-12 shadow-[0_30px_80px_-15px_rgba(0,0,0,0.8)] space-y-6 sm:space-y-8 animate-fadeIn">
+            <div className="w-[720px] h-[475px] max-w-none shrink-0 col-span-1 lg:col-span-7 xl:col-span-6">
+              <div className="w-[720px] h-[475px] max-w-none shrink-0 bg-black/1 backdrop-blur-[05px] border border-white/20 rounded-[32px] p-8 sm:p-12 shadow-[0_30px_80px_-15px_rgba(0,0,0,0.8)] space-y-6 sm:space-y-8 animate-fadeIn">
                 
-                <h1 className="text-4xl sm:text-5xl xl:text-6xl font-extrabold tracking-tight leading-[1.12] text-white font-poppins">
+                <h1 className="w-[660px] h-[116px] max-w-[678px] font-semibold sm:text-[46px] xl:text-[48px] tracking-tight leading-[1.12] text-white font-poppins">
                   Your Dream Career with AI Guidance
                 </h1>
                 
-                <p className="text-base sm:text-lg text-gray-200 font-medium tracking-wide leading-relaxed max-w-xl">
+                <p className="w-[660px] h-[120px] max-w-[678px] text-[16px] sm:text-[22px] text-gray-200 font-regular tracking-wide leading-relaxed">
                   Your personal co-pilot for professional growth. We analyze your interests and skills to build a customized roadmap that leads you to success.
                 </p>
 
                 <div className="pt-2">
                   <button 
                     onClick={() => onNavigate('login')} 
-                    className="w-full sm:w-auto px-8 py-4 rounded-full bg-[#f08fe7] hover:bg-[#fa9eed] text-gray-950 text-base font-extrabold tracking-wide transition-all duration-300 shadow-[0_4px_25px_rgba(217,70,239,0.4)] hover:shadow-[0_6px_30px_rgba(217,70,239,0.75)] cursor-pointer hover:scale-[1.01]"
+                    className="w-full sm:w-[300px] h-[75px] px-8 py-4 rounded-full bg-[#f08fe7] hover:bg-[#fa9eed] text-[#5B0055] text-[21px] font-semibold tracking-wide transition-all duration-300 shadow-[0_4px_25px_rgba(217,70,239,0.4)] hover:shadow-[0_6px_30px_rgba(217,70,239,0.75)] cursor-pointer hover:scale-[1.01]"
                   >
                     Find My Career Path
                   </button>
@@ -144,51 +145,50 @@ export default function LandingPage({ onNavigate }) {
             <div className="hidden lg:grid lg:col-span-5 xl:col-span-6 h-10 select-none pointer-events-none"></div>
           </div>
 
-          <div className="w-full bg-black/45 backdrop-blur-lg border border-white/10 rounded-[24px] p-6 sm:p-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-6 shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
-            <div className="space-y-3 group cursor-pointer" onClick={() => onNavigate('login')}>
-              <div className="flex items-center gap-2 text-cyan-400 font-bold">
-                <ArrowUpRight size={18} className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-                <h3 className="text-base sm:text-lg font-bold text-gray-200 tracking-wide font-poppins">Find Your Path</h3>
+          <div className="w-full bg-black/1 backdrop-blur-[05px] border border-white/20 rounded-[24px] p-6 sm:p-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-6 shadow-[0_30px_80px_-15px_rgba(0,0,0,0.8)] animate-fadeIn">
+            <div className="space-y-3 group cursor-pointer lg:border-r lg:border-white/20 lg:pr-6" onClick={() => onNavigate('login')}>
+              <div className="text-cyan-400 font-bold space-y-2">
+                <TrendingUp size={23} color="#FEB2F1" className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                <h3 className="text-[#ffffff] text-[21px] sm:text-[21px] font-[600] tracking-wide font-poppins">Find Your Path</h3>
               </div>
-              <p className="text-sm text-gray-400 font-medium tracking-wide leading-relaxed pl-6">
+              <p className="text-[#ffffff] text-[14.5px] font-regular tracking-wide leading-relaxed">
                 Let AI match your interests with the most rewarding career options
               </p>
             </div>
 
-            <div className="space-y-3 group cursor-pointer" onClick={() => onNavigate('login')}>
-              <div className="flex items-center gap-2 text-cyan-400 font-bold">
-                <ArrowUpRight size={18} className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-                <h3 className="text-base sm:text-lg font-bold text-gray-200 tracking-wide font-poppins">Quick Quiz</h3>
+            <div className="space-y-3 group cursor-pointer lg:border-r lg:border-white/20 lg:pr-6" onClick={() => onNavigate('login')}>
+              <div className="text-cyan-400 font-bold space-y-2">
+                <TrendingUp size={23} color="#FEB2F1" className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                <h3 className="text-[#ffffff] text-[21px] sm:text-[21px] font-[600] tracking-wide font-poppins">Quick Quiz</h3>
               </div>
-              <p className="text-sm text-gray-400 font-medium tracking-wide leading-relaxed pl-6">
+              <p className="text-[#ffffff] text-[14.5px] font-regular tracking-wide leading-relaxed">
                 Answer a few logical questions to unlock personalized career insights.
               </p>
             </div>
 
-            <div className="space-y-3 group cursor-pointer" onClick={() => onNavigate('login')}>
-              <div className="flex items-center gap-2 text-cyan-400 font-bold">
-                <ArrowUpRight size={18} className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-                <h3 className="text-base sm:text-lg font-bold text-gray-200 tracking-wide font-poppins">Growth Maps</h3>
+            <div className="space-y-3 group cursor-pointer lg:border-r lg:border-white/20 lg:pr-6" onClick={() => onNavigate('login')}>
+              <div className="text-cyan-400 font-bold space-y-2">
+                <TrendingUp size={23} color="#FEB2F1" className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                <h3 className="text-[#ffffff] text-[21px] sm:text-[21px] font-[600] tracking-wide font-poppins">Growth Maps</h3>
               </div>
-              <p className="text-sm text-gray-400 font-medium tracking-wide leading-relaxed pl-6">
+              <p className="text-[#ffffff] text-[14.5px] font-regular tracking-wide leading-relaxed">
                 Get a step-by-step learning guide to reach your professional goals.
               </p>
             </div>
 
             <div className="space-y-3 group cursor-pointer" onClick={() => onNavigate('login')}>
-              <div className="flex items-center gap-2 text-cyan-400 font-bold">
-                <ArrowUpRight size={18} className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-                <h3 className="text-base sm:text-lg font-bold text-gray-200 tracking-wide font-poppins">Skill Checker</h3>
+              <div className="text-cyan-400 font-bold space-y-2">
+                <TrendingUp size={23} color="#FEB2F1" className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                <h3 className="text-[#ffffff] text-[21px] sm:text-[21px] font-[600] tracking-wide font-poppins">Skill Checker</h3>
               </div>
-              <p className="text-sm text-gray-400 font-medium tracking-wide leading-relaxed pl-6">
+              <p className="text-[#ffffff] text-[14.5px] font-regular tracking-wide leading-relaxed">
                 Identify exactly which courses and skills you need to stay competitive.
               </p>
             </div>
           </div>
 
-        </div>
-      </div>
-
+          </div>
+          </div>
       <main className="w-full max-w-7xl mx-auto px-6 sm:px-12 lg:px-16 py-16 space-y-20 relative z-20 flex-1">
         
         <section id="about" className="w-full bg-black/40 backdrop-blur-md border border-white/10 rounded-[32px] p-8 sm:p-12">
