@@ -234,18 +234,13 @@ const ManageQuiz = ({ onNavigate, onLogout, initialView = 'list' }) => {
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="bg-white rounded-[32px] p-8 max-w-2xl w-full shadow-[0_10px_40px_-10px_rgba(0,0,0,0.2)] border-[1.5px] border-[#FFD2F7] max-h-[90vh] overflow-y-auto modal-scrollbar">
             
-            <div className="flex justify-between items-center mb-8 border-b border-gray-100 pb-5">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-[#FFE1FD] text-[#890080] border border-[#FF34DC] flex items-center justify-center shadow-sm">
-                  <Edit2 size={22} strokeWidth={2.5} />
-                </div>
-                <div>
-                  <h2 className="text-2xl font-bold text-gray-900">Edit Question</h2>
-                  <p className="text-sm text-[#890080] font-medium">Question #{editFormData.id}</p>
-                </div>
+            <div className="flex justify-between items-start mb-6 border-b border-gray-100 pb-4 text-left">
+              <div className="space-y-1">
+                <h2 className="text-2xl font-bold tracking-tight text-gray-900 inline-flex items-center gap-2">Edit Question</h2>
+                <p className="text-[#000000] font-light text-[15px]">Question #{editFormData.id}</p>
               </div>
-              <button onClick={() => setEditingId(null)} className="w-10 h-10 rounded-full bg-gray-50 hover:bg-gray-100 flex items-center justify-center text-gray-500 transition-colors cursor-pointer">
-                <X size={20} strokeWidth={2.5} />
+              <button onClick={() => setEditingId(null)} className="w-9 h-9 rounded-full bg-gray-50 hover:bg-gray-100 flex items-center justify-center text-gray-500 transition-colors cursor-pointer">
+                <X size={18} strokeWidth={2.5} />
               </button>
             </div>
 
@@ -285,29 +280,35 @@ const ManageQuiz = ({ onNavigate, onLogout, initialView = 'list' }) => {
                   </div>
                 ))}
 
-                <div className="pl-[42px] pt-2">
+                <div className="pl-[42px] pt-3">
                   <button 
+                    type="button"
                     onClick={handleAddOption}
-                    className="flex items-center gap-2 px-5 py-2.5 rounded-full border border-[#FFD2F7] bg-[#FFE1FD] text-[#890080] font-semibold text-sm hover:bg-[#FF34DC] hover:text-white transition-colors cursor-pointer"
+                    style={{ backgroundColor: '#FFD7FC', color: '#890080' }}
+                    className="inline-flex items-center justify-center font-medium text-[15px] px-4 py-2 rounded-[12px] cursor-pointer custom-quiz-border transition-all duration-300 transform hover:scale-105 hover:shadow-lg active:scale-95 shadow-sm"
                   >
-                    <Plus size={16} strokeWidth={3} /> Add New Option
+                    <Plus size={18} strokeWidth={2.5} className="mr-1.5 flex-shrink-0" />
+                    <span className="leading-none">Add New Option</span>
                   </button>
                 </div>
               </div>
             </div>
 
-            <div className="flex justify-end gap-4 pt-8 mt-4 border-t border-gray-100">
+            <div className="flex justify-end items-center gap-4 pt-8 mt-4 border-t border-gray-100">
               <button 
                 onClick={() => setEditingId(null)} 
-                className="px-8 py-3.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-[15px] transition-colors cursor-pointer"
+                className="px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-[15px] transition-colors cursor-pointer text-[18px]"
               >
                 Cancel
               </button>
               <button 
+                type="button"
                 onClick={handleSave}
-                className="px-8 py-3.5 bg-[#bd24df] hover:bg-[#890080] text-white font-semibold rounded-[15px] shadow-[0px_4px_10px_rgba(189,36,223,0.3)] transition-all cursor-pointer flex items-center gap-2"
+                style={{ backgroundColor: '#FFD7FC', color: '#890080' }}
+                className="inline-flex items-center justify-center font-medium text-[18px] px-6 py-3 rounded-[15px] cursor-pointer custom-quiz-border transition-all duration-300 transform hover:scale-105 hover:shadow-lg active:scale-95 shadow-sm"
               >
-                <Check size={18} strokeWidth={3} /> Save Changes
+                <Check size={22} strokeWidth={2.5} className="mr-2 flex-shrink-0" />
+                <span className="leading-none">Save Changes</span>
               </button>
             </div>
           </div>
