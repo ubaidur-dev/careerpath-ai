@@ -155,8 +155,8 @@ export default function App() {
               setCurrentScreen('student-dash');
             } else if (target === 'browse-careers') {
               setCurrentScreen('browse-careers');
-            } else if (target === 'details') {
-              setSelectedCareerData(data);
+            } else if (target === 'details' || target === 'career-details') {
+              setSelectedCareerData(data?.careerData || data);
               setCurrentScreen('career-details');
             } else if (target === 'home') {
               setCurrentScreen('home');

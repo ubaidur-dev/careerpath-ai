@@ -1,6 +1,7 @@
 import React from 'react';
-import { ArrowUpRight, LogIn, Mail, MapPin, Phone } from 'lucide-react';
+import { LogIn, Mail, MapPin, Phone, Lock } from 'lucide-react';
 import HomeImage from '../assets/Home.png'; 
+import { TrendingUp } from 'lucide-react';
 
 export default function LandingPage({ onNavigate }) {
   const scrollToSection = (sectionId) => {
@@ -23,6 +24,34 @@ export default function LandingPage({ onNavigate }) {
           .font-poppins {
             font-family: 'Poppins', sans-serif;
           }
+          @keyframes spin-slow {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+          }
+          @keyframes spin-reverse {
+            from { transform: rotate(360deg); }
+            to { transform: rotate(0deg); }
+          }
+          @keyframes pulse-glow {
+            0%, 100% { opacity: 0.5; transform: scale(1); }
+            50% { opacity: 0.9; transform: scale(1.06); }
+          }
+          @keyframes float-node {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-4px); }
+          }
+          .animate-spin-slow {
+            animation: spin-slow 30s linear infinite;
+          }
+          .animate-spin-reverse {
+            animation: spin-reverse 22s linear infinite;
+          }
+          .animate-pulse-glow {
+            animation: pulse-glow 3.5s ease-in-out infinite;
+          }
+          .animate-float {
+            animation: float-node 4s ease-in-out infinite;
+          }
         `}
       </style>
 
@@ -34,7 +63,7 @@ export default function LandingPage({ onNavigate }) {
             alt="Futuristic Robot Matrix Backdrop" 
             className="w-full h-full object-cover object-center brightness-[0.8]"
           />
-          <div className="absolute inset-0 bg-black/60"></div>
+          <div className="absolute inset-0 bg-black/15"></div>
         </div>
 
         <div className="absolute top-[-5%] left-[-5%] w-[50%] h-[40%] bg-blue-500/10 blur-[130px] rounded-full pointer-events-none z-10"></div>
@@ -53,25 +82,25 @@ export default function LandingPage({ onNavigate }) {
             <nav className="hidden md:flex items-center gap-8 text-base lg:text-lg font-semibold text-gray-200">
               <button 
                 onClick={() => scrollToSection('home')} 
-                className="relative pb-1 hover:text-white transition cursor-pointer after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[2px] after:bg-[#f08fe7] hover:after:w-full after:transition-all duration-300"
+                className="relative pb-1 text-gray-200 hover:text-[#f08fe7] transition-colors duration-300 cursor-pointer after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[2px] after:bg-[#f08fe7] hover:after:w-full after:transition-all after:duration-300"
               >
                 Home
               </button>
               <button 
                 onClick={() => scrollToSection('about')} 
-                className="relative pb-1 hover:text-white transition cursor-pointer after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[2px] after:bg-[#f08fe7] hover:after:w-full after:transition-all duration-300"
+                className="relative pb-1 text-gray-200 hover:text-[#f08fe7] transition-colors duration-300 cursor-pointer after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[2px] after:bg-[#f08fe7] hover:after:w-full after:transition-all after:duration-300"
               >
                 About Us
               </button>
               <button 
                 onClick={() => scrollToSection('goal')} 
-                className="relative pb-1 hover:text-white transition cursor-pointer after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[2px] after:bg-[#f08fe7] hover:after:w-full after:transition-all duration-300"
+                className="relative pb-1 text-gray-200 hover:text-[#f08fe7] transition-colors duration-300 cursor-pointer after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[2px] after:bg-[#f08fe7] hover:after:w-full after:transition-all after:duration-300"
               >
                 Our Goal
               </button>
               <button 
                 onClick={() => scrollToSection('contact')} 
-                className="relative pb-1 hover:text-white transition cursor-pointer after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[2px] after:bg-[#f08fe7] hover:after:w-full after:transition-all duration-300"
+                className="relative pb-1 text-gray-200 hover:text-[#f08fe7] transition-colors duration-300 cursor-pointer after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[2px] after:bg-[#f08fe7] hover:after:w-full after:transition-all after:duration-300"
               >
                 Contact Us
               </button>
@@ -79,7 +108,7 @@ export default function LandingPage({ onNavigate }) {
 
             <button 
               onClick={() => onNavigate('login')} 
-              className="flex items-center gap-2 px-7 py-3 rounded-full text-base lg:text-lg font-bold bg-[#f08fe7] hover:bg-[#fa9eed] text-gray-950 shadow-[0_0_25px_rgba(240,143,231,0.5)] transition cursor-pointer hover:scale-105"
+              className="flex items-center gap-2 px-7 py-3 rounded-[20px] text-base lg:text-lg font-bold bg-[#f08fe7] hover:bg-[#fa9eed] text-gray-950 shadow-[0_0_25px_rgba(240,143,231,0.5)] transition cursor-pointer hover:scale-105"
             >
               <LogIn size={20} />
               <span>Login</span>
@@ -90,21 +119,21 @@ export default function LandingPage({ onNavigate }) {
         <div className="w-full max-w-7xl mx-auto px-6 sm:px-12 lg:px-16 pt-6 pb-20 space-y-20 relative z-20">
           
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-            <div className="col-span-1 lg:col-span-7 xl:col-span-6">
-              <div className="w-full bg-black/40 backdrop-blur-md border border-white/10 rounded-[32px] p-8 sm:p-12 shadow-[0_30px_80px_-15px_rgba(0,0,0,0.8)] space-y-6 sm:space-y-8 animate-fadeIn">
+            <div className="w-[720px] h-[475px] max-w-none shrink-0 col-span-1 lg:col-span-7 xl:col-span-6">
+              <div className="w-[720px] h-[475px] max-w-none shrink-0 bg-black/1 backdrop-blur-[05px] border border-white/20 rounded-[32px] p-8 sm:p-12 shadow-[0_30px_80px_-15px_rgba(0,0,0,0.8)] space-y-6 sm:space-y-8 animate-fadeIn">
                 
-                <h1 className="text-4xl sm:text-5xl xl:text-6xl font-extrabold tracking-tight leading-[1.12] text-white font-poppins">
+                <h1 className="w-[660px] h-[116px] max-w-[678px] font-semibold sm:text-[46px] xl:text-[48px] tracking-tight leading-[1.12] text-white font-poppins">
                   Your Dream Career with AI Guidance
                 </h1>
                 
-                <p className="text-base sm:text-lg text-gray-200 font-medium tracking-wide leading-relaxed max-w-xl">
+                <p className="w-[660px] h-[120px] max-w-[678px] text-[16px] sm:text-[22px] text-gray-200 font-regular tracking-wide leading-relaxed">
                   Your personal co-pilot for professional growth. We analyze your interests and skills to build a customized roadmap that leads you to success.
                 </p>
 
                 <div className="pt-2">
                   <button 
                     onClick={() => onNavigate('login')} 
-                    className="w-full sm:w-auto px-8 py-4 rounded-full bg-[#f08fe7] hover:bg-[#fa9eed] text-gray-950 text-base font-extrabold tracking-wide transition-all duration-300 shadow-[0_4px_25px_rgba(217,70,239,0.4)] hover:shadow-[0_6px_30px_rgba(217,70,239,0.75)] cursor-pointer hover:scale-[1.01]"
+                    className="w-full sm:w-[300px] h-[75px] px-8 py-4 rounded-full bg-[#f08fe7] hover:bg-[#fa9eed] text-[#5B0055] text-[21px] font-semibold tracking-wide transition-all duration-300 shadow-[0_4px_25px_rgba(217,70,239,0.4)] hover:shadow-[0_6px_30px_rgba(217,70,239,0.75)] cursor-pointer hover:scale-[1.01]"
                   >
                     Find My Career Path
                   </button>
@@ -116,51 +145,50 @@ export default function LandingPage({ onNavigate }) {
             <div className="hidden lg:grid lg:col-span-5 xl:col-span-6 h-10 select-none pointer-events-none"></div>
           </div>
 
-          <div className="w-full bg-black/45 backdrop-blur-lg border border-white/10 rounded-[24px] p-6 sm:p-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-6 shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
-            <div className="space-y-3 group cursor-pointer" onClick={() => onNavigate('login')}>
-              <div className="flex items-center gap-2 text-cyan-400 font-bold">
-                <ArrowUpRight size={18} className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-                <h3 className="text-base sm:text-lg font-bold text-gray-200 tracking-wide font-poppins">Find Your Path</h3>
+          <div className="w-full bg-black/1 backdrop-blur-[05px] border border-white/20 rounded-[24px] p-6 sm:p-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-6 shadow-[0_30px_80px_-15px_rgba(0,0,0,0.8)] animate-fadeIn">
+            <div className="space-y-3 group cursor-pointer lg:border-r lg:border-white/20 lg:pr-6" onClick={() => onNavigate('login')}>
+              <div className="text-cyan-400 font-bold space-y-2">
+                <TrendingUp size={23} color="#FEB2F1" className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                <h3 className="text-[#ffffff] text-[21px] sm:text-[21px] font-[600] tracking-wide font-poppins">Find Your Path</h3>
               </div>
-              <p className="text-sm text-gray-400 font-medium tracking-wide leading-relaxed pl-6">
+              <p className="text-[#ffffff] text-[14.5px] font-regular tracking-wide leading-relaxed">
                 Let AI match your interests with the most rewarding career options
               </p>
             </div>
 
-            <div className="space-y-3 group cursor-pointer" onClick={() => onNavigate('login')}>
-              <div className="flex items-center gap-2 text-cyan-400 font-bold">
-                <ArrowUpRight size={18} className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-                <h3 className="text-base sm:text-lg font-bold text-gray-200 tracking-wide font-poppins">Quick Quiz</h3>
+            <div className="space-y-3 group cursor-pointer lg:border-r lg:border-white/20 lg:pr-6" onClick={() => onNavigate('login')}>
+              <div className="text-cyan-400 font-bold space-y-2">
+                <TrendingUp size={23} color="#FEB2F1" className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                <h3 className="text-[#ffffff] text-[21px] sm:text-[21px] font-[600] tracking-wide font-poppins">Quick Quiz</h3>
               </div>
-              <p className="text-sm text-gray-400 font-medium tracking-wide leading-relaxed pl-6">
+              <p className="text-[#ffffff] text-[14.5px] font-regular tracking-wide leading-relaxed">
                 Answer a few logical questions to unlock personalized career insights.
               </p>
             </div>
 
-            <div className="space-y-3 group cursor-pointer" onClick={() => onNavigate('login')}>
-              <div className="flex items-center gap-2 text-cyan-400 font-bold">
-                <ArrowUpRight size={18} className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-                <h3 className="text-base sm:text-lg font-bold text-gray-200 tracking-wide font-poppins">Growth Maps</h3>
+            <div className="space-y-3 group cursor-pointer lg:border-r lg:border-white/20 lg:pr-6" onClick={() => onNavigate('login')}>
+              <div className="text-cyan-400 font-bold space-y-2">
+                <TrendingUp size={23} color="#FEB2F1" className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                <h3 className="text-[#ffffff] text-[21px] sm:text-[21px] font-[600] tracking-wide font-poppins">Growth Maps</h3>
               </div>
-              <p className="text-sm text-gray-400 font-medium tracking-wide leading-relaxed pl-6">
+              <p className="text-[#ffffff] text-[14.5px] font-regular tracking-wide leading-relaxed">
                 Get a step-by-step learning guide to reach your professional goals.
               </p>
             </div>
 
             <div className="space-y-3 group cursor-pointer" onClick={() => onNavigate('login')}>
-              <div className="flex items-center gap-2 text-cyan-400 font-bold">
-                <ArrowUpRight size={18} className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-                <h3 className="text-base sm:text-lg font-bold text-gray-200 tracking-wide font-poppins">Skill Checker</h3>
+              <div className="text-cyan-400 font-bold space-y-2">
+                <TrendingUp size={23} color="#FEB2F1" className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                <h3 className="text-[#ffffff] text-[21px] sm:text-[21px] font-[600] tracking-wide font-poppins">Skill Checker</h3>
               </div>
-              <p className="text-sm text-gray-400 font-medium tracking-wide leading-relaxed pl-6">
+              <p className="text-[#ffffff] text-[14.5px] font-regular tracking-wide leading-relaxed">
                 Identify exactly which courses and skills you need to stay competitive.
               </p>
             </div>
           </div>
 
-        </div>
-      </div>
-
+          </div>
+          </div>
       <main className="w-full max-w-7xl mx-auto px-6 sm:px-12 lg:px-16 py-16 space-y-20 relative z-20 flex-1">
         
         <section id="about" className="w-full bg-black/40 backdrop-blur-md border border-white/10 rounded-[32px] p-8 sm:p-12">
@@ -168,21 +196,56 @@ export default function LandingPage({ onNavigate }) {
             <div className="lg:col-span-7 space-y-6">
               <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">About Us</h2>
               <p className="text-gray-300 text-base sm:text-lg leading-relaxed">
-                CareerPath AI Careers is a pioneering platform dedicated to revolutionizing professional development through advanced artificial intelligence and predictive analytics. Founded by industry experts and AI researchers, our goal is to eliminate career ambiguity by pairing individuals with global career pathways in real-time. By combining hyper-personalized career planning, live mentoring curves, and market-driven insights, we empower students, career switchers, and seasoned professionals to achieve their ultimate career ambitions with absolute precision.
+                CareerPath AI is built to take the guesswork out of professional growth and bridge the gap between where you are and where you want to be. Instead of navigating blind career moves, we analyze real-time market demands and match them directly with your personal strengths to create a clear, execution-ready roadmap. Whether you are a student starting out, a professional planning a transition, or an expert targeting leadership, our platform delivers precise guidance, eliminating confusion and turning ambition into actual career achievement.
               </p>
             </div>
             
             <div className="lg:col-span-5 flex justify-center items-center">
-              <div className="w-60 h-60 rounded-full bg-gradient-to-tr from-cyan-500/20 via-fuchsia-500/20 to-blue-600/30 border border-white/20 flex items-center justify-center relative shadow-[0_0_60px_rgba(34,211,238,0.25)] animate-pulse">
-                <div className="absolute inset-2 rounded-full border border-dashed border-cyan-400/40 animate-spin" style={{ animationDuration: '25s' }}></div>
-                <div className="text-center space-y-1 z-10">
-                  <div className="w-16 h-16 mx-auto rounded-full bg-cyan-500/20 border border-cyan-400/50 flex items-center justify-center text-cyan-300 font-extrabold text-xl shadow-[0_0_20px_rgba(34,211,238,0.5)]">
-                    AI
-                  </div>
-                  <span className="text-xs font-semibold text-gray-300 tracking-wider uppercase block pt-2">Global Network</span>
+              <div className="relative w-56 h-56 sm:w-64 sm:h-64 flex items-center justify-center animate-float">
+                
+                <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-cyan-500/15 via-fuchsia-500/10 to-blue-500/15 blur-2xl animate-pulse-glow"></div>
+                
+                <div className="absolute inset-1 rounded-full border border-cyan-400/25 shadow-[0_0_25px_rgba(34,211,238,0.25)] animate-spin-reverse pointer-events-none"></div>
+
+                <div className="w-48 h-48 sm:w-56 sm:h-56 rounded-full relative flex items-center justify-center overflow-hidden shadow-[0_0_50px_rgba(34,211,238,0.4)] border border-cyan-400/40 bg-gradient-to-br from-[#020617] via-[#09112b] to-[#020617]">
+                  
+                  <svg className="absolute inset-0 w-full h-full animate-spin-slow opacity-95" viewBox="0 0 240 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                      <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+                        <feGaussianBlur stdDeviation="2" result="blur" />
+                        <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                      </filter>
+                    </defs>
+
+                    <circle cx="120" cy="120" r="114" stroke="#22d3ee" strokeWidth="1" strokeOpacity="0.5" strokeDasharray="5 5" />
+                    
+                    <ellipse cx="120" cy="120" rx="114" ry="42" stroke="#22d3ee" strokeWidth="1.2" strokeOpacity="0.75" />
+                    <ellipse cx="120" cy="120" rx="42" ry="114" stroke="#22d3ee" strokeWidth="1.2" strokeOpacity="0.75" />
+                    <ellipse cx="120" cy="120" rx="100" ry="70" stroke="#38bdf8" strokeWidth="0.8" strokeOpacity="0.45" />
+                    <ellipse cx="120" cy="120" rx="70" ry="100" stroke="#38bdf8" strokeWidth="0.8" strokeOpacity="0.45" />
+                    
+                    <line x1="6" y1="120" x2="234" y2="120" stroke="#22d3ee" strokeWidth="1.2" strokeOpacity="0.75" />
+                    <line x1="120" y1="6" x2="120" y2="234" stroke="#22d3ee" strokeWidth="1.2" strokeOpacity="0.75" />
+                    
+                    <path d="M 25 145 Q 120 40 215 125" stroke="#f08fe7" strokeWidth="2.2" strokeOpacity="0.95" fill="none" filter="url(#glow)" />
+                    <path d="M 45 190 Q 120 110 195 45" stroke="#22d3ee" strokeWidth="2.2" strokeOpacity="0.95" fill="none" filter="url(#glow)" />
+                    <path d="M 35 85 Q 120 185 205 160" stroke="#38bdf8" strokeWidth="1.6" strokeOpacity="0.85" fill="none" />
+                    <path d="M 75 25 Q 140 120 165 215" stroke="#c084fc" strokeWidth="1.6" strokeOpacity="0.85" fill="none" />
+                    
+                    <circle cx="25" cy="145" r="4.5" fill="#f08fe7" className="animate-ping" />
+                    <circle cx="215" cy="125" r="4.5" fill="#22d3ee" filter="url(#glow)" />
+                    <circle cx="195" cy="45" r="4.5" fill="#38bdf8" filter="url(#glow)" />
+                    <circle cx="35" cy="85" r="4.5" fill="#22d3ee" />
+                    <circle cx="165" cy="215" r="4" fill="#c084fc" filter="url(#glow)" />
+                    <circle cx="120" cy="120" r="5" fill="#ffffff" filter="url(#glow)" />
+                  </svg>
+
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-cyan-950/50 pointer-events-none"></div>
                 </div>
+
               </div>
             </div>
+
           </div>
         </section>
 
@@ -240,19 +303,28 @@ export default function LandingPage({ onNavigate }) {
               </div>
             </div>
 
-            <div className="lg:col-span-6 flex flex-col justify-between space-y-6">
-              <div className="bg-white/5 border border-white/10 rounded-2xl p-6 h-64 flex items-center justify-center relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-tr from-fuchsia-500/10 to-blue-500/10"></div>
-                <span className="text-gray-400 font-medium tracking-wide relative z-10">Global Operations & AI Hub</span>
+            <div className="lg:col-span-6 flex flex-col space-y-6 h-full">
+              
+              <div className="bg-white/5 border border-white/10 rounded-2xl flex-1 w-full min-h-[300px] overflow-hidden relative shadow-[0_0_20px_rgba(0,0,0,0.5)] group">
+                <iframe 
+                  src="https://maps.google.com/maps?q=Ziauddin%20University%20Faculty%20of%20Engineering,%20Science,%20Technology%20and%20Management&t=&z=15&ie=UTF8&iwloc=&output=embed"
+                  width="100%" 
+                  height="100%" 
+                  style={{ border: 0, filter: 'invert(90%) hue-rotate(180deg) brightness(95%) contrast(90%)' }} 
+                  allowFullScreen="" 
+                  loading="lazy" 
+                  referrerPolicy="no-referrer-when-downgrade"
+                  className="absolute inset-0 z-10 transition-transform duration-700 group-hover:scale-105"
+                  title="Ziauddin University Location"
+                ></iframe>
+                <div className="absolute inset-0 bg-black/10 pointer-events-none z-20"></div>
               </div>
 
-              <div className="flex items-center gap-4 text-gray-400 text-sm font-medium">
-                <span className="hover:text-white cursor-pointer transition">LinkedIn</span>
-                <span>•</span>
-                <span className="hover:text-white cursor-pointer transition">Twitter</span>
-                <span>•</span>
-                <span className="hover:text-white cursor-pointer transition">GitHub</span>
+              <div className="flex items-center gap-2.5 text-sm text-gray-400 font-medium pt-1">
+                <Lock size={16} className="text-[#f08fe7] shrink-0" />
+                <span>End-to-end encrypted. Our support team replies within 24 hours.</span>
               </div>
+
             </div>
           </div>
         </section>
@@ -295,7 +367,7 @@ export default function LandingPage({ onNavigate }) {
             </div>
             <div className="flex items-start gap-3 text-gray-300 text-base font-medium">
               <MapPin size={20} className="text-[#f08fe7] mt-0.5 shrink-0" />
-              <span>Suite 402, Innovation Tower, Tech Park, Global Hub</span>
+              <span>F-103, Block B, North Nazimabad Town, Karachi, 74600, Pakistan</span>
             </div>
           </div>
 
@@ -311,3 +383,4 @@ export default function LandingPage({ onNavigate }) {
     </div>
   );
 }
+

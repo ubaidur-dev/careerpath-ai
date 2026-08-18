@@ -542,7 +542,7 @@ export default function BrowseCareers({ onNavigate, onLogout, activeCareerId }) 
                       onClick={() => onNavigate('quiz')} 
                       style={{ 
                         fontSize: '18.5px',
-                        maxWidth: '420px',
+                        maxWidth: '432px',
                         height: '56px' 
                       }} 
                       className="w-full xs:w-auto px-8 inline-flex items-center justify-center gap-3 figma-assessment-btn-prototype rounded-[20px] font-medium font-['Inter',sans-serif] tracking-wide shadow-sm hover:scale-[1.02] hover:shadow-md active:scale-[0.98] transition-all duration-300 cursor-pointer"
