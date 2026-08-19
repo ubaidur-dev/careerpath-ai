@@ -1,11 +1,25 @@
 import React, { useState } from 'react';
-import { X, Trash2, Plus, Check, Sparkles } from 'lucide-react';
+import { X, Trash2, Plus, Check } from 'lucide-react';
 
 const AddNewQuestion = ({ onSave, onCancel }) => {
   const [newQuestionText, setNewQuestionText] = useState('');
+  const [categories, setCategories] = useState(['Technical Skills', 'Work Style', 'Interests']);
   const [newCategory, setNewCategory] = useState('Technical Skills');
+  const [isCustomCategory, setIsCustomCategory] = useState(false);
+  const [customCategoryInput, setCustomCategoryInput] = useState('');
   const [newWeight, setNewWeight] = useState('Medium');
   const [options, setOptions] = useState(['', '']);
+
+  const handleCategorySelectChange = (e) => {
+    const val = e.target.value;
+    if (val === '__ADD_NEW__') {
+      setIsCustomCategory(true);
+      setCustomCategoryInput('');
+    } else {
+      setIsCustomCategory(false);
+      setNewCategory(val);
+    }
+  };
 
   const handleOptionChange = (index, value) => {
     const newOptions = [...options];
@@ -25,12 +39,16 @@ const AddNewQuestion = ({ onSave, onCancel }) => {
   const handleSave = () => {
     if (!newQuestionText.trim()) return;
 
+    const finalCategory = isCustomCategory 
+      ? (customCategoryInput.trim() || 'General')
+      : newCategory;
+
     const cleanedOptions = options.map(o => o.trim()).filter(Boolean);
     
     onSave({
       questionText: newQuestionText.trim(),
       type: 'Multiple Choice',
-      category: newCategory,
+      category: finalCategory,
       weight: newWeight,
       status: 'Active',
       options: cleanedOptions.length > 0 ? cleanedOptions : ['Option 1']
@@ -48,14 +66,13 @@ const AddNewQuestion = ({ onSave, onCancel }) => {
       >
         
         <div className="flex justify-between items-start mb-8 border-b border-gray-100 pb-6 text-left">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-full bg-[#FFEDF8] border border-[#FFD2F7] flex items-center justify-center">
-              <Sparkles size={24} className="text-[#890080]" />
-            </div>
-            <div className="space-y-1">
-              <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-gray-900 inline-flex items-center gap-2">Add New Question</h2>
-              <p className="text-[#890080] font-medium text-[15px] sm:text-[16px]">Create a new career indicator</p>
-            </div>
+          <div className="space-y-1">
+            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-gray-900 inline-flex items-center gap-2">
+              Add New Question
+            </h2>
+            <p className="text-[#890080] font-medium text-[15px] sm:text-[16px]">
+              Create a new career indicator
+            </p>
           </div>
           <button 
             type="button"
@@ -83,19 +100,43 @@ const AddNewQuestion = ({ onSave, onCancel }) => {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <div className="space-y-3">
-              <label className="text-base sm:text-lg font-semibold text-gray-800 block">Category Type</label>
-              <div className="relative">
-                <select 
-                  value={newCategory} 
-                  onChange={(e) => setNewCategory(e.target.value)} 
-                  className="w-full bg-[#F9F9F9] border border-gray-200 rounded-[18px] px-5 py-4 text-[17px] sm:text-[18px] focus:outline-none focus:border-[#FF34DC] focus:bg-white transition-all text-gray-900 font-medium shadow-sm appearance-none cursor-pointer"
-                  style={{ backgroundImage: `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M6 9l6 6 6-6'/></svg>")`, backgroundPosition: 'right 20px center', backgroundRepeat: 'no-repeat' }}
-                >
-                  <option value="Technical Skills">Technical Skills</option>
-                  <option value="Work Style">Work Style</option>
-                  <option value="Interests">Interests</option>
-                </select>
+              <div className="flex justify-between items-center">
+                <label className="text-base sm:text-lg font-semibold text-gray-800 block">Category Type</label>
+                {isCustomCategory && (
+                  <button
+                    type="button"
+                    onClick={() => setIsCustomCategory(false)}
+                    className="text-xs font-semibold text-[#890080] hover:underline cursor-pointer"
+                  >
+                    ← Choose Existing
+                  </button>
+                )}
               </div>
+
+              {isCustomCategory ? (
+                <input
+                  type="text"
+                  value={customCategoryInput}
+                  onChange={(e) => setCustomCategoryInput(e.target.value)}
+                  placeholder="Enter new category name..."
+                  className="w-full bg-[#F9F9F9] border border-[#FF34DC] rounded-[18px] px-5 py-4 text-[17px] sm:text-[18px] focus:outline-none focus:bg-white transition-all text-gray-900 font-medium shadow-sm"
+                  autoFocus
+                />
+              ) : (
+                <div className="relative">
+                  <select 
+                    value={newCategory} 
+                    onChange={handleCategorySelectChange} 
+                    className="w-full bg-[#F9F9F9] border border-gray-200 rounded-[18px] px-5 py-4 text-[17px] sm:text-[18px] focus:outline-none focus:border-[#FF34DC] focus:bg-white transition-all text-gray-900 font-medium shadow-sm appearance-none cursor-pointer"
+                    style={{ backgroundImage: `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M6 9l6 6 6-6'/></svg>")`, backgroundPosition: 'right 20px center', backgroundRepeat: 'no-repeat' }}
+                  >
+                    {categories.map((cat) => (
+                      <option key={cat} value={cat}>{cat}</option>
+                    ))}
+                    <option value="__ADD_NEW__">+ Add Custom Category...</option>
+                  </select>
+                </div>
+              )}
             </div>
 
             <div className="space-y-3">
@@ -109,6 +150,7 @@ const AddNewQuestion = ({ onSave, onCancel }) => {
                 >
                   <option value="High">High</option>
                   <option value="Medium">Medium</option>
+                  <option value="Low">Low</option>
                 </select>
               </div>
             </div>
