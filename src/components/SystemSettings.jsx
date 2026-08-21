@@ -1,4 +1,20 @@
 import React, { useState } from 'react';
+import { 
+  Settings, 
+  Bell, 
+  Shield, 
+  Eye, 
+  Save, 
+  Globe, 
+  Database, 
+  Mail, 
+  Lock, 
+  Sun, 
+  Moon, 
+  Monitor, 
+  Check,
+  ChevronDown
+} from 'lucide-react';
 
 export default function SystemSettings({ onBack }) {
   const [activeTab, setActiveTab] = useState('General'); 
@@ -35,6 +51,17 @@ export default function SystemSettings({ onBack }) {
     secondaryColor: '#FFB8FA'
   });
 
+  const [toastMessage, setToastMessage] = useState('');
+  const [showToast, setShowToast] = useState(false);
+
+  const triggerToast = (msg) => {
+    setToastMessage(msg);
+    setShowToast(true);
+    setTimeout(() => {
+      setShowToast(false);
+    }, 3500);
+  };
+
   const handleGeneralChange = (key, value) => {
     setGeneralSettings(prev => ({ ...prev, [key]: value }));
   };
@@ -48,252 +75,272 @@ export default function SystemSettings({ onBack }) {
   };
 
   const handleSaveChanges = () => {
-    alert('System Settings Saved Successfully! (Professionally Compiled)');
+    triggerToast("System Settings saved successfully!");
   };
 
   return (
-    <div className="min-h-screen bg-[#fafbfc] p-6 antialiased" style={{ fontFamily: "'Poppins', sans-serif" }}>
+    <div className="w-full bg-transparent text-gray-900 antialiased space-y-6 pb-10 relative text-left">
       
-      <div className="mb-6">
-        <button 
-          onClick={onBack}
-          className="flex items-center gap-2 font-semibold text-sm text-[#bc29e6] hover:text-[#9c1bc2] transition-colors cursor-pointer"
-        >
-          <svg className="w-4 h-4 stroke-current" fill="none" strokeWidth="2.5" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-          </svg>
-          Back to Admin Dashboard
-        </button>
-      </div>
+      <style>
+        {`
+          .custom-quiz-border {
+            border: 0.7px solid #FF00D3;
+          }
+          .prototype-card-border {
+            border: 0.5px solid #FFD2F7;
+          }
+        `}
+      </style>
 
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 tracking-tight">System Settings</h1>
-        <p className="text-sm font-medium text-gray-400 mt-1">Configure platform settings and preferences</p>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        
-        <div className="lg:col-span-3 space-y-4">
-          <div className="bg-white border border-gray-100 rounded-2xl p-3 shadow-[0_2px_12px_rgba(0,0,0,0.03)] space-y-1">
-            
-            <button
-              onClick={() => setActiveTab('General')}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all ${
-                activeTab === 'General'
-                  ? 'bg-[#fdf2f8] text-[#db2777]'
-                  : 'text-gray-600 hover:bg-gray-50'
-              }`}
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
-              General
-            </button>
-
-            <button
-              onClick={() => setActiveTab('Notifications')}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all ${
-                activeTab === 'Notifications'
-                  ? 'bg-[#fdf2f8] text-[#db2777]'
-                  : 'text-gray-600 hover:bg-gray-50'
-              }`}
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-              </svg>
-              Notifications
-            </button>
-
-            <button
-              onClick={() => setActiveTab('Security')}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all ${
-                activeTab === 'Security'
-                  ? 'bg-[#fdf2f8] text-[#db2777]'
-                  : 'text-gray-600 hover:bg-gray-50'
-              }`}
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-              </svg>
-              Security
-            </button>
-
-            <button
-              onClick={() => setActiveTab('Appearance')}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all ${
-                activeTab === 'Appearance'
-                  ? 'bg-[#fdf2f8] text-[#db2777]'
-                  : 'text-gray-600 hover:bg-gray-50'
-              }`}
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-              </svg>
-              Appearance
-            </button>
-
+      {showToast && (
+        <div className="fixed bottom-6 right-6 z-[100] bg-gray-900 text-white px-5 py-3.5 rounded-2xl flex items-center gap-3 shadow-2xl animate-in slide-in-from-bottom duration-300">
+          <div className="w-6 h-6 rounded-full bg-[#bd24df] flex items-center justify-center text-white">
+            <Check size={14} strokeWidth={3} />
           </div>
+          <span className="text-sm font-medium">{toastMessage}</span>
+        </div>
+      )}
+
+      <div className="pt-1 flex flex-col sm:flex-row sm:items-center justify-between gap-6 text-left">
+        <div className="space-y-2"> 
+          <h1 className="text-4xl font-bold tracking-tight text-gray-900 inline-flex items-center gap-2">
+            System Settings
+          </h1>
+          <p className="text-[#000000] font-light text-[21.3px] mt-[5px] mb-[15px]">
+            Configure platform settings and preferences
+          </p>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+<div className="lg:col-span-3 space-y-4">
+  <div className="w-[256px] h-[248px] bg-white border border-[#FFD2F7] rounded-[20px] p-3 shadow-[0_4px_20px_rgba(0,0,0,0.03)] space-y-1.5 flex flex-col justify-center">
+    
+    <button
+      type="button"
+      onClick={() => setActiveTab('General')}
+      className={`w-[203px] h-[45px] mx-auto flex items-center gap-3 px-5 py-3.5 rounded-[16px] text-[16px] font-regular transition-all cursor-pointer ${
+        activeTab === 'General'
+          ? 'bg-[#FFEDF9] text-[#000000] border-[0.2px] border-[#DBD9D9]'
+          : 'text-[#000000] hover:bg-gray-50 border-[0.2px] border-transparent'
+      }`}
+    >
+      <Settings size={18} strokeWidth={1.8} className={activeTab === 'General' ? 'text-[#000000]' : 'text-[#000000]'} />
+      General
+    </button>
+
+    <button
+      type="button"
+      onClick={() => setActiveTab('Notifications')}
+      className={`w-[203px] h-[45px] mx-auto flex items-center gap-3 px-5 py-3.5 rounded-[16px] text-[16px] font-regular transition-all cursor-pointer ${
+        activeTab === 'Notifications'
+          ? 'bg-[#FFEDF9] text-[#000000] border-[0.2px] border-[#DBD9D9]'
+          : 'text-[#000000] hover:bg-gray-50 border-[0.2px] border-transparent'
+      }`}
+    >
+      <Bell size={18} strokeWidth={1.8} className={activeTab === 'Notifications' ? 'text-[#000000]' : 'text-[#000000]'} />
+      Notifications
+    </button>
+
+    <button
+      type="button"
+      onClick={() => setActiveTab('Security')}
+      className={`w-[203px] h-[45px] mx-auto flex items-center gap-3 px-5 py-3.5 rounded-[16px] text-[16px] font-regular transition-all cursor-pointer ${
+        activeTab === 'Security'
+          ? 'bg-[#FFEDF9] text-[#000000] border-[0.2px] border-[#DBD9D9]'
+          : 'text-[#000000] hover:bg-gray-50 border-[0.2px] border-transparent'
+      }`}
+    >
+      <Shield size={18} strokeWidth={1.8} className={activeTab === 'Security' ? 'text-[#000000]' : 'text-[#000000]'} />
+      Security
+    </button>
+
+    <button
+      type="button"
+      onClick={() => setActiveTab('Appearance')}
+      className={`w-[203px] h-[45px] mx-auto flex items-center gap-3 px-5 py-3.5 rounded-[16px] text-[16px] font-regular transition-all cursor-pointer ${
+        activeTab === 'Appearance'
+          ? 'bg-[#FFEDF9] text-[#000000] border-[0.2px] border-[#DBD9D9]'
+          : 'text-[#000000] hover:bg-gray-50 border-[0.2px] border-transparent'
+      }`}
+    >
+      <Eye size={18} strokeWidth={1.8} className={activeTab === 'Appearance' ? 'text-[#000000]' : 'text-[#000000]'} />
+      Appearance
+    </button>
+
+  </div>
 
           <button 
+            type="button"
             onClick={handleSaveChanges}
-            className="w-full flex items-center justify-center gap-2 py-3.5 bg-[#db2777] hover:bg-[#be185d] text-white font-bold text-sm rounded-xl transition-all cursor-pointer shadow-md hover:shadow-lg"
+            style={{ backgroundColor: '#FFD7FC', color: '#890080' }}
+            className="w-[256px] h[55px] inline-flex items-center justify-center font-semibold text-[18px] px-6 py-3.5 gap-2 rounded-[16px] cursor-pointer custom-quiz-border transition-all duration-300 transform hover:scale-[1.02] active:scale-95 shadow-sm"
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
-            </svg>
-            Save Changes
+            <Save size={18} strokeWidth={2.2} className="mr-2 flex-shrink-0" />
+            <span>Save Changes</span>
           </button>
         </div>
 
-        <div className="lg:col-span-9 bg-white border border-gray-100 rounded-3xl p-6 sm:p-8 shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
+        <div className="lg:col-span-9 bg-white border border-[#FFD2F7] rounded-[28px] p-6 sm:p-8 shadow-[3px_6px_12px_0.5px_rgba(0,0,0,0.05)] text-left space-y-8">
           
           {activeTab === 'General' && (
-            <div className="space-y-6">
-              <div className="flex items-center gap-2.5 pb-4 border-b border-gray-50">
-                <svg className="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                </svg>
-                <div>
-                  <h2 className="text-lg font-bold text-gray-900 leading-none">General Setting</h2>
-                  <p className="text-xs font-medium text-gray-400 mt-1">Manage basic platform configuration</p>
+            <div className="space-y-7">
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-2.5">
+                  <div className="text-[#5B50E5]">
+                    <Settings size={23} strokeWidth={1.7} />
+                  </div>
+                  <h2 className="text-[25px] font-semibold text-[#000000] leading-tight ml-2">General Setting</h2>
                 </div>
+                <p className="text-[18px] font-regular text-[#707070]">
+                  Manage basic platform configuration
+                </p>
               </div>
 
               <div className="space-y-4">
-                <div className="flex items-center gap-2 text-sm font-bold text-gray-800">
-                  <svg className="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 7v5l3 3" />
-                  </svg>
-                  Site Information
+                <div className="flex items-center gap-2.5 text-[20px] font-semibold text-[#000000]">
+                  <Globe size={23} strokeWidth={1.7} className="text-[#5B50E5]" />
+                  <span>Site Information</span>
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-gray-700">Site Name</label>
+                  <label className="text-[17px] font-medium text-[#000000]">Site Name</label>
                   <input 
                     type="text"
                     value={generalSettings.siteName}
                     onChange={(e) => handleGeneralChange('siteName', e.target.value)}
-                    className="w-full bg-white border border-gray-200 focus:border-indigo-500 text-sm font-medium px-4 py-2.5 rounded-xl outline-none transition-all text-gray-800"
+                    className="w-full h-[45px] bg-[#FDFDFD] border-[#A8A8A8] border-[0.5px] text-[15px] font-medium px-4 py-2.5 rounded-[10px] outline-none transition-all text-gray-800"
                   />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-gray-700">Admin Email</label>
+                    <label className="text-[17px] font-medium text-[#000000]">Admin Email</label>
                     <input 
                       type="email"
                       value={generalSettings.adminEmail}
                       onChange={(e) => handleGeneralChange('adminEmail', e.target.value)}
-                      className="w-full bg-white border border-gray-200 focus:border-indigo-500 text-sm font-medium px-4 py-2.5 rounded-xl outline-none transition-all text-gray-800"
+                      className="w-full h-[45px] bg-[#FDFDFD] border-[#A8A8A8] border-[0.5px] text-[15px] font-medium px-4 py-2.5 rounded-[10px] outline-none transition-all text-gray-800"
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-gray-700">Support Email</label>
+                    <label className="text-[17px] font-medium text-[#000000]">Support Email</label>
                     <input 
                       type="email"
                       value={generalSettings.supportEmail}
                       onChange={(e) => handleGeneralChange('supportEmail', e.target.value)}
-                      className="w-full bg-white border border-gray-200 focus:border-indigo-500 text-sm font-medium px-4 py-2.5 rounded-xl outline-none transition-all text-gray-800"
+                      className="w-full h-[45px] bg-[#FDFDFD] border-[#A8A8A8] border-[0.5px] text-[15px] font-medium px-4 py-2.5 rounded-[10px] outline-none transition-all text-gray-800"
                     />
                   </div>
                 </div>
               </div>
 
               <div className="pt-2 space-y-4">
-                <div className="flex items-center gap-2 text-sm font-bold text-gray-800">
-                  <svg className="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                  </svg>
-                  Platform Settings
+                <div className="flex items-center gap-2.5 text-[20px] font-semibold text-[#000000]">
+                  <Database size={23} strokeWidth={1.7} className="text-[#5B50E5]" />
+                  <span>Platform Settings</span>
                 </div>
 
-                <div className="space-y-3">
-                  <label className="flex items-start justify-between bg-white border border-gray-100 p-4 rounded-xl cursor-pointer hover:bg-gray-50/50 transition-colors">
+                <div className="space-y-6">
+                  <div 
+                    onClick={() => handleGeneralChange('allowRegistration', !generalSettings.allowRegistration)}
+                    className="flex items-center h-[62px] justify-between bg-[#F9F9F9] p-4 rounded-[14px] cursor-pointer hover:bg-gray-100/70 transition-colors"
+                  >
                     <div>
-                      <span className="text-sm font-semibold text-gray-800 block">Allow New Registration</span>
-                      <span className="text-xs text-gray-400 font-medium mt-0.5">Enable new users to create accounts</span>
+                      <span className="text-[18px] font-medium text-[#000000] block">Allow New Registration</span>
+                      <span className="text-[15px] text-[#000000] font-regular mt-0.3 block">Enable new users to create accounts</span>
                     </div>
-                    <input 
-                      type="checkbox" 
-                      checked={generalSettings.allowRegistration}
-                      onChange={(e) => handleGeneralChange('allowRegistration', e.target.checked)}
-                      className="w-4 h-4 mt-0.5 accent-indigo-600 cursor-pointer"
-                    />
-                  </label>
+                    <div className={`w-5 h-5 rounded-[5px] flex items-center justify-center transition-all ${
+                      generalSettings.allowRegistration ? 'bg-[#5B50E5] text-white' : 'border-2 border-gray-300 bg-white'
+                    }`}>
+                      {generalSettings.allowRegistration && <Check size={14} strokeWidth={3} />}
+                    </div>
+                  </div>
 
-                  <label className="flex items-start justify-between bg-white border border-gray-100 p-4 rounded-xl cursor-pointer hover:bg-gray-50/50 transition-colors">
+                  <div 
+                    onClick={() => handleGeneralChange('emailVerification', !generalSettings.emailVerification)}
+                    className="flex items-center h-[62px] justify-between bg-[#F9F9F9] p-4 rounded-[14px] cursor-pointer hover:bg-gray-100/70 transition-colors"
+                  >
                     <div>
-                      <span className="text-sm font-semibold text-gray-800 block">Email Verification</span>
-                      <span className="text-xs text-gray-400 font-medium mt-0.5">Require email verification for new accounts</span>
+                      <span className="text-[18px] font-medium text-[#000000] block">Email Verification</span>
+                      <span className="text-[15px] text-[#000000] font-regular mt-0.3 block">Require email verification for new accounts</span>
                     </div>
-                    <input 
-                      type="checkbox" 
-                      checked={generalSettings.emailVerification}
-                      onChange={(e) => handleGeneralChange('emailVerification', e.target.checked)}
-                      className="w-4 h-4 mt-0.5 accent-indigo-600 cursor-pointer"
-                    />
-                  </label>
+                    <div className={`w-5 h-5 rounded-[5px] flex items-center justify-center transition-all ${
+                      generalSettings.emailVerification ? 'bg-[#5B50E5] text-white' : 'border-2 border-gray-300 bg-white'
+                    }`}>
+                      {generalSettings.emailVerification && <Check size={14} strokeWidth={3} />}
+                    </div>
+                  </div>
 
-                  <label className="flex items-start justify-between bg-white border border-gray-100 p-4 rounded-xl cursor-pointer hover:bg-gray-50/50 transition-colors">
+                  <div 
+                    onClick={() => handleGeneralChange('maintenanceMode', !generalSettings.maintenanceMode)}
+                    className="flex items-center h-[62px] justify-between bg-[#F9F9F9] p-3 rounded-[14px] cursor-pointer hover:bg-gray-100/70 transition-colors"
+                  >
                     <div>
-                      <span className="text-sm font-semibold text-gray-800 block">Maintenance Mode</span>
-                      <span className="text-xs text-gray-400 font-medium mt-0.5">Put the platform in maintenance mode</span>
+                      <span className="text-[18px] font-medium text-[#000000] block">Maintenance Mode</span>
+                      <span className="text-[15px] text-[#000000] font-regular mt-0.3 block">Put the platform in maintenance mode</span>
                     </div>
-                    <input 
-                      type="checkbox" 
-                      checked={generalSettings.maintenanceMode}
-                      onChange={(e) => handleGeneralChange('maintenanceMode', e.target.checked)}
-                      className="w-4 h-4 mt-0.5 accent-indigo-600 cursor-pointer"
-                    />
-                  </label>
+                    <div className={`w-5 h-5 rounded-[5px] flex items-center justify-center transition-all ${
+                      generalSettings.maintenanceMode ? 'bg-[#5B50E5] text-white' : 'border-2 border-gray-300 bg-white'
+                    }`}>
+                      {generalSettings.maintenanceMode && <Check size={14} strokeWidth={3} />}
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              <div className="pt-4 border-t border-gray-100 space-y-4">
-                <div className="text-sm font-bold text-gray-800">Regional Settings</div>
+              <div className="pt-3 border-t border-gray-200/80 space-y-4">
+                <div className="text-[20px] font-semibold text-[#000000]">Regional Settings</div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-gray-700">Language</label>
-                    <select
-                      value={generalSettings.language}
-                      onChange={(e) => handleGeneralChange('language', e.target.value)}
-                      className="w-full bg-white border border-gray-200 focus:border-indigo-500 text-sm font-medium px-4 py-2.5 rounded-xl outline-none cursor-pointer text-gray-700"
-                    >
-                      <option value="English">English</option>
-                      <option value="Urdu">Urdu</option>
-                      <option value="Spanish">Spanish</option>
-                    </select>
+                    <label className="text-[14px] font-semibold text-gray-800">Language</label>
+                    <div className="relative">
+                      <select
+                        value={generalSettings.language}
+                        onChange={(e) => handleGeneralChange('language', e.target.value)}
+                        className="w-full h-[45px] bg-[#FDFDFD] border border-gray-200/90 focus:border-[#5B50E5] text-[15px] font-medium px-4 py-2.5 rounded-[12px] appearance-none cursor-pointer outline-none text-gray-800 pr-10"
+                      >
+                        <option value="English">English</option>
+                        <option value="Urdu">Urdu</option>
+                        <option value="Spanish">Spanish</option>
+                      </select>
+                      <ChevronDown size={18} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
+                    </div>
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-gray-700">Timezone</label>
-                    <select
-                      value={generalSettings.timezone}
-                      onChange={(e) => handleGeneralChange('timezone', e.target.value)}
-                      className="w-full bg-white border border-gray-200 focus:border-indigo-500 text-sm font-medium px-4 py-2.5 rounded-xl outline-none cursor-pointer text-gray-700"
-                    >
-                      <option value="UTC+5 (Pakistan)">UTC+5 (Pakistan)</option>
-                      <option value="UTC+0 (GMT)">UTC+0 (GMT)</option>
-                      <option value="UTC-5 (EST)">UTC-5 (EST)</option>
-                    </select>
+                    <label className="text-[14px] font-semibold text-gray-800">Timezone</label>
+                    <div className="relative">
+                      <select
+                        value={generalSettings.timezone}
+                        onChange={(e) => handleGeneralChange('timezone', e.target.value)}
+                        className="w-full h-[45px] bg-[#FDFDFD] border border-gray-200/90 focus:border-[#5B50E5] text-[15px] font-medium px-4 py-2.5 rounded-[12px] appearance-none cursor-pointer outline-none text-gray-800 pr-10"
+                      >
+                        <option value="UTC+5 (Pakistan)">UTC+5 (Pakistan)</option>
+                        <option value="UTC+0 (GMT)">UTC+0 (GMT)</option>
+                        <option value="UTC-5 (EST)">UTC-5 (EST)</option>
+                      </select>
+                      <ChevronDown size={18} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
+                    </div>
                   </div>
                 </div>
 
-                <div className="space-y-1.5 w-full md:w-1/2">
-                  <label className="text-xs font-bold text-gray-700">Date Format</label>
-                  <select
-                    value={generalSettings.dateFormat}
-                    onChange={(e) => handleGeneralChange('dateFormat', e.target.value)}
-                    className="w-full bg-white border border-gray-200 focus:border-indigo-500 text-sm font-medium px-4 py-2.5 rounded-xl outline-none cursor-pointer text-gray-700"
-                  >
-                    <option value="DD/MM/YYYY">DD/MM/YYYY</option>
-                    <option value="MM/DD/YYYY">MM/DD/YYYY</option>
-                    <option value="YYYY-MM-DD">YYYY-MM-DD</option>
-                  </select>
+                <div className="space-y-1.5 w-full md:w-1/2 pr-0 md:pr-2">
+                  <label className="text-[14px] font-semibold text-gray-800">Date Format</label>
+                  <div className="relative">
+                    <select
+                      value={generalSettings.dateFormat}
+                      onChange={(e) => handleGeneralChange('dateFormat', e.target.value)}
+                      className="w-full h-[45px] bg-[#FDFDFD] border border-gray-200/90 focus:border-[#5B50E5] text-[15px] font-medium px-4 py-2.5 rounded-[12px] appearance-none cursor-pointer outline-none text-gray-800 pr-10"
+                    >
+                      <option value="DD/MM/YYYY">DD/MM/YYYY</option>
+                      <option value="MM/DD/YYYY">MM/DD/YYYY</option>
+                      <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+                    </select>
+                    <ChevronDown size={18} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
+                  </div>
                 </div>
               </div>
 
@@ -301,99 +348,97 @@ export default function SystemSettings({ onBack }) {
           )}
 
           {activeTab === 'Notifications' && (
-            <div className="space-y-6">
-              <div className="flex items-center gap-2.5 pb-4 border-b border-gray-50">
-                <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                </svg>
-                <div>
-                  <h2 className="text-lg font-bold text-gray-900 leading-none">Notification Settings</h2>
-                  <p className="text-xs font-medium text-gray-400 mt-1">Manage how you receive notifications</p>
+            <div className="space-y-8">
+              <div className="space-y-1 pb-2">
+                <div className="flex items-center gap-2.5">
+                  <div className="text-[#890080]">
+                    <Bell size={24} strokeWidth={2} />
+                  </div>
+                  <h2 className="text-[22px] font-bold text-gray-900 leading-tight">Notification Settings</h2>
                 </div>
+                <p className="text-[14px] font-normal text-gray-500">
+                  Manage how you receive notifications
+                </p>
               </div>
 
               <div className="space-y-4">
-                <div className="flex items-center gap-2 text-sm font-bold text-gray-800">
-                  <svg className="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                  </svg>
-                  Email Notifications
+                <div className="flex items-center gap-2 text-[18px] font-bold text-gray-900">
+                  <Mail size={20} className="text-[#4F46E5]" />
+                  <span>Email Notifications</span>
                 </div>
 
                 <div className="space-y-3">
-                  <label className="flex items-start justify-between bg-white border border-gray-100 p-4 rounded-xl cursor-pointer hover:bg-gray-50/50 transition-colors">
+                  <label className="flex items-center justify-between bg-[#FAFAFA] border border-gray-100 p-4 rounded-[16px] cursor-pointer hover:bg-gray-100/60 transition-colors">
                     <div>
-                      <span className="text-sm font-semibold text-gray-800 block">Email Notifications</span>
-                      <span className="text-xs text-gray-400 font-medium mt-0.5">Enable new users to create accounts</span>
+                      <span className="text-[16px] font-medium text-gray-900 block">Email Notifications</span>
+                      <span className="text-[13px] text-gray-500 font-normal mt-0.5 block">Enable new users to create accounts</span>
                     </div>
                     <input 
                       type="checkbox" 
                       checked={notifications.emailNotifications}
                       onChange={() => handleNotificationToggle('emailNotifications')}
-                      className="w-4 h-4 mt-0.5 accent-blue-600 cursor-pointer"
+                      className="w-6 h-6 rounded accent-[#4F46E5] cursor-pointer"
                     />
                   </label>
 
-                  <label className="flex items-start justify-between bg-white border border-gray-100 p-4 rounded-xl cursor-pointer hover:bg-gray-50/50 transition-colors">
+                  <label className="flex items-center justify-between bg-[#FAFAFA] border border-gray-100 p-4 rounded-[16px] cursor-pointer hover:bg-gray-100/60 transition-colors">
                     <div>
-                      <span className="text-sm font-semibold text-gray-800 block">Weekly Reports</span>
-                      <span className="text-xs text-gray-400 font-medium mt-0.5">Get weekly activity summaries</span>
+                      <span className="text-[16px] font-medium text-gray-900 block">Weekly Reports</span>
+                      <span className="text-[13px] text-gray-500 font-normal mt-0.5 block">Get weekly activity summaries</span>
                     </div>
                     <input 
                       type="checkbox" 
                       checked={notifications.weeklyReports}
                       onChange={() => handleNotificationToggle('weeklyReports')}
-                      className="w-4 h-4 mt-0.5 accent-blue-600 cursor-pointer"
+                      className="w-6 h-6 rounded accent-[#4F46E5] cursor-pointer"
                     />
                   </label>
 
-                  <label className="flex items-start justify-between bg-white border border-gray-100 p-4 rounded-xl cursor-pointer hover:bg-gray-50/50 transition-colors">
+                  <label className="flex items-center justify-between bg-[#FAFAFA] border border-gray-100 p-4 rounded-[16px] cursor-pointer hover:bg-gray-100/60 transition-colors">
                     <div>
-                      <span className="text-sm font-semibold text-gray-800 block">Monthly Statistics</span>
-                      <span className="text-xs text-gray-400 font-medium mt-0.5">Receive monthly platform statistics</span>
+                      <span className="text-[16px] font-medium text-gray-900 block">Monthly Statistics</span>
+                      <span className="text-[13px] text-gray-500 font-normal mt-0.5 block">Receive monthly platform statistics</span>
                     </div>
                     <input 
                       type="checkbox" 
                       checked={notifications.monthlyStatistics}
                       onChange={() => handleNotificationToggle('monthlyStatistics')}
-                      className="w-4 h-4 mt-0.5 accent-blue-600 cursor-pointer"
+                      className="w-6 h-6 rounded accent-[#4F46E5] cursor-pointer"
                     />
                   </label>
                 </div>
               </div>
 
-              <div className="pt-4 border-t border-gray-100 space-y-4">
-                <div className="flex items-center gap-2 text-sm font-bold text-gray-800">
-                  <svg className="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                  </svg>
-                  System Alerts
+              <div className="pt-4 border-t border-gray-200 space-y-4">
+                <div className="flex items-center gap-2 text-[18px] font-bold text-gray-900">
+                  <Shield size={20} className="text-[#4F46E5]" />
+                  <span>System Alerts</span>
                 </div>
 
                 <div className="space-y-3">
-                  <label className="flex items-start justify-between bg-white border border-gray-100 p-4 rounded-xl cursor-pointer hover:bg-gray-50/50 transition-colors">
+                  <label className="flex items-center justify-between bg-[#FAFAFA] border border-gray-100 p-4 rounded-[16px] cursor-pointer hover:bg-gray-100/60 transition-colors">
                     <div>
-                      <span className="text-sm font-semibold text-gray-800 block">Security Alerts</span>
-                      <span className="text-xs text-gray-400 font-medium mt-0.5">Get notified of security events</span>
+                      <span className="text-[16px] font-medium text-gray-900 block">Security Alerts</span>
+                      <span className="text-[13px] text-gray-500 font-normal mt-0.5 block">Get notified of security events</span>
                     </div>
                     <input 
                       type="checkbox" 
                       checked={notifications.securityAlerts}
                       onChange={() => handleNotificationToggle('securityAlerts')}
-                      className="w-4 h-4 mt-0.5 accent-blue-600 cursor-pointer"
+                      className="w-6 h-6 rounded accent-[#4F46E5] cursor-pointer"
                     />
                   </label>
 
-                  <label className="flex items-start justify-between bg-white border border-gray-100 p-4 rounded-xl cursor-pointer hover:bg-gray-50/50 transition-colors">
+                  <label className="flex items-center justify-between bg-[#FAFAFA] border border-gray-100 p-4 rounded-[16px] cursor-pointer hover:bg-gray-100/60 transition-colors">
                     <div>
-                      <span className="text-sm font-semibold text-gray-800 block">Push Notifications</span>
-                      <span className="text-xs text-gray-400 font-medium mt-0.5">Receive browser push notifications</span>
+                      <span className="text-[16px] font-medium text-gray-900 block">Push Notifications</span>
+                      <span className="text-[13px] text-gray-500 font-normal mt-0.5 block">Receive browser push notifications</span>
                     </div>
                     <input 
                       type="checkbox" 
                       checked={notifications.pushNotifications}
                       onChange={() => handleNotificationToggle('pushNotifications')}
-                      className="w-4 h-4 mt-0.5 accent-blue-600 cursor-pointer"
+                      className="w-6 h-6 rounded accent-[#4F46E5] cursor-pointer"
                     />
                   </label>
                 </div>
@@ -403,75 +448,79 @@ export default function SystemSettings({ onBack }) {
           )}
 
           {activeTab === 'Security' && (
-            <div className="space-y-6">
-              <div className="flex items-center gap-2.5 pb-4 border-b border-gray-50">
-                <svg className="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                </svg>
-                <div>
-                  <h2 className="text-lg font-bold text-gray-900 leading-none">Security Settings</h2>
-                  <p className="text-xs font-medium text-gray-400 mt-1">Configure security and authentication options</p>
+            <div className="space-y-8">
+              <div className="space-y-1 pb-2">
+                <div className="flex items-center gap-2.5">
+                  <div className="text-[#890080]">
+                    <Shield size={24} strokeWidth={2} />
+                  </div>
+                  <h2 className="text-[22px] font-bold text-gray-900 leading-tight">Security Settings</h2>
                 </div>
+                <p className="text-[14px] font-normal text-gray-500">
+                  Configure security and authentication options
+                </p>
               </div>
 
               <div className="space-y-4">
-                <div className="flex items-center gap-2 text-sm font-bold text-gray-800">
-                  <svg className="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 7a2 2 0 012 2v4a2 2 0 01-2 2H5a2 2 0 01-2-2V9a2 2 0 012-2m14 0V5a2 2 0 00-2-2H5a2 2 0 00-2 2v2m14 0h2a2 2 0 012 2v4a2 2 0 01-2 2h-2M5 7h2a2 2 0 002-2V3a2 2 0 012-2h4a2 2 0 012 2v2a2 2 0 002 2h2" />
-                  </svg>
-                  Authentication
+                <div className="flex items-center gap-2 text-[18px] font-bold text-gray-900">
+                  <Lock size={20} className="text-[#4F46E5]" />
+                  <span>Authentication</span>
                 </div>
 
-                <label className="flex items-start justify-between bg-white border border-gray-100 p-4 rounded-xl cursor-pointer hover:bg-gray-50/50 transition-colors">
+                <label className="flex items-center justify-between bg-[#FAFAFA] border border-gray-100 p-4 rounded-[16px] cursor-pointer hover:bg-gray-100/60 transition-colors">
                   <div>
-                    <span className="text-sm font-semibold text-gray-800 block">Two-Factor Authentication</span>
-                    <span className="text-xs text-gray-400 font-medium mt-0.5">Require 2FA for admin accounts</span>
+                    <span className="text-[16px] font-medium text-gray-900 block">Two-Factor Authentication</span>
+                    <span className="text-[13px] text-gray-500 font-normal mt-0.5 block">Require 2FA for admin accounts</span>
                   </div>
                   <input 
                     type="checkbox" 
                     checked={security.twoFactorAuth}
                     onChange={(e) => handleSecurityChange('twoFactorAuth', e.target.checked)}
-                    className="w-4 h-4 mt-0.5 accent-emerald-600 cursor-pointer"
+                    className="w-6 h-6 rounded accent-[#4F46E5] cursor-pointer"
                   />
                 </label>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-gray-700">Session Timeout (minutes)</label>
+                  <div className="space-y-2">
+                    <label className="text-[14px] font-medium text-gray-800">Session Timeout (minutes)</label>
                     <input 
                       type="number"
                       value={security.sessionTimeout}
                       onChange={(e) => handleSecurityChange('sessionTimeout', e.target.value)}
-                      className="w-full bg-white border border-gray-200 focus:border-emerald-500 text-sm font-medium px-4 py-2.5 rounded-xl outline-none transition-all text-gray-800"
+                      className="w-full bg-[#FAFAFA] border border-gray-200 focus:border-[#FF34DC] text-[16px] font-normal px-4 py-3 rounded-[14px] outline-none transition-all text-gray-900"
                     />
                   </div>
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-gray-700">Min Password Length</label>
+                  <div className="space-y-2">
+                    <label className="text-[14px] font-medium text-gray-800">Min Password Length</label>
                     <input 
                       type="number"
                       value={security.minPasswordLength}
                       onChange={(e) => handleSecurityChange('minPasswordLength', e.target.value)}
-                      className="w-full bg-white border border-gray-200 focus:border-emerald-500 text-sm font-medium px-4 py-2.5 rounded-xl outline-none transition-all text-gray-800"
+                      className="w-full bg-[#FAFAFA] border border-gray-200 focus:border-[#FF34DC] text-[16px] font-normal px-4 py-3 rounded-[14px] outline-none transition-all text-gray-900"
                     />
                   </div>
                 </div>
               </div>
 
-              <div className="pt-4 border-t border-gray-100 space-y-3">
-                <div className="text-sm font-bold text-gray-800">Password Policy</div>
+              <div className="pt-4 border-t border-gray-200 space-y-4">
+                <div className="text-[18px] font-bold text-gray-900">Password Policy</div>
                 
-                <div className="bg-[#fff5f9] border border-pink-50 p-4 rounded-2xl space-y-2.5 text-xs font-semibold text-gray-700">
-                  <div className="flex items-center gap-2">
-                    <span className="text-emerald-600 text-base">✓</span> Minimum 8 characters required
+                <div className="bg-[#FFF4FC] border border-[#FFD2F7] p-6 rounded-[20px] space-y-3">
+                  <div className="flex items-center gap-3 text-[15px] font-medium text-gray-800">
+                    <Check size={18} className="text-[#890080]" strokeWidth={3} />
+                    <span>Minimum 8 characters required</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-emerald-600 text-base">✓</span> Must contain uppercase and lowercase letters
+                  <div className="flex items-center gap-3 text-[15px] font-medium text-gray-800">
+                    <Check size={18} className="text-[#890080]" strokeWidth={3} />
+                    <span>Must contain uppercase and lowercase letters</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-emerald-600 text-base">✓</span> Must contain at least one number
+                  <div className="flex items-center gap-3 text-[15px] font-medium text-gray-800">
+                    <Check size={18} className="text-[#890080]" strokeWidth={3} />
+                    <span>Must contain at least one number</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-emerald-600 text-base">✓</span> Must contain at least one special character
+                  <div className="flex items-center gap-3 text-[15px] font-medium text-gray-800">
+                    <Check size={18} className="text-[#890080]" strokeWidth={3} />
+                    <span>Must contain at least one special character</span>
                   </div>
                 </div>
               </div>
@@ -480,88 +529,88 @@ export default function SystemSettings({ onBack }) {
           )}
 
           {activeTab === 'Appearance' && (
-            <div className="space-y-6">
-              <div className="flex items-center gap-2.5 pb-4 border-b border-gray-50">
-                <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                </svg>
-                <div>
-                  <h2 className="text-lg font-bold text-gray-900 leading-none">Appearance Settings</h2>
-                  <p className="text-xs font-medium text-gray-400 mt-1">Customize the look and feel of the platform</p>
+            <div className="space-y-8">
+              <div className="space-y-1 pb-2">
+                <div className="flex items-center gap-2.5">
+                  <div className="text-[#890080]">
+                    <Eye size={24} strokeWidth={2} />
+                  </div>
+                  <h2 className="text-[22px] font-bold text-gray-900 leading-tight">Appearance Settings</h2>
                 </div>
+                <p className="text-[14px] font-normal text-gray-500">
+                  Customize the look and feel of the platform
+                </p>
               </div>
 
               <div className="space-y-4">
-                <div className="text-sm font-bold text-gray-800">Theme Preferences</div>
+                <div className="text-[18px] font-bold text-gray-900">Theme Preferences</div>
                 
-                <div className="grid grid-cols-3 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <button
+                    type="button"
                     onClick={() => setAppearance(prev => ({ ...prev, theme: 'Light' }))}
-                    className={`p-4 rounded-xl border flex flex-col items-center justify-center gap-2 transition-all cursor-pointer ${
+                    className={`p-6 rounded-[20px] border flex flex-col items-center justify-center gap-3 transition-all cursor-pointer ${
                       appearance.theme === 'Light'
-                        ? 'border-pink-300 bg-white ring-1 ring-pink-300/30 text-pink-600'
-                        : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50'
+                        ? 'border-[#FF34DC] bg-[#FFF8FE] text-[#890080] shadow-sm'
+                        : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
                     }`}
                   >
-                    <span className="text-xl">☀️</span>
-                    <span className="text-xs font-bold">Light</span>
+                    <Sun size={28} className={appearance.theme === 'Light' ? 'text-[#FF34DC]' : 'text-gray-500'} />
+                    <span className="text-[16px] font-semibold">Light</span>
                   </button>
 
                   <button
+                    type="button"
                     onClick={() => setAppearance(prev => ({ ...prev, theme: 'Dark' }))}
-                    className={`p-4 rounded-xl border flex flex-col items-center justify-center gap-2 transition-all cursor-pointer ${
+                    className={`p-6 rounded-[20px] border flex flex-col items-center justify-center gap-3 transition-all cursor-pointer ${
                       appearance.theme === 'Dark'
-                        ? 'border-pink-300 bg-white ring-1 ring-pink-300/30 text-pink-600'
-                        : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50'
+                        ? 'border-[#FF34DC] bg-[#FFF8FE] text-[#890080] shadow-sm'
+                        : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
                     }`}
                   >
-                    <span className="text-xl">🌙</span>
-                    <span className="text-xs font-bold">Dark</span>
+                    <Moon size={28} className={appearance.theme === 'Dark' ? 'text-[#FF34DC]' : 'text-gray-500'} />
+                    <span className="text-[16px] font-semibold">Dark</span>
                   </button>
 
                   <button
+                    type="button"
                     onClick={() => setAppearance(prev => ({ ...prev, theme: 'Auto' }))}
-                    className={`p-4 rounded-xl border flex flex-col items-center justify-center gap-2 transition-all cursor-pointer ${
+                    className={`p-6 rounded-[20px] border flex flex-col items-center justify-center gap-3 transition-all cursor-pointer ${
                       appearance.theme === 'Auto'
-                        ? 'border-pink-300 bg-white ring-1 ring-pink-300/30 text-pink-600'
-                        : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50'
+                        ? 'border-[#FF34DC] bg-[#FFF8FE] text-[#890080] shadow-sm'
+                        : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
                     }`}
                   >
-                    <span className="text-xl">🖥️</span>
-                    <span className="text-xs font-bold">Auto</span>
+                    <Monitor size={28} className={appearance.theme === 'Auto' ? 'text-[#FF34DC]' : 'text-gray-500'} />
+                    <span className="text-[16px] font-semibold">Auto</span>
                   </button>
                 </div>
               </div>
 
-              <div className="pt-4 border-t border-gray-100 space-y-4">
-                <div className="text-sm font-bold text-gray-800">Color Palette</div>
+              <div className="pt-4 border-t border-gray-200 space-y-4">
+                <div className="text-[18px] font-bold text-gray-900">Color Palette</div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5 bg-white border border-gray-100 p-5 rounded-2xl">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-[#FAFAFA] border border-gray-200 p-6 rounded-[20px]">
                   
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Primary Color</label>
-                    <div className="flex items-center gap-3 bg-gray-50/50 border border-gray-100 px-3 py-2 rounded-xl">
-                      <input 
-                        type="color" 
-                        value={appearance.primaryColor}
-                        onChange={(e) => setAppearance(prev => ({ ...prev, primaryColor: e.target.value }))}
-                        className="w-8 h-8 rounded-lg cursor-pointer border-0 bg-transparent outline-none shrink-0"
+                  <div className="flex flex-col gap-2">
+                    <label className="text-[13px] font-medium text-gray-500 uppercase tracking-wider">Primary Color</label>
+                    <div className="flex items-center gap-3">
+                      <div 
+                        className="w-10 h-10 rounded-[12px] shadow-sm flex-shrink-0" 
+                        style={{ backgroundColor: appearance.primaryColor }}
                       />
-                      <span className="text-sm font-bold text-gray-700 uppercase">{appearance.primaryColor}</span>
+                      <span className="text-[16px] font-semibold text-gray-900 uppercase">{appearance.primaryColor}</span>
                     </div>
                   </div>
 
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Secondary Color</label>
-                    <div className="flex items-center gap-3 bg-gray-50/50 border border-gray-100 px-3 py-2 rounded-xl">
-                      <input 
-                        type="color" 
-                        value={appearance.secondaryColor}
-                        onChange={(e) => setAppearance(prev => ({ ...prev, secondaryColor: e.target.value }))}
-                        className="w-8 h-8 rounded-lg cursor-pointer border-0 bg-transparent outline-none shrink-0"
+                  <div className="flex flex-col gap-2">
+                    <label className="text-[13px] font-medium text-gray-500 uppercase tracking-wider">Secondary Color</label>
+                    <div className="flex items-center gap-3">
+                      <div 
+                        className="w-10 h-10 rounded-[12px] shadow-sm flex-shrink-0" 
+                        style={{ backgroundColor: appearance.secondaryColor }}
                       />
-                      <span className="text-sm font-bold text-gray-700 uppercase">{appearance.secondaryColor}</span>
+                      <span className="text-[16px] font-semibold text-gray-900 uppercase">{appearance.secondaryColor}</span>
                     </div>
                   </div>
 
