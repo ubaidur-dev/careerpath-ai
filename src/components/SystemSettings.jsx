@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { 
   Settings, 
   Bell, 
+  KeyRound,
   Shield, 
   Eye, 
   Save, 
@@ -114,62 +115,62 @@ export default function SystemSettings({ onBack }) {
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         
-<div className="lg:col-span-3 space-y-4">
-  <div className="w-[256px] h-[248px] bg-white border border-[#FFD2F7] rounded-[20px] p-3 shadow-[0_4px_20px_rgba(0,0,0,0.03)] space-y-1.5 flex flex-col justify-center">
-    
-    <button
-      type="button"
-      onClick={() => setActiveTab('General')}
-      className={`w-[203px] h-[45px] mx-auto flex items-center gap-3 px-5 py-3.5 rounded-[16px] text-[16px] font-regular transition-all cursor-pointer ${
-        activeTab === 'General'
-          ? 'bg-[#FFEDF9] text-[#000000] border-[0.2px] border-[#DBD9D9]'
-          : 'text-[#000000] hover:bg-gray-50 border-[0.2px] border-transparent'
-      }`}
-    >
-      <Settings size={18} strokeWidth={1.8} className={activeTab === 'General' ? 'text-[#000000]' : 'text-[#000000]'} />
-      General
-    </button>
+        <div className="lg:col-span-3 space-y-4">
+          <div className="w-[256px] h-[248px] bg-white border border-[#FFD2F7] rounded-[20px] p-3 shadow-[3px_4px_4px_0.2px_rgba(0,0,0,0.25)] space-y-1.5 flex flex-col justify-center">
+            
+            <button
+              type="button"
+              onClick={() => setActiveTab('General')}
+              className={`w-[203px] h-[45px] mx-auto flex items-center gap-3 px-5 py-3.5 rounded-[16px] text-[16px] transition-all cursor-pointer ${
+                activeTab === 'General'
+                  ? 'bg-[#FFEDF9] text-[#890080] font-medium border-[0.2px] border-[#DBD9D9]'
+                  : 'text-[#000000] font-regular hover:bg-gray-50 border-[0.2px] border-transparent'
+              }`}
+            >
+              <Settings size={18} strokeWidth={1.8} className={activeTab === 'General' ? 'text-[#890080]' : 'text-[#000000]'} />
+              General
+            </button>
 
-    <button
-      type="button"
-      onClick={() => setActiveTab('Notifications')}
-      className={`w-[203px] h-[45px] mx-auto flex items-center gap-3 px-5 py-3.5 rounded-[16px] text-[16px] font-regular transition-all cursor-pointer ${
-        activeTab === 'Notifications'
-          ? 'bg-[#FFEDF9] text-[#000000] border-[0.2px] border-[#DBD9D9]'
-          : 'text-[#000000] hover:bg-gray-50 border-[0.2px] border-transparent'
-      }`}
-    >
-      <Bell size={18} strokeWidth={1.8} className={activeTab === 'Notifications' ? 'text-[#000000]' : 'text-[#000000]'} />
-      Notifications
-    </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab('Notifications')}
+              className={`w-[203px] h-[45px] mx-auto flex items-center gap-3 px-5 py-3.5 rounded-[16px] text-[16px] transition-all cursor-pointer ${
+                activeTab === 'Notifications'
+                  ? 'bg-[#FFEDF9] text-[#890080] font-medium border-[0.2px] border-[#DBD9D9]'
+                  : 'text-[#000000] font-regular hover:bg-gray-50 border-[0.2px] border-transparent'
+              }`}
+            >
+              <Bell size={18} strokeWidth={1.8} className={activeTab === 'Notifications' ? 'text-[#890080]' : 'text-[#000000]'} />
+              Notifications
+            </button>
 
-    <button
-      type="button"
-      onClick={() => setActiveTab('Security')}
-      className={`w-[203px] h-[45px] mx-auto flex items-center gap-3 px-5 py-3.5 rounded-[16px] text-[16px] font-regular transition-all cursor-pointer ${
-        activeTab === 'Security'
-          ? 'bg-[#FFEDF9] text-[#000000] border-[0.2px] border-[#DBD9D9]'
-          : 'text-[#000000] hover:bg-gray-50 border-[0.2px] border-transparent'
-      }`}
-    >
-      <Shield size={18} strokeWidth={1.8} className={activeTab === 'Security' ? 'text-[#000000]' : 'text-[#000000]'} />
-      Security
-    </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab('Security')}
+              className={`w-[203px] h-[45px] mx-auto flex items-center gap-3 px-5 py-3.5 rounded-[16px] text-[16px] transition-all cursor-pointer ${
+                activeTab === 'Security'
+                  ? 'bg-[#FFEDF9] text-[#890080] font-medium border-[0.2px] border-[#DBD9D9]'
+                  : 'text-[#000000] font-regular hover:bg-gray-50 border-[0.2px] border-transparent'
+              }`}
+            >
+              <Shield size={18} strokeWidth={1.8} className={activeTab === 'Security' ? 'text-[#890080]' : 'text-[#000000]'} />
+              Security
+            </button>
 
-    <button
-      type="button"
-      onClick={() => setActiveTab('Appearance')}
-      className={`w-[203px] h-[45px] mx-auto flex items-center gap-3 px-5 py-3.5 rounded-[16px] text-[16px] font-regular transition-all cursor-pointer ${
-        activeTab === 'Appearance'
-          ? 'bg-[#FFEDF9] text-[#000000] border-[0.2px] border-[#DBD9D9]'
-          : 'text-[#000000] hover:bg-gray-50 border-[0.2px] border-transparent'
-      }`}
-    >
-      <Eye size={18} strokeWidth={1.8} className={activeTab === 'Appearance' ? 'text-[#000000]' : 'text-[#000000]'} />
-      Appearance
-    </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab('Appearance')}
+              className={`w-[203px] h-[45px] mx-auto flex items-center gap-3 px-5 py-3.5 rounded-[16px] text-[16px] transition-all cursor-pointer ${
+                activeTab === 'Appearance'
+                  ? 'bg-[#FFEDF9] text-[#890080] font-medium border-[0.2px] border-[#DBD9D9]'
+                  : 'text-[#000000] font-regular hover:bg-gray-50 border-[0.2px] border-transparent'
+              }`}
+            >
+              <Eye size={18} strokeWidth={1.8} className={activeTab === 'Appearance' ? 'text-[#890080]' : 'text-[#000000]'} />
+              Appearance
+            </button>
 
-  </div>
+          </div>
 
           <button 
             type="button"
@@ -182,7 +183,7 @@ export default function SystemSettings({ onBack }) {
           </button>
         </div>
 
-        <div className="lg:col-span-9 bg-white border border-[#FFD2F7] rounded-[28px] p-6 sm:p-8 shadow-[3px_6px_12px_0.5px_rgba(0,0,0,0.05)] text-left space-y-8">
+        <div className="lg:col-span-9 bg-white border border-[#FFD2F7] rounded-[28px] p-6 sm:p-8 shadow-[3px_6px_6px_0.5px_rgba(0,0,0,0.25)] text-left space-y-8">
           
           {activeTab === 'General' && (
             <div className="space-y-7">
@@ -199,7 +200,7 @@ export default function SystemSettings({ onBack }) {
               </div>
 
               <div className="space-y-4">
-                <div className="flex items-center gap-2.5 text-[20px] font-semibold text-[#000000]">
+                <div className="flex items-center gap-4.5 text-[20px] font-semibold text-[#000000]">
                   <Globe size={23} strokeWidth={1.7} className="text-[#5B50E5]" />
                   <span>Site Information</span>
                 </div>
@@ -237,7 +238,7 @@ export default function SystemSettings({ onBack }) {
               </div>
 
               <div className="pt-2 space-y-4">
-                <div className="flex items-center gap-2.5 text-[20px] font-semibold text-[#000000]">
+                <div className="flex items-center gap-4.5 text-[20px] font-semibold text-[#000000]">
                   <Database size={23} strokeWidth={1.7} className="text-[#5B50E5]" />
                   <span>Platform Settings</span>
                 </div>
@@ -295,7 +296,7 @@ export default function SystemSettings({ onBack }) {
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-[14px] font-semibold text-gray-800">Language</label>
+                    <label className="text-[17px] font-medium text-[#000000]">Language</label>
                     <div className="relative">
                       <select
                         value={generalSettings.language}
@@ -311,7 +312,7 @@ export default function SystemSettings({ onBack }) {
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-[14px] font-semibold text-gray-800">Timezone</label>
+                    <label className="text-[17px] font-medium text-[#000000]">Timezone</label>
                     <div className="relative">
                       <select
                         value={generalSettings.timezone}
@@ -328,7 +329,7 @@ export default function SystemSettings({ onBack }) {
                 </div>
 
                 <div className="space-y-1.5 w-full md:w-1/2 pr-0 md:pr-2">
-                  <label className="text-[14px] font-semibold text-gray-800">Date Format</label>
+                  <label className="text-[17px] font-medium text-[#000000]">Date Format</label>
                   <div className="relative">
                     <select
                       value={generalSettings.dateFormat}
@@ -348,30 +349,30 @@ export default function SystemSettings({ onBack }) {
           )}
 
           {activeTab === 'Notifications' && (
-            <div className="space-y-8">
-              <div className="space-y-1 pb-2">
+            <div className="space-y-7">
+              <div className="space-y-1.5">
                 <div className="flex items-center gap-2.5">
-                  <div className="text-[#890080]">
-                    <Bell size={24} strokeWidth={2} />
+                  <div className="text-[#5B50E5]">
+                    <Bell size={23} strokeWidth={1.7} />                  
                   </div>
-                  <h2 className="text-[22px] font-bold text-gray-900 leading-tight">Notification Settings</h2>
+                  <h2 className="text-[25px] font-semibold text-[#000000] leading-tight ml-2">Notification Settings</h2>
                 </div>
-                <p className="text-[14px] font-normal text-gray-500">
+                <p className="text-[18px] font-regular text-[#707070]">
                   Manage how you receive notifications
                 </p>
               </div>
 
               <div className="space-y-4">
-                <div className="flex items-center gap-2 text-[18px] font-bold text-gray-900">
-                  <Mail size={20} className="text-[#4F46E5]" />
+                <div className="flex items-center gap-4.5 text-[20px] font-semibold text-[#000000]">
+                  <Mail size={23} strokeWidth={1.7} className="text-[#4F46E5]" />
                   <span>Email Notifications</span>
                 </div>
 
-                <div className="space-y-3">
-                  <label className="flex items-center justify-between bg-[#FAFAFA] border border-gray-100 p-4 rounded-[16px] cursor-pointer hover:bg-gray-100/60 transition-colors">
+                <div className="space-y-6">
+                  <label className="h-[62px] flex items-center justify-between bg-[#F9F9F9] border border-gray-100 p-4 rounded-[16px] cursor-pointer hover:bg-gray-100/60 transition-colors">
                     <div>
-                      <span className="text-[16px] font-medium text-gray-900 block">Email Notifications</span>
-                      <span className="text-[13px] text-gray-500 font-normal mt-0.5 block">Enable new users to create accounts</span>
+                      <span className="text-[18px] font-medium text-[#000000] block">Email Notifications</span>
+                      <span className="text-[15px] text-[#000000] font-regular mt-0.5 block">Enable new users to create accounts</span>
                     </div>
                     <input 
                       type="checkbox" 
@@ -381,10 +382,10 @@ export default function SystemSettings({ onBack }) {
                     />
                   </label>
 
-                  <label className="flex items-center justify-between bg-[#FAFAFA] border border-gray-100 p-4 rounded-[16px] cursor-pointer hover:bg-gray-100/60 transition-colors">
+                  <label className="h-[62px] flex items-center justify-between bg-[#F9F9F9] border border-gray-100 p-4 rounded-[16px] cursor-pointer hover:bg-gray-100/60 transition-colors">
                     <div>
-                      <span className="text-[16px] font-medium text-gray-900 block">Weekly Reports</span>
-                      <span className="text-[13px] text-gray-500 font-normal mt-0.5 block">Get weekly activity summaries</span>
+                      <span className="text-[18px] font-medium text-[#000000] block">Weekly Reports</span>
+                      <span className="text-[15px] text-[#000000] font-regular mt-0.5 block">Get weekly activity summaries</span>
                     </div>
                     <input 
                       type="checkbox" 
@@ -394,10 +395,10 @@ export default function SystemSettings({ onBack }) {
                     />
                   </label>
 
-                  <label className="flex items-center justify-between bg-[#FAFAFA] border border-gray-100 p-4 rounded-[16px] cursor-pointer hover:bg-gray-100/60 transition-colors">
+                  <label className="h-[62px] flex items-center justify-between bg-[#F9F9F9] border border-gray-100 p-4 rounded-[16px] cursor-pointer hover:bg-gray-100/60 transition-colors">
                     <div>
-                      <span className="text-[16px] font-medium text-gray-900 block">Monthly Statistics</span>
-                      <span className="text-[13px] text-gray-500 font-normal mt-0.5 block">Receive monthly platform statistics</span>
+                      <span className="text-[18px] font-medium text-[#000000] block">Monthly Statistics</span>
+                      <span className="text-[15px] text-[#000000] font-regular mt-0.5 block">Receive monthly platform statistics</span>
                     </div>
                     <input 
                       type="checkbox" 
@@ -410,16 +411,16 @@ export default function SystemSettings({ onBack }) {
               </div>
 
               <div className="pt-4 border-t border-gray-200 space-y-4">
-                <div className="flex items-center gap-2 text-[18px] font-bold text-gray-900">
-                  <Shield size={20} className="text-[#4F46E5]" />
+                <div className="flex items-center gap-4.5 text-[20px] font-semibold text-[#000000]">
+                  <Shield size={23} strokeWidth={1.7} className="text-[#4F46E5]" />
                   <span>System Alerts</span>
                 </div>
 
-                <div className="space-y-3">
-                  <label className="flex items-center justify-between bg-[#FAFAFA] border border-gray-100 p-4 rounded-[16px] cursor-pointer hover:bg-gray-100/60 transition-colors">
+                <div className="space-y-6">
+                  <label className="h-[62px] flex items-center justify-between bg-[#F9F9F9] border border-gray-100 p-4 rounded-[16px] cursor-pointer hover:bg-gray-100/60 transition-colors">
                     <div>
-                      <span className="text-[16px] font-medium text-gray-900 block">Security Alerts</span>
-                      <span className="text-[13px] text-gray-500 font-normal mt-0.5 block">Get notified of security events</span>
+                      <span className="text-[18px] font-medium text-[#000000] block">Security Alerts</span>
+                      <span className="text-[15px] text-[#000000] font-regular mt-0.5 block">Get notified of security events</span>
                     </div>
                     <input 
                       type="checkbox" 
@@ -429,10 +430,10 @@ export default function SystemSettings({ onBack }) {
                     />
                   </label>
 
-                  <label className="flex items-center justify-between bg-[#FAFAFA] border border-gray-100 p-4 rounded-[16px] cursor-pointer hover:bg-gray-100/60 transition-colors">
+                  <label className="h-[62px] flex items-center justify-between bg-[#F9F9F9] border border-gray-100 p-4 rounded-[16px] cursor-pointer hover:bg-gray-100/60 transition-colors">
                     <div>
-                      <span className="text-[16px] font-medium text-gray-900 block">Push Notifications</span>
-                      <span className="text-[13px] text-gray-500 font-normal mt-0.5 block">Receive browser push notifications</span>
+                      <span className="text-[18px] font-medium text-[#000000] block">Push Notifications</span>
+                      <span className="text-[15px] text-[#000000] font-regular mt-0.5 block">Receive browser push notifications</span>
                     </div>
                     <input 
                       type="checkbox" 
@@ -448,29 +449,29 @@ export default function SystemSettings({ onBack }) {
           )}
 
           {activeTab === 'Security' && (
-            <div className="space-y-8">
-              <div className="space-y-1 pb-2">
-                <div className="flex items-center gap-2.5">
-                  <div className="text-[#890080]">
-                    <Shield size={24} strokeWidth={2} />
+            <div className="space-y-7">
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-4.5">
+                  <div className="text-[#6155F5]">
+                    <Shield size={23} strokeWidth={1.7} />
                   </div>
-                  <h2 className="text-[22px] font-bold text-gray-900 leading-tight">Security Settings</h2>
+                  <h2 className="text-[25px] font-semibold text-[#000000] leading-tight">Security Settings</h2>
                 </div>
-                <p className="text-[14px] font-normal text-gray-500">
+                <p className="text-[18px] font-regular text-[#707070]">
                   Configure security and authentication options
                 </p>
               </div>
 
               <div className="space-y-4">
-                <div className="flex items-center gap-2 text-[18px] font-bold text-gray-900">
-                  <Lock size={20} className="text-[#4F46E5]" />
+                <div className="flex items-center gap-4.5 text-[20px] font-semibold text-[#000000]">
+                  <Lock size={23} strokeWidth={1.7} className="text-[#6155F5]" />
                   <span>Authentication</span>
                 </div>
 
-                <label className="flex items-center justify-between bg-[#FAFAFA] border border-gray-100 p-4 rounded-[16px] cursor-pointer hover:bg-gray-100/60 transition-colors">
+                <label className="h-[62px] flex items-center justify-between bg-[#F9F9F9] border border-gray-100 p-4 rounded-[16px] cursor-pointer hover:bg-gray-100/60 transition-colors">
                   <div>
-                    <span className="text-[16px] font-medium text-gray-900 block">Two-Factor Authentication</span>
-                    <span className="text-[13px] text-gray-500 font-normal mt-0.5 block">Require 2FA for admin accounts</span>
+                    <span className="text-[18px] font-medium text-[#000000] block">Two-Factor Authentication</span>
+                    <span className="text-[15px] text-[#000000] font-regular mt-0.3 block">Require 2FA for admin accounts</span>
                   </div>
                   <input 
                     type="checkbox" 
@@ -482,7 +483,7 @@ export default function SystemSettings({ onBack }) {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <label className="text-[14px] font-medium text-gray-800">Session Timeout (minutes)</label>
+                    <label className="text-[17px] font-medium text-[#000000]">Session Timeout (minutes)</label>
                     <input 
                       type="number"
                       value={security.sessionTimeout}
@@ -491,7 +492,7 @@ export default function SystemSettings({ onBack }) {
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[14px] font-medium text-gray-800">Min Password Length</label>
+                    <label className="text-[17px] font-medium text-[#000000]">Min Password Length</label>
                     <input 
                       type="number"
                       value={security.minPasswordLength}
@@ -503,23 +504,26 @@ export default function SystemSettings({ onBack }) {
               </div>
 
               <div className="pt-4 border-t border-gray-200 space-y-4">
-                <div className="text-[18px] font-bold text-gray-900">Password Policy</div>
+                <div className="flex items-center gap-4.5 text-[20px] font-semibold text-[#000000]">
+                  <KeyRound size={23} strokeWidth={1.7} className="text-[#6155F5]" />
+                  <span>Password Policy</span>
+                </div>
                 
-                <div className="bg-[#FFF4FC] border border-[#FFD2F7] p-6 rounded-[20px] space-y-3">
-                  <div className="flex items-center gap-3 text-[15px] font-medium text-gray-800">
-                    <Check size={18} className="text-[#890080]" strokeWidth={3} />
+                <div className="bg-[#FEF4FF] border border-[#FFC8ED] border-[0.5px] p-6 rounded-[20px] space-y-3">
+                  <div className="flex items-center gap-3 text-[16.5px] font-regular text-[#000000]">
+                    <Check size={18} className="text-[#890080]" strokeWidth={2.3} />
                     <span>Minimum 8 characters required</span>
-                  </div>
-                  <div className="flex items-center gap-3 text-[15px] font-medium text-gray-800">
-                    <Check size={18} className="text-[#890080]" strokeWidth={3} />
+                  </div>      
+                  <div className="flex items-center gap-3 text-[16.5px] font-regular text-[#000000]">
+                    <Check size={18} className="text-[#890080]" strokeWidth={2.3} />
                     <span>Must contain uppercase and lowercase letters</span>
                   </div>
-                  <div className="flex items-center gap-3 text-[15px] font-medium text-gray-800">
-                    <Check size={18} className="text-[#890080]" strokeWidth={3} />
+                  <div className="flex items-center gap-3 text-[16.5px] font-regular text-[#000000]">
+                    <Check size={18} className="text-[#890080]" strokeWidth={2.3} />
                     <span>Must contain at least one number</span>
                   </div>
-                  <div className="flex items-center gap-3 text-[15px] font-medium text-gray-800">
-                    <Check size={18} className="text-[#890080]" strokeWidth={3} />
+                  <div className="flex items-center gap-3 text-[16.5px] font-regular text-[#000000]">
+                    <Check size={18} className="text-[#890080]" strokeWidth={2.3} />
                     <span>Must contain at least one special character</span>
                   </div>
                 </div>
@@ -529,21 +533,21 @@ export default function SystemSettings({ onBack }) {
           )}
 
           {activeTab === 'Appearance' && (
-            <div className="space-y-8">
-              <div className="space-y-1 pb-2">
-                <div className="flex items-center gap-2.5">
-                  <div className="text-[#890080]">
-                    <Eye size={24} strokeWidth={2} />
+            <div className="space-y-7">
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-4.5">
+                  <div className="text-[#5b50e5]">
+                    <Eye size={23} strokeWidth={1.7} />
                   </div>
-                  <h2 className="text-[22px] font-bold text-gray-900 leading-tight">Appearance Settings</h2>
+                  <h2 className="text-[25px] font-semibold text-[#000000] leading-tight">Appearance Settings</h2>
                 </div>
-                <p className="text-[14px] font-normal text-gray-500">
+                <p className="text-[18px] font-regular text-[#707070]">
                   Customize the look and feel of the platform
                 </p>
               </div>
 
               <div className="space-y-4">
-                <div className="text-[18px] font-bold text-gray-900">Theme Preferences</div>
+                <div className="text-[20px] font-semibold text-[#000000]">Theme Preferences</div>
                 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <button
