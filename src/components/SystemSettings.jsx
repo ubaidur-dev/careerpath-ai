@@ -176,7 +176,7 @@ export default function SystemSettings({ onBack }) {
             type="button"
             onClick={handleSaveChanges}
             style={{ backgroundColor: '#FFD7FC', color: '#890080' }}
-            className="w-[256px] h[55px] inline-flex items-center justify-center font-semibold text-[18px] px-6 py-3.5 gap-2 rounded-[16px] cursor-pointer custom-quiz-border transition-all duration-300 transform hover:scale-[1.02] active:scale-95 shadow-sm"
+            className="w-[256px] h-[55px] inline-flex items-center justify-center font-semibold text-[18px] px-6 py-3.5 gap-2 rounded-[16px] cursor-pointer custom-quiz-border transition-all duration-300 transform hover:scale-[1.02] active:scale-95 shadow-sm"
           >
             <Save size={18} strokeWidth={2.2} className="mr-2 flex-shrink-0" />
             <span>Save Changes</span>
@@ -372,7 +372,7 @@ export default function SystemSettings({ onBack }) {
                   <label className="h-[62px] flex items-center justify-between bg-[#F9F9F9] border border-gray-100 p-4 rounded-[16px] cursor-pointer hover:bg-gray-100/60 transition-colors">
                     <div>
                       <span className="text-[18px] font-medium text-[#000000] block">Email Notifications</span>
-                      <span className="text-[15px] text-[#000000] font-regular mt-0.5 block">Enable new users to create accounts</span>
+                      <span className="text-[15px] text-[#000000] font-regular mt-0.5 block">Receive notifications and updates via email</span>
                     </div>
                     <input 
                       type="checkbox" 
@@ -553,68 +553,68 @@ export default function SystemSettings({ onBack }) {
                   <button
                     type="button"
                     onClick={() => setAppearance(prev => ({ ...prev, theme: 'Light' }))}
-                    className={`p-6 rounded-[20px] border flex flex-col items-center justify-center gap-3 transition-all cursor-pointer ${
+                    className={`w-[238px] h-[95px] p-6 rounded-[20px] border flex flex-col items-center justify-center gap-3 transition-all cursor-pointer ${
                       appearance.theme === 'Light'
                         ? 'border-[#FF34DC] bg-[#FFF8FE] text-[#890080] shadow-sm'
                         : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
                     }`}
                   >
-                    <Sun size={28} className={appearance.theme === 'Light' ? 'text-[#FF34DC]' : 'text-gray-500'} />
-                    <span className="text-[16px] font-semibold">Light</span>
+                    <Sun size={35} className={appearance.theme === 'Light' ? 'text-[#FF34DC]' : 'text-gray-500'} />
+                    <span className="text-[18px] font-normal">Light</span>
                   </button>
 
                   <button
                     type="button"
                     onClick={() => setAppearance(prev => ({ ...prev, theme: 'Dark' }))}
-                    className={`p-6 rounded-[20px] border flex flex-col items-center justify-center gap-3 transition-all cursor-pointer ${
+                    className={`w-[238px] h-[95px] p-6 rounded-[20px] border flex flex-col items-center justify-center gap-3 transition-all cursor-pointer ${
                       appearance.theme === 'Dark'
                         ? 'border-[#FF34DC] bg-[#FFF8FE] text-[#890080] shadow-sm'
                         : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
                     }`}
                   >
-                    <Moon size={28} className={appearance.theme === 'Dark' ? 'text-[#FF34DC]' : 'text-gray-500'} />
-                    <span className="text-[16px] font-semibold">Dark</span>
+                    <Moon size={35} className={appearance.theme === 'Dark' ? 'text-[#FF34DC]' : 'text-gray-500'} />
+                    <span className="text-[18px] font-normal">Dark</span>
                   </button>
 
                   <button
                     type="button"
                     onClick={() => setAppearance(prev => ({ ...prev, theme: 'Auto' }))}
-                    className={`p-6 rounded-[20px] border flex flex-col items-center justify-center gap-3 transition-all cursor-pointer ${
+                    className={`w-[238px] h-[95px] p-6 rounded-[20px] border flex flex-col items-center justify-center gap-3 transition-all cursor-pointer ${
                       appearance.theme === 'Auto'
                         ? 'border-[#FF34DC] bg-[#FFF8FE] text-[#890080] shadow-sm'
                         : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
                     }`}
                   >
-                    <Monitor size={28} className={appearance.theme === 'Auto' ? 'text-[#FF34DC]' : 'text-gray-500'} />
-                    <span className="text-[16px] font-semibold">Auto</span>
+                    <Monitor size={35} className={appearance.theme === 'Auto' ? 'text-[#FF34DC]' : 'text-gray-500'} />
+                    <span className="text-[18px] font-normal">Auto</span>
                   </button>
                 </div>
               </div>
 
               <div className="pt-4 border-t border-gray-200 space-y-4">
-                <div className="text-[18px] font-bold text-gray-900">Color Palette</div>
+                <div className="text-[20px] font-semibold text-[#000000]">Color Palette</div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-[#FAFAFA] border border-gray-200 p-6 rounded-[20px]">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-[#FFFFFF] border border-gray-200 p-6 rounded-[15px]">
                   
                   <div className="flex flex-col gap-2">
-                    <label className="text-[13px] font-medium text-gray-500 uppercase tracking-wider">Primary Color</label>
+                    <label className="text-[17px] font-medium text-[#707070] tracking-wider">Primary Color</label>
                     <div className="flex items-center gap-3">
                       <div 
                         className="w-10 h-10 rounded-[12px] shadow-sm flex-shrink-0" 
                         style={{ backgroundColor: appearance.primaryColor }}
                       />
-                      <span className="text-[16px] font-semibold text-gray-900 uppercase">{appearance.primaryColor}</span>
+                      <span className="text-[16.5px] font-regular text-[#000000] uppercase">{appearance.primaryColor}</span>
                     </div>
                   </div>
 
                   <div className="flex flex-col gap-2">
-                    <label className="text-[13px] font-medium text-gray-500 uppercase tracking-wider">Secondary Color</label>
+                    <label className="text-[17px] font-medium text-[#707070] tracking-wider">Secondary Color</label>
                     <div className="flex items-center gap-3">
                       <div 
                         className="w-10 h-10 rounded-[12px] shadow-sm flex-shrink-0" 
                         style={{ backgroundColor: appearance.secondaryColor }}
                       />
-                      <span className="text-[16px] font-semibold text-gray-900 uppercase">{appearance.secondaryColor}</span>
+                      <span className="text-[16.5px] font-regular text-[#000000] uppercase">{appearance.secondaryColor}</span>
                     </div>
                   </div>
 
