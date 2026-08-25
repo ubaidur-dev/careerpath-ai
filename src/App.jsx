@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+
 import LandingPage from './components/LandingPage';
 import AuthPage from './components/AuthPage';
 import StudentDashboard from "./components/StudentDashboard";
@@ -10,13 +12,16 @@ import UserProfile from "./components/UserProfile";
 import CareerAssessment from "./components/CareerAssessment"; 
 import CareerResults from './components/CareerResults'; 
 
+axios.defaults.baseURL = 'http://127.0.0.1:8000/api';
+
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState('home');
   const [authMode, setAuthMode] = useState('login');
   const [selectedCareerData, setSelectedCareerData] = useState(null); 
-  
   const [selectedCareerId, setSelectedCareerId] = useState(null); 
   
+  const [backendStatus, setBackendStatus] = useState('checking');
+
   const [quizAnswers, setQuizAnswers] = useState({
     q1: null, q2: null, q3: null, q4: null, q5: null,
     q6: null, q7: null, q8: null, q9: null, q10: null
@@ -26,8 +31,38 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }, [currentScreen, authMode]);
 
+  useEffect(() => {
+    axios.get('/test-connection')
+      .then((res) => {
+        console.log("Backend Connected:", res.data);
+        setBackendStatus('connected');
+      })
+      .catch((err) => {
+        console.warn("Backend Not Connected Yet:", err.message);
+        setBackendStatus('disconnected');
+      });
+  }, []);
+
   return (
-    <div className="min-h-screen bg-[#fafafa] text-[#111111]">
+    <div className="min-h-screen bg-[#fafafa] text-[#111111] relative">
+      
+      <div className="fixed bottom-4 right-4 z-50 text-xs px-3 py-1.5 rounded-full shadow-lg font-medium border transition-all">
+        {backendStatus === 'checking' && (
+          <span className="bg-yellow-100 text-yellow-800 border-yellow-300">
+            🟡 Connecting Backend...
+          </span>
+        )}
+        {backendStatus === 'connected' && (
+          <span className="bg-green-100 text-green-800 border-green-300">
+            🟢 Laravel Backend Connected
+          </span>
+        )}
+        {backendStatus === 'disconnected' && (
+          <span className="bg-red-100 text-red-800 border-red-300">
+            🔴 Laravel Offline (Start php artisan serve)
+          </span>
+        )}
+      </div>
       
       {currentScreen === 'home' && (
         <LandingPage 
