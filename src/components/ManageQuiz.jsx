@@ -1,72 +1,20 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { 
   Plus, 
   Trash2, 
   Edit2, 
   Check, 
-  X, 
   AlertTriangle
 } from 'lucide-react';
 import AddNewQuestion from './AddNewQuestion';
 import EditQuestion from './EditQuestion';
 
+const API_BASE_URL = 'http://localhost:8000/api';
+
 const ManageQuiz = ({ onNavigate, onLogout, initialView = 'list' }) => {
-  const [questions, setQuestions] = useState([
-    {
-      id: 1,
-      questionText: 'Do you enjoy programming or working with code?',
-      type: 'Multiple Choice',
-      category: 'Technical Skills',
-      weight: 'High',
-      status: 'Active',
-      options: ['Yes, I love it!', 'Somewhat', 'Not really', 'No preference']
-    },
-    {
-      id: 2,
-      questionText: 'Do you prefer working with people or working independently?',
-      type: 'Multiple Choice',
-      category: 'Work Style',
-      weight: 'Medium',
-      status: 'Active',
-      options: ['With people', 'Independently', 'Hybrid approach', 'It depends']
-    },
-    {
-      id: 3,
-      questionText: 'Are you more interested in creative work or analytical tasks?',
-      type: 'Multiple Choice',
-      category: 'Interests',
-      weight: 'High',
-      status: 'Active',
-      options: ['Creative work', 'Analytical tasks', 'Both equally', 'Neither specifically']
-    },
-    {
-      id: 4,
-      questionText: 'How comfortable are you with math and statistics?',
-      type: 'Multiple Choice',
-      category: 'Technical Skills',
-      weight: 'Medium',
-      status: 'Active',
-      options: ['Very comfortable', 'Somewhat comfortable', 'Not comfortable', 'Willing to learn']
-    },
-    {
-      id: 5,
-      questionText: 'Do you enjoy solving complex problems and puzzles?',
-      type: 'Multiple Choice',
-      category: 'Work Style',
-      weight: 'Medium',
-      status: 'Active',
-      options: ['Absolutely!', 'Yes', 'Sometimes', 'Not particularly']
-    },
-    {
-      id: 6,
-      questionText: 'On a scale of 1-10, how important is work-life balance to you?',
-      type: 'Multiple Choice',
-      category: 'Interests',
-      weight: 'High',
-      status: 'Active',
-      options: ['Absolutely!', 'Yes', 'Sometimes', 'Not particularly']
-    }
-  ]);
+  const [questions, setQuestions] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const [showAddForm, setShowAddForm] = useState(initialView === 'add');
   
@@ -85,6 +33,24 @@ const ManageQuiz = ({ onNavigate, onLogout, initialView = 'list' }) => {
   const [showToast, setShowToast] = useState(false);
   const [deleteConfirmId, setDeleteConfirmId] = useState(null);
 
+  const fetchQuestions = async () => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/admin/questions`);
+      setQuestions(response.data || []);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching questions:", error);
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchQuestions();
+
+    const interval = setInterval(fetchQuestions, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
   const triggerToast = (msg) => {
     setToastMessage(msg);
     setShowToast(true);
@@ -93,34 +59,60 @@ const ManageQuiz = ({ onNavigate, onLogout, initialView = 'list' }) => {
     }, 3500);
   };
 
+  const dynamicCategories = ['All Categories', ...Array.from(new Set(questions.map(q => q.category).filter(Boolean)))];
+
   const filteredQuestions = questions.filter(q => {
-    const matchCategory = selectedCategory === 'All Categories' || q.category === selectedCategory;
-    const matchType = selectedType === 'All Types' || q.type === selectedType;
-    const matchStatus = selectedStatus === 'All Status' || q.status === selectedStatus;
-    const matchWeight = selectedWeight === 'All Weights' || q.weight === selectedWeight;
+    const qCategory = q.category || 'General';
+    const qType = q.type || 'Multiple Choice';
+    const qStatus = q.status || 'Active';
+    const qWeight = q.weight || 'Medium';
+
+    const matchCategory = selectedCategory === 'All Categories' || qCategory === selectedCategory;
+    const matchType = selectedType === 'All Types' || qType === selectedType;
+    const matchStatus = selectedStatus === 'All Status' || qStatus === selectedStatus;
+    const matchWeight = selectedWeight === 'All Weights' || qWeight === selectedWeight;
+    
     return matchCategory && matchType && matchStatus && matchWeight;
   });
 
-  const handleSaveEditedQuestion = (updatedQuestion) => {
-    setQuestions(questions.map(q => q.id === editingId ? updatedQuestion : q));
-    setEditingId(null);
-    triggerToast("Question details successfully updated!");
-  };
-
-  const handleSaveNewQuestion = (newQuestionData) => {
-    const nextId = questions.length > 0 ? Math.max(...questions.map(q => q.id)) + 1 : 1;
-    setQuestions([...questions, { ...newQuestionData, id: nextId }]);
-    setShowAddForm(false);
-    triggerToast("New career question successfully saved!");
-  };
-
-  const executeDelete = () => {
-    if (deleteConfirmId !== null) {
-      setQuestions(questions.filter(q => q.id !== deleteConfirmId));
-      setDeleteConfirmId(null);
-      triggerToast("Question has been successfully deleted.");
+  const handleSaveEditedQuestion = async (updatedQuestion) => {
+    try {
+      await axios.put(`${API_BASE_URL}/admin/questions/${editingId}`, updatedQuestion);
+      setEditingId(null);
+      triggerToast("Question details successfully updated!");
+      fetchQuestions();
+    } catch (error) {
+      console.error("Error updating question:", error);
     }
   };
+
+  const handleSaveNewQuestion = async (newQuestionData) => {
+    try {
+      await axios.post(`${API_BASE_URL}/admin/questions`, newQuestionData);
+      setShowAddForm(false);
+      triggerToast("New career question successfully saved!");
+      fetchQuestions();
+    } catch (error) {
+      console.error("Error saving new question:", error);
+    }
+  };
+
+  const executeDelete = async () => {
+    if (deleteConfirmId !== null) {
+      try {
+        await axios.delete(`${API_BASE_URL}/admin/questions/${deleteConfirmId}`);
+        setDeleteConfirmId(null);
+        triggerToast("Question has been successfully deleted.");
+        fetchQuestions();
+      } catch (error) {
+        console.error("Error deleting question:", error);
+      }
+    }
+  };
+
+  const totalQuestions = questions.length;
+  const activeQuestionsCount = questions.filter(q => (q.status || 'Active') === 'Active').length;
+  const uniqueCategoriesCount = new Set(questions.map(q => q.category).filter(Boolean)).size;
 
   return (
     <div className="w-full bg-transparent text-gray-900 antialiased space-y-8 pb-10 relative">
@@ -133,7 +125,6 @@ const ManageQuiz = ({ onNavigate, onLogout, initialView = 'list' }) => {
           .prototype-card-border {
             border: 0.5px solid #FFD2F7;
           }
-          /* Custom scrollbar for modal */
           .modal-scrollbar::-webkit-scrollbar {
             width: 6px;
           }
@@ -152,26 +143,37 @@ const ManageQuiz = ({ onNavigate, onLogout, initialView = 'list' }) => {
       </style>
 
       {deleteConfirmId !== null && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm animate-in fade-in duration-200">
+        <div className="fixed inset-0 w-screen h-screen z-[100] flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="bg-white rounded-[24px] p-8 max-w-sm w-full shadow-2xl space-y-6 text-center border border-[#FFD2F7]">
-            <div className="w-16 h-16 rounded-full bg-red-50 text-red-500 flex items-center justify-center mx-auto border border-red-100">
+            <div className="w-16 h-16 rounded-full bg-[#FFEDF8] text-[#890080] flex items-center justify-center mx-auto border border-[#FF34DC]">
               <AlertTriangle size={32} strokeWidth={2} />
             </div>
             <div className="space-y-2">
               <h3 className="text-xl font-bold text-gray-900">Delete Question?</h3>
               <p className="text-sm font-medium text-gray-500 leading-relaxed">
-                Are you sure you want to delete question #{deleteConfirmId}? This cannot be undone.
+                Are you sure you want to delete this question? This cannot be undone.
               </p>
             </div>
             <div className="flex gap-3">
-              <button onClick={() => setDeleteConfirmId(null)} className="flex-1 py-3.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold text-sm rounded-xl transition-colors cursor-pointer">Cancel</button>
-              <button onClick={executeDelete} className="flex-1 py-3.5 bg-red-500 hover:bg-red-600 text-white font-semibold text-sm rounded-xl transition-colors shadow-sm cursor-pointer">Delete</button>
+              <button 
+                onClick={() => setDeleteConfirmId(null)} 
+                className="flex-1 py-3.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold text-sm rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-lg active:scale-95 cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={executeDelete} 
+                style={{ backgroundColor: '#FFD7FC', color: '#890080' }}
+                className="flex-1 py-3.5 font-semibold text-sm rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-lg active:scale-95 custom-quiz-border shadow-sm cursor-pointer inline-flex items-center justify-center gap-2"
+              >
+                <Trash2 size={16} strokeWidth={2.2} />
+                <span>Delete</span>
+              </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* MODALS */}
       {showAddForm && (
         <AddNewQuestion 
           onSave={handleSaveNewQuestion}
@@ -182,6 +184,7 @@ const ManageQuiz = ({ onNavigate, onLogout, initialView = 'list' }) => {
       {editingId !== null && (
         <EditQuestion 
           question={questions.find(q => q.id === editingId)}
+          existingCategories={dynamicCategories.filter(c => c !== 'All Categories')}
           onSave={handleSaveEditedQuestion}
           onCancel={() => setEditingId(null)}
         />
@@ -219,9 +222,9 @@ const ManageQuiz = ({ onNavigate, onLogout, initialView = 'list' }) => {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 justify-items-center">
         {[
-          { id: 1, label: 'Total Questions', value: questions.length, emoji: '📝', trend: '+12%' },
-          { id: 2, label: 'Active Questions', value: questions.filter(q => q.status === 'Active').length, emoji: '⚡', trend: '+5%' },
-          { id: 3, label: 'Categories', value: new Set(questions.map(q => q.category)).size, emoji: '🗂️', trend: '+18%' },
+          { id: 1, label: 'Total Questions', value: totalQuestions, emoji: '📝', trend: '+12%' },
+          { id: 2, label: 'Active Questions', value: activeQuestionsCount, emoji: '⚡', trend: '+5%' },
+          { id: 3, label: 'Categories', value: uniqueCategoriesCount, emoji: '🗂️', trend: '+18%' },
           { id: 4, label: 'Response Rate', value: '94%', emoji: '📊', trend: '+8%' },
         ].map((stat) => (
           <div 
@@ -242,18 +245,18 @@ const ManageQuiz = ({ onNavigate, onLogout, initialView = 'list' }) => {
         ))}
       </div>
 
-      <div className="w-full h-[130px] rounded-[25px] bg-white p-6 shadow-[3px_6px_6px_0.5px_rgba(0,0,0,0.25)] flex flex-wrap items-center gap-4 border border-[#FFD2F7]">
+      <div className="w-full h-auto min-h-[130px] rounded-[25px] bg-white p-6 shadow-[3px_6px_6px_0.5px_rgba(0,0,0,0.25)] flex flex-wrap items-center gap-4 border border-[#FFD2F7]">
         {[
-          { state: selectedCategory, setState: setSelectedCategory, options: ['All Categories', 'Technical Skills', 'Work Style', 'Interests'] },
+          { state: selectedCategory, setState: setSelectedCategory, options: dynamicCategories },
           { state: selectedType, setState: setSelectedType, options: ['All Types', 'Multiple Choice'] },
-          { state: selectedStatus, setState: setSelectedStatus, options: ['All Status', 'Active'] },
-          { state: selectedWeight, setState: setSelectedWeight, options: ['All Weights', 'High', 'Medium'] }
+          { state: selectedStatus, setState: setSelectedStatus, options: ['All Status', 'Active', 'Inactive'] },
+          { state: selectedWeight, setState: setSelectedWeight, options: ['All Weights', 'High', 'Medium', 'Low'] }
         ].map((filter, idx) => (
           <div key={idx} className="relative w-full sm:w-[214px] h-[57px] text-[20px] font-regular rounded-[15px] flex-shrink-0">
             <select 
               value={filter.state}
               onChange={(e) => filter.setState(e.target.value)}
-              className="w-[214px] h-[57px] bg-white border-[1px] border-[#C0C0C0] text-regular text-[20px] font-[20px] rounded-[15px] px-5 pr-10 appearance-none cursor-pointer outline-none hover:border-gray-400 focus:border-[#bd24df] transition-all"
+              className="w-full sm:w-[214px] h-[57px] bg-white border-[1px] border-[#C0C0C0] text-regular text-[20px] font-[20px] rounded-[15px] px-5 pr-10 appearance-none cursor-pointer outline-none hover:border-gray-400 focus:border-[#bd24df] transition-all"
               style={{ backgroundImage: `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M6 9l6 6 6-6'/></svg>")`, backgroundPosition: 'right 16px center', backgroundRepeat: 'no-repeat' }}
             >
               {filter.options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
@@ -263,30 +266,34 @@ const ManageQuiz = ({ onNavigate, onLogout, initialView = 'list' }) => {
       </div>
 
       <div className="space-y-6">
-        {filteredQuestions.length > 0 ? (
-          filteredQuestions.map((q) => (
+        {loading ? (
+          <div className="bg-white rounded-3xl p-16 text-center text-gray-500 text-lg">Loading questions...</div>
+        ) : filteredQuestions.length > 0 ? (
+          filteredQuestions.map((q, index) => (
             <div key={q.id} className="w-full h-auto rounded-[25px] bg-white p-8 shadow-[3px_6px_6px_0.5px_rgba(0,0,0,0.25)] border border-[#FFD2F7] flex flex-col gap-6 relative">
               <div className="flex items-start gap-4">
                 <div className="w-[45px] h-[45px] bg-[#FFE1FD] border-[1px] border-[#FF34DC] text-[#890080] font-bold text-[23px] text-xl rounded-[15px] flex items-center justify-center flex-shrink-0">
-                  {q.id}
+                  {index + 1}
                 </div>
-                <h2 className="text-[23px] font-medium text-gray-900 tracking-tight mt-1">{q.questionText}</h2>
+                <h2 className="text-[23px] font-medium text-gray-900 tracking-tight mt-1">{q.question_text || q.questionText}</h2>
               </div>
 
               <div className="flex flex-wrap gap-3 pl-[62px]">
-                <span className="px-5 py-1.5 bg-[#F9F9F9] text-[#B6005B] rounded-full text-[16px] font-regular">{q.type}</span>
-                <span className="px-5 py-1.5 bg-[#F9F9F9] text-[#890080] rounded-full text-[16px] font-regular">{q.category}</span>
-                <span className={`px-5 py-1.5 rounded-full text-[16px] font-regular ${q.weight === 'High' ? 'bg-[#F9F9F9] text-[#D80000]' : 'bg-[#fff7ed] text-[#ea580c]'}`}>
-                  Weight: {q.weight}
+                <span className="px-5 py-1.5 bg-[#F9F9F9] text-[#B6005B] rounded-full text-[16px] font-regular">{q.type || 'Multiple Choice'}</span>
+                <span className="px-5 py-1.5 bg-[#F9F9F9] text-[#890080] rounded-full text-[16px] font-regular">{q.category || 'Technical Skills'}</span>
+                <span className={`px-5 py-1.5 rounded-full text-[16px] font-regular ${(q.weight || 'Medium') === 'High' ? 'bg-[#F9F9F9] text-[#D80000]' : 'bg-[#fff7ed] text-[#ea580c]'}`}>
+                  Weight: {q.weight || 'Medium'}
                 </span>
-                <span className="px-5 py-1.5 bg-[#F9F9F9] text-[#039527] rounded-full text-[16px] font-regular">{q.status}</span>
+                <span className={`px-5 py-1.5 rounded-full text-[16px] font-regular ${(q.status || 'Active') === 'Active' ? 'bg-[#F9F9F9] text-[#039527]' : 'bg-[#fff1f2] text-[#e11d48]'}`}>
+                  {q.status || 'Active'}
+                </span>
               </div>
 
               <div className="flex flex-col md:flex-row gap-6 items-stretch pl-[62px]">
                 <div className="flex-1 bg-[#F9F9F9] rounded-[15px] p-6 border border-gray-100">
                   <div className="text-[16px] font-regular text-[#000000] mb-4">Options:</div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 pl-1">
-                    {q.options.map((opt, i) => (
+                    {Array.isArray(q.options) && q.options.map((opt, i) => (
                       <div key={i} className="w-auto h-auto text-[14px] font-regular text-[#000000] flex items-center gap-3">
                         <div className="w-1.5 h-1.5 bg-[#3b82f6] rounded-full flex-shrink-0"></div>
                         {opt}
