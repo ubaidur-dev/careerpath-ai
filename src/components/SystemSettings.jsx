@@ -1,28 +1,46 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { 
+  User,
   Settings, 
-  Bell, 
-  KeyRound,
   Shield, 
-  Eye, 
   Save, 
   Globe, 
   Database, 
-  Mail, 
   Lock, 
-  Sun, 
-  Moon, 
-  Monitor, 
+  KeyRound,
   Check,
-  ChevronDown
+  ChevronDown,
+  Eye,
+  EyeOff,
+  Camera,
+  Trash2,
+  Upload
 } from 'lucide-react';
 
 export default function SystemSettings({ onBack }) {
-  const [activeTab, setActiveTab] = useState('General'); 
+  const [activeTab, setActiveTab] = useState('Admin Profile'); 
 
+  // Admin Profile State
+  const [profile, setProfile] = useState({
+    fullName: 'Admin User',
+    email: 'admin@aicareeradvisor.com',
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: ''
+  });
+
+  // Profile Image State & Reference
+  const [profileImage, setProfileImage] = useState(null);
+  const fileInputRef = useRef(null);
+
+  // Password Visibility States for Real-Time Toggle
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  // General Settings State
   const [generalSettings, setGeneralSettings] = useState({
     siteName: 'AI Career Advisor',
-    adminEmail: 'admin@aicareeradvisor.com',
     supportEmail: 'support@aicareeradvisor.com',
     allowRegistration: true,
     emailVerification: true,
@@ -32,24 +50,11 @@ export default function SystemSettings({ onBack }) {
     dateFormat: 'DD/MM/YYYY'
   });
 
-  const [notifications, setNotifications] = useState({
-    emailNotifications: true,
-    weeklyReports: true,
-    monthlyStatistics: true,
-    securityAlerts: true,
-    pushNotifications: false
-  });
-
+  // Security Settings State
   const [security, setSecurity] = useState({
     twoFactorAuth: false,
     sessionTimeout: '35',
     minPasswordLength: '8'
-  });
-
-  const [appearance, setAppearance] = useState({
-    theme: 'Light', 
-    primaryColor: '#8405CD',
-    secondaryColor: '#FFB8FA'
   });
 
   const [toastMessage, setToastMessage] = useState('');
@@ -63,20 +68,39 @@ export default function SystemSettings({ onBack }) {
     }, 3500);
   };
 
-  const handleGeneralChange = (key, value) => {
-    setGeneralSettings(prev => ({ ...prev, [key]: value }));
+  const handleProfileChange = (key, value) => {
+    setProfile(prev => ({ ...prev, [key]: value }));
   };
 
-  const handleNotificationToggle = (key) => {
-    setNotifications(prev => ({ ...prev, [key]: !prev[key] }));
+  const handleGeneralChange = (key, value) => {
+    setGeneralSettings(prev => ({ ...prev, [key]: value }));
   };
 
   const handleSecurityChange = (key, value) => {
     setSecurity(prev => ({ ...prev, [key]: value }));
   };
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setProfileImage(reader.result); 
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleDeleteImage = (e) => {
+    e.stopPropagation(); 
+    setProfileImage(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''; 
+    }
+  };
+
   const handleSaveChanges = () => {
-    triggerToast("System Settings saved successfully!");
+    triggerToast("Settings saved successfully!");
   };
 
   return (
@@ -115,9 +139,25 @@ export default function SystemSettings({ onBack }) {
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         
+        {/* Left Navigation Box */}
         <div className="lg:col-span-3 space-y-4">
-          <div className="w-[256px] h-[248px] bg-white border border-[#FFD2F7] rounded-[20px] p-3 shadow-[3px_4px_4px_0.2px_rgba(0,0,0,0.25)] space-y-1.5 flex flex-col justify-center">
+          <div className="w-[256px] h-[200px] bg-white border border-[#FFD2F7] rounded-[20px] p-3 shadow-[3px_4px_4px_0.2px_rgba(0,0,0,0.25)] space-y-1.5 flex flex-col justify-center">
             
+            {/* Tab 1: Admin Profile */}
+            <button
+              type="button"
+              onClick={() => setActiveTab('Admin Profile')}
+              className={`w-[203px] h-[45px] mx-auto flex items-center gap-3 px-5 py-3.5 rounded-[16px] text-[16px] transition-all cursor-pointer ${
+                activeTab === 'Admin Profile'
+                  ? 'bg-[#FFEDF9] text-[#890080] font-medium border-[0.2px] border-[#DBD9D9]'
+                  : 'text-[#000000] font-regular hover:bg-gray-50 border-[0.2px] border-transparent'
+              }`}
+            >
+              <User size={18} strokeWidth={1.8} className={activeTab === 'Admin Profile' ? 'text-[#890080]' : 'text-[#000000]'} />
+              Admin Profile
+            </button>
+
+            {/* Tab 2: General */}
             <button
               type="button"
               onClick={() => setActiveTab('General')}
@@ -131,19 +171,7 @@ export default function SystemSettings({ onBack }) {
               General
             </button>
 
-            <button
-              type="button"
-              onClick={() => setActiveTab('Notifications')}
-              className={`w-[203px] h-[45px] mx-auto flex items-center gap-3 px-5 py-3.5 rounded-[16px] text-[16px] transition-all cursor-pointer ${
-                activeTab === 'Notifications'
-                  ? 'bg-[#FFEDF9] text-[#890080] font-medium border-[0.2px] border-[#DBD9D9]'
-                  : 'text-[#000000] font-regular hover:bg-gray-50 border-[0.2px] border-transparent'
-              }`}
-            >
-              <Bell size={18} strokeWidth={1.8} className={activeTab === 'Notifications' ? 'text-[#890080]' : 'text-[#000000]'} />
-              Notifications
-            </button>
-
+            {/* Tab 3: Security */}
             <button
               type="button"
               onClick={() => setActiveTab('Security')}
@@ -155,19 +183,6 @@ export default function SystemSettings({ onBack }) {
             >
               <Shield size={18} strokeWidth={1.8} className={activeTab === 'Security' ? 'text-[#890080]' : 'text-[#000000]'} />
               Security
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setActiveTab('Appearance')}
-              className={`w-[203px] h-[45px] mx-auto flex items-center gap-3 px-5 py-3.5 rounded-[16px] text-[16px] transition-all cursor-pointer ${
-                activeTab === 'Appearance'
-                  ? 'bg-[#FFEDF9] text-[#890080] font-medium border-[0.2px] border-[#DBD9D9]'
-                  : 'text-[#000000] font-regular hover:bg-gray-50 border-[0.2px] border-transparent'
-              }`}
-            >
-              <Eye size={18} strokeWidth={1.8} className={activeTab === 'Appearance' ? 'text-[#890080]' : 'text-[#000000]'} />
-              Appearance
             </button>
 
           </div>
@@ -183,8 +198,203 @@ export default function SystemSettings({ onBack }) {
           </button>
         </div>
 
+        {/* Right Main Content Area */}
         <div className="lg:col-span-9 bg-white border border-[#FFD2F7] rounded-[28px] p-6 sm:p-8 shadow-[3px_6px_6px_0.5px_rgba(0,0,0,0.25)] text-left space-y-8">
           
+          {/* TAB 1: ADMIN PROFILE */}
+          {activeTab === 'Admin Profile' && (
+            <div className="space-y-7">
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-2.5">
+                  <div className="text-[#5B50E5]">
+                    <User size={23} strokeWidth={1.7} />
+                  </div>
+                  <h2 className="text-[25px] font-semibold text-[#000000] leading-tight ml-2">Admin Profile</h2>
+                </div>
+                <p className="text-[18px] font-regular text-[#707070]">
+                  Manage your account credentials and personal profile information
+                </p>
+              </div>
+
+              {/* Profile Picture Upload Section */}
+              <div className="flex flex-col sm:flex-row items-center gap-6 p-5 bg-[#FDFDFD] border border-gray-200/80 rounded-[20px]">
+                <input 
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleImageChange}
+                  accept="image/*"
+                  className="hidden"
+                />
+
+                <div className="relative group flex-shrink-0">
+                  <div className="w-[120px] h-[120px] rounded-full bg-[#FFBFF4] text-[#000000] font-extrabold text-[32px] flex items-center justify-center shadow-sm overflow-hidden relative">
+                    {profileImage ? (
+                      <>
+                        <img src={profileImage} alt="Admin Avatar" className="w-full h-full object-cover" />
+                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-200">
+                          <button 
+                            type="button"
+                            onClick={handleDeleteImage}
+                            className="p-2 bg-red-600 text-white rounded-full hover:bg-red-700 transition transform hover:scale-110 cursor-pointer"
+                            title="Delete Picture"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      </>
+                    ) : (
+                      "AU"
+                    )}
+                  </div>
+
+                  {!profileImage && (
+                    <button 
+                      type="button"
+                      onClick={() => fileInputRef.current.click()}
+                      className="absolute bottom-0 right-0 w-[42px] h-[42px] flex items-center justify-center bg-white border border-gray-300 text-gray-600 hover:text-[#bd24df] rounded-full shadow-md transition cursor-pointer"
+                      title="Upload Picture"
+                    >
+                      <Camera size={18} />
+                    </button>
+                  )}
+                </div>
+
+                <div className="space-y-1.5 text-center sm:text-left">
+                  <h3 className="text-[19px] font-semibold text-[#000000]">Profile Picture</h3>
+                  <p className="text-[15px] font-regular text-[#707070]">
+                    Upload a picture to personalize your account. JPG, PNG or GIF up to 5MB.
+                  </p>
+                  <div className="pt-1.5 flex items-center gap-3 justify-center sm:justify-start">
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current.click()}
+                      className="px-4 py-2 bg-[#FFEDF9] text-[#bd24df] border border-[#f2c6fa] hover:bg-[#bd24df] hover:text-white rounded-[12px] text-[14px] font-semibold transition cursor-pointer inline-flex items-center gap-2"
+                    >
+                      <Upload size={16} strokeWidth={2} />
+                      <span>{profileImage ? "Change Photo" : "Upload Photo"}</span>
+                    </button>
+                    {profileImage && (
+                      <button
+                        type="button"
+                        onClick={handleDeleteImage}
+                        className="px-4 py-2 bg-red-50 text-red-600 border border-red-200 hover:bg-red-600 hover:text-white rounded-[12px] text-[14px] font-medium transition cursor-pointer inline-flex items-center gap-2"
+                      >
+                        <Trash2 size={16} strokeWidth={2} />
+                        <span>Remove Photo</span>
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Account Information */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-4.5 text-[20px] font-semibold text-[#000000]">
+                  <User size={23} strokeWidth={1.7} className="text-[#5B50E5]" />
+                  <span>Account Information</span>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="text-[17px] font-medium text-[#000000]">Full Name</label>
+                    <input 
+                      type="text"
+                      value={profile.fullName}
+                      onChange={(e) => handleProfileChange('fullName', e.target.value)}
+                      className="w-full h-[45px] bg-[#FDFDFD] border-[#A8A8A8] border-[0.5px] text-[15px] font-medium px-4 py-2.5 rounded-[10px] outline-none transition-all text-gray-800"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-[17px] font-medium text-[#000000]">Email Address</label>
+                    <input 
+                      type="email"
+                      value={profile.email}
+                      onChange={(e) => handleProfileChange('email', e.target.value)}
+                      className="w-full h-[45px] bg-[#FDFDFD] border-[#A8A8A8] border-[0.5px] text-[15px] font-medium px-4 py-2.5 rounded-[10px] outline-none transition-all text-gray-800"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Password Change */}
+              <div className="pt-3 border-t border-gray-200/80 space-y-4">
+                <div className="flex items-center gap-4.5 text-[20px] font-semibold text-[#000000]">
+                  <Lock size={23} strokeWidth={1.7} className="text-[#5B50E5]" />
+                  <span>Change Password</span>
+                </div>
+
+                <div className="space-y-4">
+                  {/* Current Password */}
+                  <div className="space-y-1.5">
+                    <label className="text-[17px] font-medium text-[#000000]">Current Password</label>
+                    <div className="relative">
+                      <input 
+                        type={showCurrentPassword ? "text" : "password"}
+                        placeholder="Enter current password"
+                        value={profile.currentPassword}
+                        onChange={(e) => handleProfileChange('currentPassword', e.target.value)}
+                        className="w-full h-[45px] bg-[#FDFDFD] border-[#A8A8A8] border-[0.5px] text-[15px] font-medium pl-4 pr-11 py-2.5 rounded-[10px] outline-none transition-all text-gray-800"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                        className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 cursor-pointer focus:outline-none"
+                      >
+                        {showCurrentPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* New Password */}
+                    <div className="space-y-1.5">
+                      <label className="text-[17px] font-medium text-[#000000]">New Password</label>
+                      <div className="relative">
+                        <input 
+                          type={showNewPassword ? "text" : "password"}
+                          placeholder="Enter new password"
+                          value={profile.newPassword}
+                          onChange={(e) => handleProfileChange('newPassword', e.target.value)}
+                          className="w-full h-[45px] bg-[#FDFDFD] border-[#A8A8A8] border-[0.5px] text-[15px] font-medium pl-4 pr-11 py-2.5 rounded-[10px] outline-none transition-all text-gray-800"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowNewPassword(!showNewPassword)}
+                          className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 cursor-pointer focus:outline-none"
+                        >
+                          {showNewPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Confirm Password */}
+                    <div className="space-y-1.5">
+                      <label className="text-[17px] font-medium text-[#000000]">Confirm New Password</label>
+                      <div className="relative">
+                        <input 
+                          type={showConfirmPassword ? "text" : "password"}
+                          placeholder="Confirm new password"
+                          value={profile.confirmPassword}
+                          onChange={(e) => handleProfileChange('confirmPassword', e.target.value)}
+                          className="w-full h-[45px] bg-[#FDFDFD] border-[#A8A8A8] border-[0.5px] text-[15px] font-medium pl-4 pr-11 py-2.5 rounded-[10px] outline-none transition-all text-gray-800"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                          className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 cursor-pointer focus:outline-none"
+                        >
+                          {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          )}
+
+          {/* TAB 2: GENERAL SETTINGS */}
           {activeTab === 'General' && (
             <div className="space-y-7">
               <div className="space-y-1.5">
@@ -205,23 +415,13 @@ export default function SystemSettings({ onBack }) {
                   <span>Site Information</span>
                 </div>
 
-                <div className="space-y-1.5">
-                  <label className="text-[17px] font-medium text-[#000000]">Site Name</label>
-                  <input 
-                    type="text"
-                    value={generalSettings.siteName}
-                    onChange={(e) => handleGeneralChange('siteName', e.target.value)}
-                    className="w-full h-[45px] bg-[#FDFDFD] border-[#A8A8A8] border-[0.5px] text-[15px] font-medium px-4 py-2.5 rounded-[10px] outline-none transition-all text-gray-800"
-                  />
-                </div>
-
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-[17px] font-medium text-[#000000]">Admin Email</label>
+                    <label className="text-[17px] font-medium text-[#000000]">Site Name</label>
                     <input 
-                      type="email"
-                      value={generalSettings.adminEmail}
-                      onChange={(e) => handleGeneralChange('adminEmail', e.target.value)}
+                      type="text"
+                      value={generalSettings.siteName}
+                      onChange={(e) => handleGeneralChange('siteName', e.target.value)}
                       className="w-full h-[45px] bg-[#FDFDFD] border-[#A8A8A8] border-[0.5px] text-[15px] font-medium px-4 py-2.5 rounded-[10px] outline-none transition-all text-gray-800"
                     />
                   </div>
@@ -348,106 +548,7 @@ export default function SystemSettings({ onBack }) {
             </div>
           )}
 
-          {activeTab === 'Notifications' && (
-            <div className="space-y-7">
-              <div className="space-y-1.5">
-                <div className="flex items-center gap-2.5">
-                  <div className="text-[#5B50E5]">
-                    <Bell size={23} strokeWidth={1.7} />                  
-                  </div>
-                  <h2 className="text-[25px] font-semibold text-[#000000] leading-tight ml-2">Notification Settings</h2>
-                </div>
-                <p className="text-[18px] font-regular text-[#707070]">
-                  Manage how you receive notifications
-                </p>
-              </div>
-
-              <div className="space-y-4">
-                <div className="flex items-center gap-4.5 text-[20px] font-semibold text-[#000000]">
-                  <Mail size={23} strokeWidth={1.7} className="text-[#4F46E5]" />
-                  <span>Email Notifications</span>
-                </div>
-
-                <div className="space-y-6">
-                  <label className="h-[62px] flex items-center justify-between bg-[#F9F9F9] border border-gray-100 p-4 rounded-[16px] cursor-pointer hover:bg-gray-100/60 transition-colors">
-                    <div>
-                      <span className="text-[18px] font-medium text-[#000000] block">Email Notifications</span>
-                      <span className="text-[15px] text-[#000000] font-regular mt-0.5 block">Receive notifications and updates via email</span>
-                    </div>
-                    <input 
-                      type="checkbox" 
-                      checked={notifications.emailNotifications}
-                      onChange={() => handleNotificationToggle('emailNotifications')}
-                      className="w-6 h-6 rounded accent-[#4F46E5] cursor-pointer"
-                    />
-                  </label>
-
-                  <label className="h-[62px] flex items-center justify-between bg-[#F9F9F9] border border-gray-100 p-4 rounded-[16px] cursor-pointer hover:bg-gray-100/60 transition-colors">
-                    <div>
-                      <span className="text-[18px] font-medium text-[#000000] block">Weekly Reports</span>
-                      <span className="text-[15px] text-[#000000] font-regular mt-0.5 block">Get weekly activity summaries</span>
-                    </div>
-                    <input 
-                      type="checkbox" 
-                      checked={notifications.weeklyReports}
-                      onChange={() => handleNotificationToggle('weeklyReports')}
-                      className="w-6 h-6 rounded accent-[#4F46E5] cursor-pointer"
-                    />
-                  </label>
-
-                  <label className="h-[62px] flex items-center justify-between bg-[#F9F9F9] border border-gray-100 p-4 rounded-[16px] cursor-pointer hover:bg-gray-100/60 transition-colors">
-                    <div>
-                      <span className="text-[18px] font-medium text-[#000000] block">Monthly Statistics</span>
-                      <span className="text-[15px] text-[#000000] font-regular mt-0.5 block">Receive monthly platform statistics</span>
-                    </div>
-                    <input 
-                      type="checkbox" 
-                      checked={notifications.monthlyStatistics}
-                      onChange={() => handleNotificationToggle('monthlyStatistics')}
-                      className="w-6 h-6 rounded accent-[#4F46E5] cursor-pointer"
-                    />
-                  </label>
-                </div>
-              </div>
-
-              <div className="pt-4 border-t border-gray-200 space-y-4">
-                <div className="flex items-center gap-4.5 text-[20px] font-semibold text-[#000000]">
-                  <Shield size={23} strokeWidth={1.7} className="text-[#4F46E5]" />
-                  <span>System Alerts</span>
-                </div>
-
-                <div className="space-y-6">
-                  <label className="h-[62px] flex items-center justify-between bg-[#F9F9F9] border border-gray-100 p-4 rounded-[16px] cursor-pointer hover:bg-gray-100/60 transition-colors">
-                    <div>
-                      <span className="text-[18px] font-medium text-[#000000] block">Security Alerts</span>
-                      <span className="text-[15px] text-[#000000] font-regular mt-0.5 block">Get notified of security events</span>
-                    </div>
-                    <input 
-                      type="checkbox" 
-                      checked={notifications.securityAlerts}
-                      onChange={() => handleNotificationToggle('securityAlerts')}
-                      className="w-6 h-6 rounded accent-[#4F46E5] cursor-pointer"
-                    />
-                  </label>
-
-                  <label className="h-[62px] flex items-center justify-between bg-[#F9F9F9] border border-gray-100 p-4 rounded-[16px] cursor-pointer hover:bg-gray-100/60 transition-colors">
-                    <div>
-                      <span className="text-[18px] font-medium text-[#000000] block">Push Notifications</span>
-                      <span className="text-[15px] text-[#000000] font-regular mt-0.5 block">Receive browser push notifications</span>
-                    </div>
-                    <input 
-                      type="checkbox" 
-                      checked={notifications.pushNotifications}
-                      onChange={() => handleNotificationToggle('pushNotifications')}
-                      className="w-6 h-6 rounded accent-[#4F46E5] cursor-pointer"
-                    />
-                  </label>
-                </div>
-              </div>
-
-            </div>
-          )}
-
+          {/* TAB 3: SECURITY SETTINGS */}
           {activeTab === 'Security' && (
             <div className="space-y-7">
               <div className="space-y-1.5">
@@ -455,7 +556,7 @@ export default function SystemSettings({ onBack }) {
                   <div className="text-[#6155F5]">
                     <Shield size={23} strokeWidth={1.7} />
                   </div>
-                  <h2 className="text-[25px] font-semibold text-[#000000] leading-tight">Security Settings</h2>
+                  <h2 className="text-[25px] font-semibold text-[#000000] leading-tight ml-2">Security Settings</h2>
                 </div>
                 <p className="text-[18px] font-regular text-[#707070]">
                   Configure security and authentication options
@@ -468,18 +569,20 @@ export default function SystemSettings({ onBack }) {
                   <span>Authentication</span>
                 </div>
 
-                <label className="h-[62px] flex items-center justify-between bg-[#F9F9F9] border border-gray-100 p-4 rounded-[16px] cursor-pointer hover:bg-gray-100/60 transition-colors">
+                <div 
+                  onClick={() => handleSecurityChange('twoFactorAuth', !security.twoFactorAuth)}
+                  className="h-[62px] flex items-center justify-between bg-[#F9F9F9] border border-gray-100 p-4 rounded-[16px] cursor-pointer hover:bg-gray-100/60 transition-colors"
+                >
                   <div>
                     <span className="text-[18px] font-medium text-[#000000] block">Two-Factor Authentication</span>
                     <span className="text-[15px] text-[#000000] font-regular mt-0.3 block">Require 2FA for admin accounts</span>
                   </div>
-                  <input 
-                    type="checkbox" 
-                    checked={security.twoFactorAuth}
-                    onChange={(e) => handleSecurityChange('twoFactorAuth', e.target.checked)}
-                    className="w-6 h-6 rounded accent-[#4F46E5] cursor-pointer"
-                  />
-                </label>
+                  <div className={`w-5 h-5 rounded-[5px] flex items-center justify-center transition-all ${
+                    security.twoFactorAuth ? 'bg-[#5B50E5] text-white' : 'border-2 border-gray-300 bg-white'
+                  }`}>
+                    {security.twoFactorAuth && <Check size={14} strokeWidth={3} />}
+                  </div>
+                </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
@@ -488,7 +591,7 @@ export default function SystemSettings({ onBack }) {
                       type="number"
                       value={security.sessionTimeout}
                       onChange={(e) => handleSecurityChange('sessionTimeout', e.target.value)}
-                      className="w-full bg-[#FAFAFA] border border-gray-200 focus:border-[#FF34DC] text-[16px] font-normal px-4 py-3 rounded-[14px] outline-none transition-all text-gray-900"
+                      className="w-full h-[45px] bg-[#FDFDFD] border-[#A8A8A8] border-[0.5px] text-[15px] font-medium px-4 py-2.5 rounded-[10px] outline-none transition-all text-gray-800"
                     />
                   </div>
                   <div className="space-y-2">
@@ -497,7 +600,7 @@ export default function SystemSettings({ onBack }) {
                       type="number"
                       value={security.minPasswordLength}
                       onChange={(e) => handleSecurityChange('minPasswordLength', e.target.value)}
-                      className="w-full bg-[#FAFAFA] border border-gray-200 focus:border-[#FF34DC] text-[16px] font-normal px-4 py-3 rounded-[14px] outline-none transition-all text-gray-900"
+                      className="w-full h-[45px] bg-[#FDFDFD] border-[#A8A8A8] border-[0.5px] text-[15px] font-medium px-4 py-2.5 rounded-[10px] outline-none transition-all text-gray-800"
                     />
                   </div>
                 </div>
@@ -526,98 +629,6 @@ export default function SystemSettings({ onBack }) {
                     <Check size={18} className="text-[#890080]" strokeWidth={2.3} />
                     <span>Must contain at least one special character</span>
                   </div>
-                </div>
-              </div>
-
-            </div>
-          )}
-
-          {activeTab === 'Appearance' && (
-            <div className="space-y-7">
-              <div className="space-y-1.5">
-                <div className="flex items-center gap-4.5">
-                  <div className="text-[#5b50e5]">
-                    <Eye size={23} strokeWidth={1.7} />
-                  </div>
-                  <h2 className="text-[25px] font-semibold text-[#000000] leading-tight">Appearance Settings</h2>
-                </div>
-                <p className="text-[18px] font-regular text-[#707070]">
-                  Customize the look and feel of the platform
-                </p>
-              </div>
-
-              <div className="space-y-4">
-                <div className="text-[20px] font-semibold text-[#000000]">Theme Preferences</div>
-                
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  <button
-                    type="button"
-                    onClick={() => setAppearance(prev => ({ ...prev, theme: 'Light' }))}
-                    className={`w-[238px] h-[95px] p-6 rounded-[20px] border flex flex-col items-center justify-center gap-3 transition-all cursor-pointer ${
-                      appearance.theme === 'Light'
-                        ? 'border-[#FF34DC] bg-[#FFF8FE] text-[#890080] shadow-sm'
-                        : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
-                    }`}
-                  >
-                    <Sun size={35} className={appearance.theme === 'Light' ? 'text-[#FF34DC]' : 'text-gray-500'} />
-                    <span className="text-[18px] font-normal">Light</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => setAppearance(prev => ({ ...prev, theme: 'Dark' }))}
-                    className={`w-[238px] h-[95px] p-6 rounded-[20px] border flex flex-col items-center justify-center gap-3 transition-all cursor-pointer ${
-                      appearance.theme === 'Dark'
-                        ? 'border-[#FF34DC] bg-[#FFF8FE] text-[#890080] shadow-sm'
-                        : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
-                    }`}
-                  >
-                    <Moon size={35} className={appearance.theme === 'Dark' ? 'text-[#FF34DC]' : 'text-gray-500'} />
-                    <span className="text-[18px] font-normal">Dark</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => setAppearance(prev => ({ ...prev, theme: 'Auto' }))}
-                    className={`w-[238px] h-[95px] p-6 rounded-[20px] border flex flex-col items-center justify-center gap-3 transition-all cursor-pointer ${
-                      appearance.theme === 'Auto'
-                        ? 'border-[#FF34DC] bg-[#FFF8FE] text-[#890080] shadow-sm'
-                        : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
-                    }`}
-                  >
-                    <Monitor size={35} className={appearance.theme === 'Auto' ? 'text-[#FF34DC]' : 'text-gray-500'} />
-                    <span className="text-[18px] font-normal">Auto</span>
-                  </button>
-                </div>
-              </div>
-
-              <div className="pt-4 border-t border-gray-200 space-y-4">
-                <div className="text-[20px] font-semibold text-[#000000]">Color Palette</div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-[#FFFFFF] border border-gray-200 p-6 rounded-[15px]">
-                  
-                  <div className="flex flex-col gap-2">
-                    <label className="text-[17px] font-medium text-[#707070] tracking-wider">Primary Color</label>
-                    <div className="flex items-center gap-3">
-                      <div 
-                        className="w-10 h-10 rounded-[12px] shadow-sm flex-shrink-0" 
-                        style={{ backgroundColor: appearance.primaryColor }}
-                      />
-                      <span className="text-[16.5px] font-regular text-[#000000] uppercase">{appearance.primaryColor}</span>
-                    </div>
-                  </div>
-
-                  <div className="flex flex-col gap-2">
-                    <label className="text-[17px] font-medium text-[#707070] tracking-wider">Secondary Color</label>
-                    <div className="flex items-center gap-3">
-                      <div 
-                        className="w-10 h-10 rounded-[12px] shadow-sm flex-shrink-0" 
-                        style={{ backgroundColor: appearance.secondaryColor }}
-                      />
-                      <span className="text-[16.5px] font-regular text-[#000000] uppercase">{appearance.secondaryColor}</span>
-                    </div>
-                  </div>
-
                 </div>
               </div>
 
