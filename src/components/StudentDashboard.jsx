@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import Header from './Header';
 import { 
   LayoutDashboard, 
@@ -16,10 +17,90 @@ import {
   ArrowRight,
   Code2, 
   BarChart3, 
-  PenTool 
+  PenTool,
+  Briefcase,
+  ShieldCheck,
+  Smartphone,
+  Globe,
+  Cpu,
+  Brain,
+  Microscope,
+  Lightbulb,
+  Stethoscope,
+  Bot,
+  Flame,
+  GraduationCap,
+  Building2,
+  HeartPulse,
+  Scale,
+  Wrench,
+  Palette,
+  Camera,
+  Film,
+  Plane,
+  Truck,
+  Compass,
+  Headphones,
+  FileText,
+  Database,
+  Server,
+  Terminal,
+  Lock,
+  Activity,
+  HelpCircle
 } from 'lucide-react';
 
-export default function StudentDashboard({ onLogout, onNavigate, isFirstTimeLogin = true }) {
+const ICON_MAP = {
+  Code2,
+  BarChart3,
+  PenTool,
+  Briefcase,
+  TrendingUp,
+  TrendingDown: TrendingUp,
+  Target,
+  Users: User,
+  DollarSign: Award,
+  Search,
+  Zap,
+  ShieldCheck,
+  Smartphone,
+  Globe,
+  Cpu,
+  Brain,
+  Microscope,
+  Lightbulb,
+  Stethoscope,
+  Bot,
+  Flame,
+  GraduationCap,
+  Building2,
+  HeartPulse,
+  Scale,
+  Wrench,
+  Palette,
+  Camera,
+  Film,
+  Plane,
+  Truck,
+  Compass,
+  Headphones,
+  FileText,
+  Database,
+  Server,
+  Terminal,
+  Lock,
+  Activity
+};
+
+const RenderCareerIcon = ({ iconName, size = 32 }) => {
+  if (!iconName) {
+    return <Code2 size={size} className="text-purple-600" />;
+  }
+  const IconComponent = ICON_MAP[iconName] || Code2;
+  return <IconComponent size={size} className="text-purple-600" />;
+};
+
+export default function StudentDashboard({ onLogout, onNavigate, isFirstTimeLogin = true, user }) {
   const [renderOverlay, setRenderOverlay] = useState(() => {
     const hasSeenWelcome = sessionStorage.getItem('hasSeenWelcomeOverlay');
     return hasSeenWelcome !== 'true';
@@ -27,6 +108,40 @@ export default function StudentDashboard({ onLogout, onNavigate, isFirstTimeLogi
   
   const [showWelcomeOverlay, setShowWelcomeOverlay] = useState(renderOverlay);
   const [greeting, setGreeting] = useState('Hello');
+  const [careerMatches, setCareerMatches] = useState([
+    { title: 'Software Developer', match: '92%', icon: 'Code2' },
+    { title: 'Data Analyst', match: '87%', icon: 'BarChart3' },
+    { title: 'UX Designer', match: '82%', icon: 'PenTool' },
+  ]);
+
+  const currentUser = user || (() => {
+    try {
+      const stored = localStorage.getItem('user');
+      return stored ? JSON.parse(stored) : null;
+    } catch {
+      return null;
+    }
+  })();
+
+  const rawName = currentUser?.name || 'Student';
+  const firstName = rawName.trim().split(' ')[0] || 'Student';
+
+  const fetchCareerMatches = () => {
+    axios.get('http://localhost:8000/api/career-details')
+      .then(res => {
+        if (res.data && Array.isArray(res.data) && res.data.length > 0) {
+          const topThree = res.data.slice(0, 3).map(c => ({
+            title: c.title,
+            match: c.match || '90%',
+            icon: c.icon || c.iconText || 'Code2'
+          }));
+          setCareerMatches(topThree);
+        }
+      })
+      .catch(err => {
+        console.error("Error fetching dynamic career matches for dashboard:", err);
+      });
+  };
 
   useEffect(() => {
     const currentHour = new Date().getHours();
@@ -39,6 +154,21 @@ export default function StudentDashboard({ onLogout, onNavigate, isFirstTimeLogi
     } else {
       setGreeting('Good Night');
     }
+
+    fetchCareerMatches();
+
+    const careerChannel = new BroadcastChannel('career_updates_channel');
+    careerChannel.onmessage = (event) => {
+      if (event.data === 'refresh_careers') {
+        fetchCareerMatches();
+      }
+    };
+
+    const handleInstantSync = () => fetchCareerMatches();
+    window.addEventListener('careerDataUpdated', handleInstantSync);
+    window.addEventListener('storage', handleInstantSync);
+    window.addEventListener('focus', handleInstantSync);
+    const syncInterval = setInterval(fetchCareerMatches, 500);
 
     if (renderOverlay) {
       const fadeTimeout = setTimeout(() => {
@@ -53,8 +183,21 @@ export default function StudentDashboard({ onLogout, onNavigate, isFirstTimeLogi
       return () => {
         clearTimeout(fadeTimeout);
         clearTimeout(removeTimeout);
+        careerChannel.close();
+        window.removeEventListener('careerDataUpdated', handleInstantSync);
+        window.removeEventListener('storage', handleInstantSync);
+        window.removeEventListener('focus', handleInstantSync);
+        clearInterval(syncInterval);
       };
     }
+
+    return () => {
+      careerChannel.close();
+      window.removeEventListener('careerDataUpdated', handleInstantSync);
+      window.removeEventListener('storage', handleInstantSync);
+      window.removeEventListener('focus', handleInstantSync);
+      clearInterval(syncInterval);
+    };
   }, [renderOverlay]);
 
   const handleEnhancedLogout = () => {
@@ -69,18 +212,6 @@ export default function StudentDashboard({ onLogout, onNavigate, isFirstTimeLogi
     { id: 4, label: 'Hours Saved', value: '8', emoji: '⚡' },
   ];
 
-  const dynamicIconMap = {
-    'Software Developer': Code2,
-    'Data Analyst': BarChart3,
-    'UX Designer': PenTool,
-  };
-
-  const careerMatches = [
-    { title: 'Software Developer', match: '92%', iconKey: 'Software Developer' },
-    { title: 'Data Analyst', match: '87%', iconKey: 'Data Analyst' },
-    { title: 'UX Designer', match: '82%', iconKey: 'UX Designer' },
-  ];
-
   const recentActivity = [
     { id: 1, text: 'Completed Career Assessment', time: '2 hours ago', icon: CheckCircle2 },
     { id: 2, text: 'Viewed Software Developer Path', time: '1 day ago', icon: BookOpen },
@@ -89,7 +220,6 @@ export default function StudentDashboard({ onLogout, onNavigate, isFirstTimeLogi
 
   return (
     <div className="relative min-h-screen bg-[#fcf8fe] text-gray-800 font-inter antialiased">
-      
       <style>
         {`
           @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
@@ -106,11 +236,9 @@ export default function StudentDashboard({ onLogout, onNavigate, isFirstTimeLogi
             border: 0.7px solid #FF34DC;
             color: #890080;
           }
-          
           .figma-section-shadow {
             box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.25);
           }
-          
           @keyframes overlayWave {
             0% { transform: rotate( 0.0deg) }
             15% { transform: rotate(14.0deg) }
@@ -124,7 +252,6 @@ export default function StudentDashboard({ onLogout, onNavigate, isFirstTimeLogi
             animation: overlayWave 1.5s ease-in-out infinite;
             transform-origin: 70% 70%;
           }
-
           @keyframes loadStrip {
             0% { width: 0%; }
             100% { width: 100%; }
@@ -145,11 +272,9 @@ export default function StudentDashboard({ onLogout, onNavigate, isFirstTimeLogi
             <div className="text-6xl sm:text-7xl inline-block animate-overlay-wave select-none mb-2">
               👋🏼
             </div>
-            
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-gray-900 leading-tight font-inter">
-              {greeting}, Ahmed!
+              {greeting}, {firstName}!
             </h2>
-            
             <div className="space-y-3 max-w-lg mx-auto">
               <p className="text-[#D200AD] text-base sm:text-lg md:text-xl font-semibold tracking-wide font-inter">
                 You are exactly where you need to be.
@@ -158,7 +283,6 @@ export default function StudentDashboard({ onLogout, onNavigate, isFirstTimeLogi
                 Welcome to your real-time career counseling platform—a dedicated space built to understand your true potential, clear your doubts, and craft the most beautiful path for your future success.
               </p>
             </div>
-            
             <div className="w-full max-w-xs bg-gray-200 h-1.5 rounded-full overflow-hidden mt-6 shadow-inner">
               <div 
                 style={{ backgroundColor: '#83047A' }} 
@@ -172,11 +296,10 @@ export default function StudentDashboard({ onLogout, onNavigate, isFirstTimeLogi
       <Header onNavigate={onNavigate} onLogout={handleEnhancedLogout} />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-        
         <div className="pt-4 space-y-7 text-left">
           <div className="space-y-2"> 
             <h1 className="text-4xl font-bold tracking-tight text-gray-900 inline-flex items-center gap-2">
-              Hello, Ahmed! <span className="select-none">👋🏼</span>
+              Hello, {firstName}! <span className="select-none">👋🏼</span>
             </h1>
             <p className="text-[#000000] font-light text-[21.3px] mt-[5px] mb-[15px]">
               Ready to take the next step in your career journey?
@@ -196,35 +319,30 @@ export default function StudentDashboard({ onLogout, onNavigate, isFirstTimeLogi
           </button>
         </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 justify-items-center">
-            {stats.map((stat) => {
-              return (
-                <div 
-                  key={stat.id} 
-                  className="bg-white h-[145px] w-full max-w-[303px] px-[25px] rounded-[25px] prototype-card-border shadow-[0px_5px_5px_rgba(0,0,0,0.25)] flex items-center gap-[16px] text-left"
-                >
-                  <div className="text-[45px] select-none flex-shrink-0 filter drop-shadow-sm flex items-center justify-center">
-                    {stat.emoji}
-                  </div>
-                  
-                  <div className="flex flex-col justify-center">
-                    <div className="text-[36px] font-bold text-gray-900 tracking-tight leading-tight">{stat.value}</div>
-                    <div className="text-[15px] font-normal text-[#545454] mt-[2px]">{stat.label}</div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 justify-items-center">
+          {stats.map((stat) => (
+            <div 
+              key={stat.id} 
+              className="bg-white h-[145px] w-full max-w-[303px] px-[25px] rounded-[25px] prototype-card-border shadow-[0px_5px_5px_rgba(0,0,0,0.25)] flex items-center gap-[16px] text-left"
+            >
+              <div className="text-[45px] select-none flex-shrink-0 filter drop-shadow-sm flex items-center justify-center">
+                {stat.emoji}
+              </div>
+              <div className="flex flex-col justify-center">
+                <div className="text-[36px] font-bold text-gray-900 tracking-tight leading-tight">{stat.value}</div>
+                <div className="text-[15px] font-normal text-[#545454] mt-[2px]">{stat.label}</div>
+              </div>
+            </div>
+          ))}
+        </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
           <div className="lg:col-span-2 space-y-6">
-            
             <div className="bg-white p-6 rounded-[25px] prototype-card-border figma-section-shadow space-y-5 text-left">
               <div className="flex items-center justify-between">
                 <h2 className="text-xl font-semibold text-gray-900">Your Career Journey</h2>
                 <TrendingUp size={24} strokeWidth={2.5} className="text-indigo-600" />
               </div>
-              
               <div className="space-y-1.5">
                 <div className="flex justify-end">
                   <span style={{ color: '#83047A' }} className="text-sm font-normal">75%</span>
@@ -233,14 +351,13 @@ export default function StudentDashboard({ onLogout, onNavigate, isFirstTimeLogi
                   <div style={{ backgroundColor: '#83047A', width: '75%' }} className="h-full rounded-full" />
                 </div>
               </div>
-              
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
                 <div style={{ backgroundColor: '#F3E4FF' }} className="p-4 rounded-[25px] border border-[#e2ccf0]">
                   <div className="text-2xl font-bold text-gray-900" style={{ textShadow: "0 0 1px #111827, 0 0 1px #111827" }}>87%</div>
                   <div className="text-s font-normal text-[#000000] mt-0.5">Last Quiz Score</div>
                 </div>
                 <div style={{ backgroundColor: '#FFE4FF' }} className="p-4 rounded-[20px] border border-[#f5ccf5]">
-                  <div className="text-2xl font-bold text-gray-900" style={{ textShadow: "0 0 1px #111827, 0 0 1px #111827" }}>5</div>
+                  <div className="text-2xl font-bold text-gray-900" style={{ textShadow: "0 0 1px #111827, 0 0 1px #111827" }}>{careerMatches.length}</div>
                   <div className="text-s font-normal text-[#000000] mt-0.5">Matching Careers</div>
                 </div>
               </div>
@@ -250,18 +367,17 @@ export default function StudentDashboard({ onLogout, onNavigate, isFirstTimeLogi
               <h2 className="text-xl font-semibold text-gray-900">Top Career Matches</h2>
               <div className="space-y-3">
                 {careerMatches.map((career, index) => {
-                  const CareerIcon = dynamicIconMap[career.iconKey] || Code2;
+                  const cleanMatchNumber = career.match ? career.match.replace(/match/gi, '').replace('%', '').trim() : '90';
                   return (
                     <div key={index} className="flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 rounded-xl transition cursor-pointer group border border-gray-100">
                       <div className="flex items-center gap-4">
                         <div className="flex items-center justify-center">
-                          <CareerIcon size={32} className="text-purple-600" />
+                          <RenderCareerIcon iconName={career.icon} size={32} />
                         </div>
                         <div>
                           <div style={{ color: '#BE007F' }} className="font-semibold text-base">{career.title}</div>
-                          <div className="text-sm text-black mt-0.5">
-                            <span className="font-normal">Match: </span>
-                            <span className="font-bold">{career.match}</span>
+                          <div className="text-sm font-normal text-black mt-0.5">
+                            Match: <span className="font-bold">{cleanMatchNumber}%</span>
                           </div>
                         </div>
                       </div>
@@ -284,7 +400,6 @@ export default function StudentDashboard({ onLogout, onNavigate, isFirstTimeLogi
           </div>
 
           <div className="space-y-6 text-left">
-            
             <div className="bg-white p-6 rounded-[25px] prototype-card-border figma-section-shadow space-y-5">
               <h2 className="text-xl font-semibold text-gray-900">Recent Activity</h2>
               <div className="space-y-5 relative before:absolute before:inset-y-1 before:left-[11px] before:w-[2px] before:bg-gray-100">
@@ -308,7 +423,6 @@ export default function StudentDashboard({ onLogout, onNavigate, isFirstTimeLogi
             <div className="bg-white p-6 rounded-[25px] prototype-card-border figma-section-shadow space-y-4">
               <h2 className="text-xl font-semibold text-gray-900">Quick Actions</h2>
               <div className="flex flex-col gap-2.5">
-                
                 <button 
                   type="button"
                   onClick={() => {
@@ -319,7 +433,6 @@ export default function StudentDashboard({ onLogout, onNavigate, isFirstTimeLogi
                   <span>Retake Assessment</span>
                   <RefreshCw size={16} className="text-gray-400 group-hover:text-[#890080] transition-colors" />
                 </button>
-                
                 <button 
                   type="button"
                   onClick={() => {
@@ -330,7 +443,6 @@ export default function StudentDashboard({ onLogout, onNavigate, isFirstTimeLogi
                   <span>Browse Careers</span>
                   <ChevronRight size={16} className="text-gray-400 group-hover:text-[#890080] transition-colors" />
                 </button>
-                
                 <button 
                   type="button"
                   onClick={() => {
@@ -341,10 +453,8 @@ export default function StudentDashboard({ onLogout, onNavigate, isFirstTimeLogi
                   <span>Update Profile</span>
                   <User size={16} className="text-gray-400 group-hover:text-[#890080] transition-colors" />
                 </button>
-                
               </div>
             </div>
-
           </div>
         </div>
       </main>
