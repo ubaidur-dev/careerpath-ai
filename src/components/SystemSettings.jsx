@@ -1,4 +1,5 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import axios from 'axios';
 import { 
   User,
   Settings, 
@@ -20,25 +21,22 @@ import {
 export default function SystemSettings({ onBack }) {
   const [activeTab, setActiveTab] = useState('Admin Profile'); 
 
-  // Admin Profile State
   const [profile, setProfile] = useState({
-    fullName: 'Admin User',
-    email: 'admin@aicareeradvisor.com',
+    fullName: '',
+    email: '',
     currentPassword: '',
     newPassword: '',
     confirmPassword: ''
   });
 
-  // Profile Image State & Reference
-  const [profileImage, setProfileImage] = useState(null);
+  const [avatarPreview, setAvatarPreview] = useState(null);
+  const [avatarFile, setAvatarFile] = useState(null);
   const fileInputRef = useRef(null);
 
-  // Password Visibility States for Real-Time Toggle
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  // General Settings State
   const [generalSettings, setGeneralSettings] = useState({
     siteName: 'AI Career Advisor',
     supportEmail: 'support@aicareeradvisor.com',
@@ -50,7 +48,6 @@ export default function SystemSettings({ onBack }) {
     dateFormat: 'DD/MM/YYYY'
   });
 
-  // Security Settings State
   const [security, setSecurity] = useState({
     twoFactorAuth: false,
     sessionTimeout: '35',
@@ -68,6 +65,66 @@ export default function SystemSettings({ onBack }) {
     }, 3500);
   };
 
+  const getAuthToken = () => {
+    const directToken = localStorage.getItem('token') || 
+                        sessionStorage.getItem('token') || 
+                        localStorage.getItem('access_token') || 
+                        sessionStorage.getItem('access_token') || 
+                        localStorage.getItem('auth_token') || 
+                        sessionStorage.getItem('auth_token');
+    if (directToken) return directToken;
+
+    try {
+      const storedUser = localStorage.getItem('user') || sessionStorage.getItem('user') || localStorage.getItem('auth');
+      if (storedUser) {
+        const parsed = JSON.parse(storedUser);
+        if (parsed.token) return parsed.token;
+        if (parsed.access_token) return parsed.access_token;
+        if (parsed.data?.token) return parsed.data.token;
+      }
+    } catch (e) {
+      console.error("Error parsing stored user object", e);
+    }
+
+    return null;
+  };
+
+  useEffect(() => {
+    const fetchAdminProfile = async () => {
+      try {
+        const token = getAuthToken();
+        if (!token) {
+          console.warn("No authentication token found in storage!");
+          triggerToast("Warning: No auth token found. Please login again.");
+          return;
+        }
+
+        const response = await axios.get('/admin/profile', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (response.data) {
+          setProfile(prev => ({
+            ...prev,
+            fullName: response.data.name || response.data.full_name || '',
+            email: response.data.email || ''
+          }));
+          if (response.data.avatar) {
+            const avatarUrl = response.data.avatar.startsWith('http')
+              ? response.data.avatar
+              : `http://127.0.0.1:8000/storage/${response.data.avatar}`;
+            setAvatarPreview(avatarUrl);
+          } else {
+            setAvatarPreview(null);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to load admin profile", error);
+        triggerToast(error.response?.data?.message || "Unauthenticated session.");
+      }
+    };
+    fetchAdminProfile();
+  }, []);
+
   const handleProfileChange = (key, value) => {
     setProfile(prev => ({ ...prev, [key]: value }));
   };
@@ -83,24 +140,100 @@ export default function SystemSettings({ onBack }) {
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setProfileImage(reader.result); 
-      };
-      reader.readAsDataURL(file);
+      setAvatarFile(file);
+      setAvatarPreview(URL.createObjectURL(file));
     }
   };
 
   const handleDeleteImage = (e) => {
     e.stopPropagation(); 
-    setProfileImage(null);
+    setAvatarPreview(null);
+    setAvatarFile('DELETE');
     if (fileInputRef.current) {
       fileInputRef.current.value = ''; 
     }
   };
 
-  const handleSaveChanges = () => {
-    triggerToast("Settings saved successfully!");
+  const getInitials = (name) => {
+    if (!name) return "AU";
+    const parts = name.trim().split(' ');
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
+    return name.substring(0, 2).toUpperCase();
+  };
+
+  const handleSaveChanges = async () => {
+    try {
+      const token = getAuthToken();
+      if (!token) {
+        triggerToast("Authentication token missing. Please log in.");
+        return;
+      }
+
+      if (profile.newPassword || profile.confirmPassword || profile.currentPassword) {
+        if (!profile.currentPassword) {
+          triggerToast("Please enter your current password.");
+          return;
+        }
+        if (profile.newPassword.length < 8) {
+          triggerToast("New password must be at least 8 characters.");
+          return;
+        }
+        if (profile.newPassword !== profile.confirmPassword) {
+          triggerToast("New password and confirm password do not match.");
+          return;
+        }
+      }
+
+      const formData = new FormData();
+      formData.append('name', profile.fullName);
+      formData.append('email', profile.email);
+
+      if (avatarFile === 'DELETE') {
+        formData.append('remove_avatar', '1');
+      } else if (avatarFile instanceof File) {
+        formData.append('avatar', avatarFile);
+      }
+
+      if (profile.newPassword) {
+        formData.append('current_password', profile.currentPassword);
+        formData.append('password', profile.newPassword);
+        formData.append('password_confirmation', profile.confirmPassword);
+      }
+
+      const response = await axios.post('/admin/profile/update', formData, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+
+      triggerToast(response.data.message || "Profile updated successfully!");
+
+      setProfile(prev => ({
+        ...prev,
+        fullName: response.data.name ?? prev.fullName,
+        email: response.data.email ?? prev.email,
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: ''
+      }));
+
+      if (response.data.avatar) {
+        const avatarUrl = response.data.avatar.startsWith('http')
+          ? response.data.avatar
+          : `http://127.0.0.1:8000/storage/${response.data.avatar}`;
+        setAvatarPreview(avatarUrl);
+      } else {
+        setAvatarPreview(null);
+      }
+
+      setAvatarFile(null);
+    } catch (error) {
+      console.error(error);
+      triggerToast(error.response?.data?.message || "Failed to update profile settings");
+    }
   };
 
   return (
@@ -139,11 +272,9 @@ export default function SystemSettings({ onBack }) {
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         
-        {/* Left Navigation Box */}
         <div className="lg:col-span-3 space-y-4">
           <div className="w-[256px] h-[200px] bg-white border border-[#FFD2F7] rounded-[20px] p-3 shadow-[3px_4px_4px_0.2px_rgba(0,0,0,0.25)] space-y-1.5 flex flex-col justify-center">
             
-            {/* Tab 1: Admin Profile */}
             <button
               type="button"
               onClick={() => setActiveTab('Admin Profile')}
@@ -157,7 +288,6 @@ export default function SystemSettings({ onBack }) {
               Admin Profile
             </button>
 
-            {/* Tab 2: General */}
             <button
               type="button"
               onClick={() => setActiveTab('General')}
@@ -171,7 +301,6 @@ export default function SystemSettings({ onBack }) {
               General
             </button>
 
-            {/* Tab 3: Security */}
             <button
               type="button"
               onClick={() => setActiveTab('Security')}
@@ -198,10 +327,8 @@ export default function SystemSettings({ onBack }) {
           </button>
         </div>
 
-        {/* Right Main Content Area */}
         <div className="lg:col-span-9 bg-white border border-[#FFD2F7] rounded-[28px] p-6 sm:p-8 shadow-[3px_6px_6px_0.5px_rgba(0,0,0,0.25)] text-left space-y-8">
           
-          {/* TAB 1: ADMIN PROFILE */}
           {activeTab === 'Admin Profile' && (
             <div className="space-y-7">
               <div className="space-y-1.5">
@@ -216,7 +343,6 @@ export default function SystemSettings({ onBack }) {
                 </p>
               </div>
 
-              {/* Profile Picture Upload Section */}
               <div className="flex flex-col sm:flex-row items-center gap-6 p-5 bg-[#FDFDFD] border border-gray-200/80 rounded-[20px]">
                 <input 
                   type="file"
@@ -228,9 +354,9 @@ export default function SystemSettings({ onBack }) {
 
                 <div className="relative group flex-shrink-0">
                   <div className="w-[120px] h-[120px] rounded-full bg-[#FFBFF4] text-[#000000] font-extrabold text-[32px] flex items-center justify-center shadow-sm overflow-hidden relative">
-                    {profileImage ? (
+                    {avatarPreview ? (
                       <>
-                        <img src={profileImage} alt="Admin Avatar" className="w-full h-full object-cover" />
+                        <img src={avatarPreview} alt="Admin Avatar" className="w-full h-full object-cover" />
                         <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-200">
                           <button 
                             type="button"
@@ -243,11 +369,11 @@ export default function SystemSettings({ onBack }) {
                         </div>
                       </>
                     ) : (
-                      "AU"
+                      getInitials(profile.fullName)
                     )}
                   </div>
 
-                  {!profileImage && (
+                  {!avatarPreview && (
                     <button 
                       type="button"
                       onClick={() => fileInputRef.current.click()}
@@ -271,9 +397,9 @@ export default function SystemSettings({ onBack }) {
                       className="px-4 py-2 bg-[#FFEDF9] text-[#bd24df] border border-[#f2c6fa] hover:bg-[#bd24df] hover:text-white rounded-[12px] text-[14px] font-semibold transition cursor-pointer inline-flex items-center gap-2"
                     >
                       <Upload size={16} strokeWidth={2} />
-                      <span>{profileImage ? "Change Photo" : "Upload Photo"}</span>
+                      <span>{avatarPreview ? "Change Photo" : "Upload Photo"}</span>
                     </button>
-                    {profileImage && (
+                    {avatarPreview && (
                       <button
                         type="button"
                         onClick={handleDeleteImage}
@@ -287,7 +413,6 @@ export default function SystemSettings({ onBack }) {
                 </div>
               </div>
 
-              {/* Account Information */}
               <div className="space-y-4">
                 <div className="flex items-center gap-4.5 text-[20px] font-semibold text-[#000000]">
                   <User size={23} strokeWidth={1.7} className="text-[#5B50E5]" />
@@ -316,7 +441,6 @@ export default function SystemSettings({ onBack }) {
                 </div>
               </div>
 
-              {/* Password Change */}
               <div className="pt-3 border-t border-gray-200/80 space-y-4">
                 <div className="flex items-center gap-4.5 text-[20px] font-semibold text-[#000000]">
                   <Lock size={23} strokeWidth={1.7} className="text-[#5B50E5]" />
@@ -328,11 +452,15 @@ export default function SystemSettings({ onBack }) {
                   <div className="space-y-1.5">
                     <label className="text-[17px] font-medium text-[#000000]">Current Password</label>
                     <div className="relative">
-                      <input 
+                      <input
                         type={showCurrentPassword ? "text" : "password"}
                         placeholder="Enter current password"
                         value={profile.currentPassword}
                         onChange={(e) => handleProfileChange('currentPassword', e.target.value)}
+                        autoComplete="off"
+                        name="admin-current-password"
+                        readOnly
+                        onFocus={(e) => e.target.removeAttribute('readonly')}
                         className="w-full h-[45px] bg-[#FDFDFD] border-[#A8A8A8] border-[0.5px] text-[15px] font-medium pl-4 pr-11 py-2.5 rounded-[10px] outline-none transition-all text-gray-800"
                       />
                       <button
@@ -350,11 +478,13 @@ export default function SystemSettings({ onBack }) {
                     <div className="space-y-1.5">
                       <label className="text-[17px] font-medium text-[#000000]">New Password</label>
                       <div className="relative">
-                        <input 
+                        <input
                           type={showNewPassword ? "text" : "password"}
                           placeholder="Enter new password"
                           value={profile.newPassword}
                           onChange={(e) => handleProfileChange('newPassword', e.target.value)}
+                          autoComplete="new-password"
+                          name="admin-new-password"
                           className="w-full h-[45px] bg-[#FDFDFD] border-[#A8A8A8] border-[0.5px] text-[15px] font-medium pl-4 pr-11 py-2.5 rounded-[10px] outline-none transition-all text-gray-800"
                         />
                         <button
@@ -367,15 +497,16 @@ export default function SystemSettings({ onBack }) {
                       </div>
                     </div>
 
-                    {/* Confirm Password */}
                     <div className="space-y-1.5">
                       <label className="text-[17px] font-medium text-[#000000]">Confirm New Password</label>
                       <div className="relative">
-                        <input 
+                        <input
                           type={showConfirmPassword ? "text" : "password"}
                           placeholder="Confirm new password"
                           value={profile.confirmPassword}
                           onChange={(e) => handleProfileChange('confirmPassword', e.target.value)}
+                          autoComplete="new-password"
+                          name="admin-confirm-password"
                           className="w-full h-[45px] bg-[#FDFDFD] border-[#A8A8A8] border-[0.5px] text-[15px] font-medium pl-4 pr-11 py-2.5 rounded-[10px] outline-none transition-all text-gray-800"
                         />
                         <button
@@ -394,7 +525,6 @@ export default function SystemSettings({ onBack }) {
             </div>
           )}
 
-          {/* TAB 2: GENERAL SETTINGS */}
           {activeTab === 'General' && (
             <div className="space-y-7">
               <div className="space-y-1.5">
@@ -548,7 +678,6 @@ export default function SystemSettings({ onBack }) {
             </div>
           )}
 
-          {/* TAB 3: SECURITY SETTINGS */}
           {activeTab === 'Security' && (
             <div className="space-y-7">
               <div className="space-y-1.5">
