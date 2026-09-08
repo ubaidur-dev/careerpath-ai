@@ -65,17 +65,13 @@ export default function SystemSettings({ onBack }) {
     }, 3500);
   };
 
+ 
   const getAuthToken = () => {
-    const directToken = localStorage.getItem('token') || 
-                        sessionStorage.getItem('token') || 
-                        localStorage.getItem('access_token') || 
-                        sessionStorage.getItem('access_token') || 
-                        localStorage.getItem('auth_token') || 
-                        sessionStorage.getItem('auth_token');
+    const directToken = sessionStorage.getItem('token') || sessionStorage.getItem('access_token') || sessionStorage.getItem('auth_token');
     if (directToken) return directToken;
 
     try {
-      const storedUser = localStorage.getItem('user') || sessionStorage.getItem('user') || localStorage.getItem('auth');
+      const storedUser = sessionStorage.getItem('user');
       if (storedUser) {
         const parsed = JSON.parse(storedUser);
         if (parsed.token) return parsed.token;
@@ -87,6 +83,24 @@ export default function SystemSettings({ onBack }) {
     }
 
     return null;
+  };
+
+  
+  const syncStoredUser = ({ name, email, avatar } = {}) => {
+    try {
+      const raw = sessionStorage.getItem('user');
+      const existing = raw ? JSON.parse(raw) : {};
+      const merged = {
+        ...existing,
+        ...(name !== undefined ? { name } : {}),
+        ...(email !== undefined ? { email } : {}),
+        ...(avatar !== undefined ? { avatar, avatar_url: avatar } : {}),
+      };
+      sessionStorage.setItem('user', JSON.stringify(merged));
+      window.dispatchEvent(new Event('user-profile-updated'));
+    } catch (e) {
+      console.error('Failed to sync stored user', e);
+    }
   };
 
   useEffect(() => {
@@ -108,14 +122,12 @@ export default function SystemSettings({ onBack }) {
             fullName: response.data.name || response.data.full_name || '',
             email: response.data.email || ''
           }));
-          if (response.data.avatar) {
-            const avatarUrl = response.data.avatar.startsWith('http')
-              ? response.data.avatar
-              : `http://127.0.0.1:8000/storage/${response.data.avatar}`;
-            setAvatarPreview(avatarUrl);
-          } else {
-            setAvatarPreview(null);
-          }
+          setAvatarPreview(response.data.avatar || null);
+          syncStoredUser({
+            name: response.data.name || response.data.full_name,
+            email: response.data.email,
+            avatar: response.data.avatar || null,
+          });
         }
       } catch (error) {
         console.error("Failed to load admin profile", error);
@@ -220,14 +232,12 @@ export default function SystemSettings({ onBack }) {
         confirmPassword: ''
       }));
 
-      if (response.data.avatar) {
-        const avatarUrl = response.data.avatar.startsWith('http')
-          ? response.data.avatar
-          : `http://127.0.0.1:8000/storage/${response.data.avatar}`;
-        setAvatarPreview(avatarUrl);
-      } else {
-        setAvatarPreview(null);
-      }
+      setAvatarPreview(response.data.avatar || null);
+      syncStoredUser({
+        name: response.data.name,
+        email: response.data.email,
+        avatar: response.data.avatar || null,
+      });
 
       setAvatarFile(null);
     } catch (error) {
@@ -356,7 +366,12 @@ export default function SystemSettings({ onBack }) {
                   <div className="w-[120px] h-[120px] rounded-full bg-[#FFBFF4] text-[#000000] font-extrabold text-[32px] flex items-center justify-center shadow-sm overflow-hidden relative">
                     {avatarPreview ? (
                       <>
-                        <img src={avatarPreview} alt="Admin Avatar" className="w-full h-full object-cover" />
+                        <img
+                          src={avatarPreview}
+                          alt="Admin Avatar"
+                          className="w-full h-full object-cover"
+                          onError={() => setAvatarPreview(null)}
+                        />
                         <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-200">
                           <button 
                             type="button"
