@@ -3,7 +3,7 @@ import { Eye, EyeOff, XCircle, CheckCircle2, ChevronDown, Search } from 'lucide-
 import axios from 'axios';
 import AuthImage from '../assets/Authentication.PNG'; 
 
-export default function AuthPage({ mode, setMode, onSuccess, onBackHome }) {
+export default function AuthPage({ mode, setMode, onBackHome }) {
   const [role, setRole] = useState('student'); 
   const [showPass, setShowPass] = useState(false);
   const [showAdminPass, setShowAdminPass] = useState(false);
@@ -150,10 +150,21 @@ export default function AuthPage({ mode, setMode, onSuccess, onBackHome }) {
       setLoading(false);
       setSuccessMsg(isLogin ? 'Login successful!' : 'Account created successfully!');
 
-      if (onSuccess) {
+      if (response.data?.login_history_id) {
+        sessionStorage.setItem('login_history_id', response.data.login_history_id);
+      }
+
+      if (response.data?.token) {
+        sessionStorage.setItem('token', response.data.token);
+      }
+      if (response.data?.user) {
+        sessionStorage.setItem('user', JSON.stringify(response.data.user));
+      }
+
+      if (response.data?.token) {
         setTimeout(() => {
-          const userObj = response.data?.user || { role };
-          onSuccess(userObj);
+        
+          window.location.reload();
         }, 1000);
       }
     } catch (err) {
