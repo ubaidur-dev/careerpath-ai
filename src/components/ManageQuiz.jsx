@@ -1,14 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { 
-  Plus, 
-  Trash2, 
-  Edit2, 
-  Check, 
-  AlertTriangle
+import {
+  Plus,
+  Trash2,
+  Edit2,
+  Check,
+  AlertTriangle,
+  Layers,
+  Tag,
+  Gauge
 } from 'lucide-react';
 import AddNewQuestion from './AddNewQuestion';
 import EditQuestion from './EditQuestion';
+import Dropdown from './Dropdown';
 
 const API_BASE_URL = 'http://localhost:8000/api';
 
@@ -32,7 +36,6 @@ const ManageQuiz = ({ onNavigate, onLogout, initialView = 'list' }) => {
   const [toastMessage, setToastMessage] = useState('');
   const [showToast, setShowToast] = useState(false);
   const [deleteConfirmId, setDeleteConfirmId] = useState(null);
-
   const fetchQuestions = async () => {
     try {
       const response = await axios.get(`${API_BASE_URL}/admin/questions`);
@@ -46,7 +49,6 @@ const ManageQuiz = ({ onNavigate, onLogout, initialView = 'list' }) => {
 
   useEffect(() => {
     fetchQuestions();
-
     const interval = setInterval(fetchQuestions, 5000);
     return () => clearInterval(interval);
   }, []);
@@ -58,7 +60,6 @@ const ManageQuiz = ({ onNavigate, onLogout, initialView = 'list' }) => {
       setShowToast(false);
     }, 3500);
   };
-
   const dynamicCategories = ['All Categories', ...Array.from(new Set(questions.map(q => q.category).filter(Boolean)))];
 
   const filteredQuestions = questions.filter(q => {
@@ -75,6 +76,7 @@ const ManageQuiz = ({ onNavigate, onLogout, initialView = 'list' }) => {
     return matchCategory && matchType && matchStatus && matchWeight;
   });
 
+
   const handleSaveEditedQuestion = async (updatedQuestion) => {
     try {
       await axios.put(`${API_BASE_URL}/admin/questions/${editingId}`, updatedQuestion);
@@ -85,6 +87,7 @@ const ManageQuiz = ({ onNavigate, onLogout, initialView = 'list' }) => {
       console.error("Error updating question:", error);
     }
   };
+
 
   const handleSaveNewQuestion = async (newQuestionData) => {
     try {
@@ -109,7 +112,6 @@ const ManageQuiz = ({ onNavigate, onLogout, initialView = 'list' }) => {
       }
     }
   };
-
   const totalQuestions = questions.length;
   const activeQuestionsCount = questions.filter(q => (q.status || 'Active') === 'Active').length;
   const uniqueCategoriesCount = new Set(questions.map(q => q.category).filter(Boolean)).size;
@@ -238,7 +240,12 @@ const ManageQuiz = ({ onNavigate, onLogout, initialView = 'list' }) => {
               {stat.emoji}
             </div>
             <div className="flex flex-col justify-center mt-2">
-              <div className="text-[36px] font-bold text-gray-900 tracking-tight leading-tight">{stat.value}</div>
+              <div 
+                className="text-[36px] font-bold text-gray-900 tracking-tight leading-tight"
+                style={{ filter: 'drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25))' }}
+              >
+                {stat.value}
+              </div>
               <div className="text-[15px] font-normal text-[#545454] mt-[2px]">{stat.label}</div>
             </div>
           </div>
@@ -247,21 +254,19 @@ const ManageQuiz = ({ onNavigate, onLogout, initialView = 'list' }) => {
 
       <div className="w-full h-auto min-h-[130px] rounded-[25px] bg-white p-6 shadow-[3px_6px_6px_0.5px_rgba(0,0,0,0.25)] flex flex-wrap items-center gap-4 border border-[#FFD2F7]">
         {[
-          { state: selectedCategory, setState: setSelectedCategory, options: dynamicCategories },
-          { state: selectedType, setState: setSelectedType, options: ['All Types', 'Multiple Choice'] },
-          { state: selectedStatus, setState: setSelectedStatus, options: ['All Status', 'Active', 'Inactive'] },
-          { state: selectedWeight, setState: setSelectedWeight, options: ['All Weights', 'High', 'Medium', 'Low'] }
+          { label: 'Category', state: selectedCategory, setState: setSelectedCategory, options: dynamicCategories },
+          { label: 'Type', state: selectedType, setState: setSelectedType, options: ['All Types', 'Multiple Choice'] },
+          { label: 'Status', state: selectedStatus, setState: setSelectedStatus, options: ['All Status', 'Active', 'Inactive'] },
+          { label: 'Weight', state: selectedWeight, setState: setSelectedWeight, options: ['All Weights', 'High', 'Medium', 'Low'] }
         ].map((filter, idx) => (
-          <div key={idx} className="relative w-full sm:w-[214px] h-[57px] text-[20px] font-regular rounded-[15px] flex-shrink-0">
-            <select 
-              value={filter.state}
-              onChange={(e) => filter.setState(e.target.value)}
-              className="w-full sm:w-[214px] h-[57px] bg-white border-[1px] border-[#C0C0C0] text-regular text-[20px] font-[20px] rounded-[15px] px-5 pr-10 appearance-none cursor-pointer outline-none hover:border-gray-400 focus:border-[#bd24df] transition-all"
-              style={{ backgroundImage: `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M6 9l6 6 6-6'/></svg>")`, backgroundPosition: 'right 16px center', backgroundRepeat: 'no-repeat' }}
-            >
-              {filter.options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
-            </select>
-          </div>
+          <Dropdown
+            key={idx}
+            value={filter.state}
+            onChange={filter.setState}
+            options={filter.options}
+            ariaLabel={`Filter by ${filter.label}`}
+            className="w-full sm:w-[214px] flex-shrink-0"
+          />
         ))}
       </div>
 
@@ -270,46 +275,70 @@ const ManageQuiz = ({ onNavigate, onLogout, initialView = 'list' }) => {
           <div className="bg-white rounded-3xl p-16 text-center text-gray-500 text-lg">Loading questions...</div>
         ) : filteredQuestions.length > 0 ? (
           filteredQuestions.map((q, index) => (
-            <div key={q.id} className="w-full h-auto rounded-[25px] bg-white p-8 shadow-[3px_6px_6px_0.5px_rgba(0,0,0,0.25)] border border-[#FFD2F7] flex flex-col gap-6 relative">
-              <div className="flex items-start gap-4">
-                <div className="w-[45px] h-[45px] bg-[#FFE1FD] border-[1px] border-[#FF34DC] text-[#890080] font-bold text-[23px] text-xl rounded-[15px] flex items-center justify-center flex-shrink-0">
-                  {index + 1}
+            <div
+              key={q.id}
+              className="bg-white rounded-[25px] prototype-card-border shadow-[0_4px_20px_-4px_rgba(137,0,128,0.12)] p-7 sm:p-9 flex flex-col lg:flex-row lg:items-start justify-between gap-6"
+            >
+              <div className="space-y-4 flex-1 min-w-0">
+                <div className="flex items-start gap-4">
+                  <div className="w-9 h-9 rounded-full bg-[#890080] text-white font-bold text-sm flex items-center justify-center flex-shrink-0 shadow-xs mt-0.5">
+                    {index + 1}
+                  </div>
+                  <h2 className="text-[22px] font-bold text-gray-900 tracking-tight leading-snug break-words">
+                    {q.question_text || q.questionText}
+                  </h2>
                 </div>
-                <h2 className="text-[23px] font-medium text-gray-900 tracking-tight mt-1">{q.question_text || q.questionText}</h2>
-              </div>
 
-              <div className="flex flex-wrap gap-3 pl-[62px]">
-                <span className="px-5 py-1.5 bg-[#F9F9F9] text-[#B6005B] rounded-full text-[16px] font-regular">{q.type || 'Multiple Choice'}</span>
-                <span className="px-5 py-1.5 bg-[#F9F9F9] text-[#890080] rounded-full text-[16px] font-regular">{q.category || 'Technical Skills'}</span>
-                <span className={`px-5 py-1.5 rounded-full text-[16px] font-regular ${(q.weight || 'Medium') === 'High' ? 'bg-[#F9F9F9] text-[#D80000]' : 'bg-[#fff7ed] text-[#ea580c]'}`}>
-                  Weight: {q.weight || 'Medium'}
-                </span>
-                <span className={`px-5 py-1.5 rounded-full text-[16px] font-regular ${(q.status || 'Active') === 'Active' ? 'bg-[#F9F9F9] text-[#039527]' : 'bg-[#fff1f2] text-[#e11d48]'}`}>
-                  {q.status || 'Active'}
-                </span>
-              </div>
+                <div className="flex flex-wrap items-center gap-2.5 pl-0 lg:pl-[52px]">
+                  <span className="inline-flex items-center gap-1.5 bg-[#FCF8FE] px-3.5 py-1.5 rounded-xl border border-[#FFD2F7] text-[14px] font-normal text-[#890080]">
+                    <Layers size={15} className="text-[#890080]" /> {q.type || 'Multiple Choice'}
+                  </span>
+                  <span className="inline-flex items-center gap-1.5 bg-[#FCF8FE] px-3.5 py-1.5 rounded-xl border border-[#FFD2F7] text-[14px] font-normal text-[#890080]">
+                    <Tag size={15} className="text-[#890080]" /> {q.category || 'Technical Skills'}
+                  </span>
+                  <span className="inline-flex items-center gap-1.5 bg-[#FCF8FE] px-3.5 py-1.5 rounded-xl border border-[#FFD2F7] text-[14px] font-normal text-[#890080]">
+                    <Gauge size={15} className="text-[#890080]" /> Weight: {q.weight || 'Medium'}
+                  </span>
+                  <span className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-[14px] font-medium border ${
+                    (q.status || 'Active') === 'Active'
+                      ? 'bg-[#E3F6ED] border-[#05A660]/30 text-[#05A660]'
+                      : 'bg-[#FEF3C7] border-[#F59E0B]/40 text-[#B45309]'
+                  }`}>
+                    <span className={`w-2 h-2 rounded-full flex-shrink-0 ${(q.status || 'Active') === 'Active' ? 'bg-[#05A660]' : 'bg-[#F59E0B]'}`}></span>
+                    {q.status || 'Active'}
+                  </span>
+                </div>
 
-              <div className="flex flex-col md:flex-row gap-6 items-stretch pl-[62px]">
-                <div className="flex-1 bg-[#F9F9F9] rounded-[15px] p-6 border border-gray-100">
-                  <div className="text-[16px] font-regular text-[#000000] mb-4">Options:</div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 pl-1">
-                    {Array.isArray(q.options) && q.options.map((opt, i) => (
-                      <div key={i} className="w-auto h-auto text-[14px] font-regular text-[#000000] flex items-center gap-3">
-                        <div className="w-1.5 h-1.5 bg-[#3b82f6] rounded-full flex-shrink-0"></div>
-                        {opt}
-                      </div>
-                    ))}
+                <div className="pl-0 lg:pl-[52px]">
+                  <div className="bg-[#FEF7FB] rounded-[15px] p-5 border border-[#FFD2F7]">
+                    <div className="text-[13px] font-semibold uppercase tracking-wider text-[#CC0088] mb-3">Options</div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2.5">
+                      {Array.isArray(q.options) && q.options.map((opt, i) => (
+                        <div key={i} className="flex items-start gap-2.5 text-[15px] font-normal text-gray-700">
+                          <span className="mt-[7px] w-1.5 h-1.5 rounded-full bg-[#F45EE4] flex-shrink-0"></span>
+                          <span className="break-words">{opt}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
+              </div>
 
-                <div className="flex items-center gap-4 self-center flex-shrink-0">
-                  <button onClick={() => setEditingId(q.id)} className="w-[79px] h-[113px] rounded-full border-[0.7px] border-[#FF34DC] bg-[#FFEDF8] flex items-center justify-center text-[#890080] hover:bg-[#ffdef9] transition-colors cursor-pointer group shadow-sm">
-                    <Edit2 size={48} strokeWidth={2.2} className="group-hover:scale-110 transition-transform" />
-                  </button>
-                  <button onClick={() => setDeleteConfirmId(q.id)} className="w-[79px] h-[113px] rounded-full border-[0.7px] border-[#FF0000] bg-[#FFEDED] flex items-center justify-center text-[#000000] hover:bg-[#ffe5e5] transition-colors cursor-pointer group shadow-sm">
-                    <Trash2 size={48} strokeWidth={2.2} className="group-hover:scale-110 transition-transform" />
-                  </button>
-                </div>
+              <div className="flex items-center gap-2.5 shrink-0 border-t lg:border-t-0 pt-4 lg:pt-0 border-gray-100 w-full lg:w-auto justify-end">
+                <button
+                  type="button"
+                  onClick={() => setEditingId(q.id)}
+                  className="inline-flex items-center justify-center font-medium text-sm px-3.5 py-2 rounded-xl border border-[#F45EE4]/40 bg-[#FFE1FD] text-[#890080] hover:bg-[#890080] hover:text-white hover:border-[#890080] transition-all duration-200 cursor-pointer shadow-2xs active:scale-95"
+                >
+                  <Edit2 size={15} strokeWidth={2.2} className="mr-1.5" /> Edit
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setDeleteConfirmId(q.id)}
+                  className="inline-flex items-center justify-center font-medium text-sm px-3.5 py-2 rounded-xl border border-rose-200/80 bg-rose-50/70 text-rose-600 hover:bg-rose-600 hover:text-white hover:border-rose-600 transition-all duration-200 cursor-pointer shadow-2xs active:scale-95"
+                >
+                  <Trash2 size={15} strokeWidth={2.2} className="mr-1.5" /> Delete
+                </button>
               </div>
             </div>
           ))
