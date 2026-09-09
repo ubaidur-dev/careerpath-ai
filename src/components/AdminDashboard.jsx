@@ -3,7 +3,10 @@ import axios from 'axios';
 import Header from './Header'; 
 import ManageQuiz from './ManageQuiz';
 import SystemSettings from './SystemSettings';
-import { Plus, Briefcase, ClipboardList, FileText, Settings } from 'lucide-react'; 
+import ManageCareers from './ManageCareers';
+import TotalStudents from './TotalStudents';
+import RecentActivity from './RecentActivity';
+import { Plus, Briefcase, ClipboardList, FileText, Settings, LayoutDashboard, Users, Activity } from 'lucide-react';
 
 export default function AdminDashboard({ onLogout, onNavigateToResults }) {
   const [currentView, setCurrentView] = useState('dashboard');
@@ -51,22 +54,29 @@ export default function AdminDashboard({ onLogout, onNavigateToResults }) {
 
     const intervalId = setInterval(() => {
       fetchDashboardData();
-    }, 5000); 
+    }, 5000);
 
     return () => clearInterval(intervalId);
   }, []);
 
-  const displayedStudents = showAllStudents 
-    ? dashboardData.recentActivity 
-    : dashboardData.recentActivity.slice(0, 5);
+  const displayedStudents = showAllStudents
+    ? dashboardData.recentActivity
+    : dashboardData.recentActivity.slice(0, 10);
 
   const getStatusDetails = (score, apiStatus) => {
+    if (apiStatus === 'New Student') return { status: 'New Student', scoreColor: 'text-[#7E06AD]', pillClasses: 'text-[#7E06AD] bg-[#F9EDFF]' };
     if (apiStatus === 'In Progress') return { status: 'In Progress', scoreColor: 'text-[#0047FF]', pillClasses: 'text-[#E88B00] bg-[#FFF2E0]' };
     if (apiStatus === 'Error') return { status: 'Error', scoreColor: 'text-red-500', pillClasses: 'text-red-600 bg-red-50' };
     if (score >= 90) return { status: 'Completed', scoreColor: 'text-[#05A660]', pillClasses: 'text-[#05A660] bg-[#E3F6ED]' };
     if (score >= 80) return { status: 'Completed', scoreColor: 'text-[#84CC16]', pillClasses: 'text-[#05A660] bg-[#E3F6ED]' };
     if (score >= 70) return { status: 'Completed', scoreColor: 'text-[#0047FF]', pillClasses: 'text-[#05A660] bg-[#E3F6ED]' };
     return { status: 'Completed', scoreColor: 'text-gray-600', pillClasses: 'text-[#05A660] bg-[#E3F6ED]' };
+  };
+
+  const getInitials = (name) => {
+    if (!name) return '?';
+    const parts = name.trim().split(/\s+/);
+    return parts.length >= 2 ? (parts[0][0] + parts[1][0]).toUpperCase() : name.substring(0, 2).toUpperCase();
   };
 
   const staticTopBoxes = [
@@ -86,7 +96,7 @@ export default function AdminDashboard({ onLogout, onNavigateToResults }) {
         `}
       </style>
 
-      <Header currentView={currentView} onLogout={onLogout} onNavigate={setCurrentView} />
+      <Header currentView={currentView} onLogout={onLogout} onNavigate={setCurrentView} userRole="admin" />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
         
@@ -97,7 +107,7 @@ export default function AdminDashboard({ onLogout, onNavigateToResults }) {
                 <h1 className="text-4xl font-bold tracking-tight text-gray-900 inline-flex items-center gap-2">
                   Admin Dashboard
                 </h1>
-                <p className="text-[#000000] font-light text-[21.3px] mt-[5px] mb-[15px]">
+                <p className="text-[#707070] font-light text-[21.3px] mt-[5px] mb-[15px]">
                   Manage your AI Career Advisor platform
                 </p>
               </div>
@@ -128,7 +138,12 @@ export default function AdminDashboard({ onLogout, onNavigateToResults }) {
                   </div>
                   
                   <div className="flex flex-col justify-center mt-2">
-                    <div className="text-[36px] font-bold text-gray-900 tracking-tight leading-tight">{stat.value}</div>
+                    <div 
+                      className="text-[36px] font-bold text-gray-900 tracking-tight leading-tight"
+                      style={{ filter: 'drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25))' }}
+                    >
+                      {stat.value}
+                    </div>
                     <div className="text-[15px] font-normal text-[#545454] mt-[2px]">{stat.label}</div>
                   </div>
                 </div>
@@ -140,7 +155,7 @@ export default function AdminDashboard({ onLogout, onNavigateToResults }) {
                 
                 <div className="bg-white rounded-[25px] p-7 sm:p-9 prototype-card-border custom-card-shadow">
                   <div className="flex items-center justify-between mb-8">
-                    <h2 className="text-[30px] font-semibold text-gray-900 tracking-tight">Recent Student Activity</h2>
+                    <h2 className="text-[32px] font-semibold text-gray-900 tracking-tight">Recent Student Activity</h2>
                     <button 
                       onClick={() => setShowAllStudents(!showAllStudents)} 
                       className="w-[109px] h-[43px] border border-[#F45EE4]/40 bg-[#FFE1FD] text-[#890080] hover:bg-[#fae6f4] inline-flex items-center justify-center text-center rounded-xl text-[18px] font-regular transition-all cursor-pointer whitespace-nowrap"
@@ -165,12 +180,23 @@ export default function AdminDashboard({ onLogout, onNavigateToResults }) {
                           return (
                             <tr key={idx} className="border-b border-gray-50 last:border-0 hover:bg-gray-50/30 transition-colors">
                               <td className="py-5">
-                                <div className="text-[#111827] text-[18px] font-medium">{row.name}</div>
-                                <div className="text-[#545454] text-[16px] font-regular mt-0.5">{row.email}</div>
+                                <div className="flex items-center gap-3">
+                                  <div className="w-10 h-10 rounded-full bg-[#F7E8FF] text-[#890080] text-[13px] font-semibold flex items-center justify-center overflow-hidden flex-shrink-0">
+                                    {row.avatar ? (
+                                      <img src={row.avatar} alt={row.name} className="w-full h-full object-cover" />
+                                    ) : (
+                                      getInitials(row.name)
+                                    )}
+                                  </div>
+                                  <div>
+                                    <div className="text-[#111827] text-[18px] font-medium">{row.name}</div>
+                                    <div className="text-[#545454] text-[16px] font-regular mt-0.5">{row.email}</div>
+                                  </div>
+                                </div>
                               </td>
                               <td className="py-5 text-center">
                                 <span className={`font-semibold text-[22px] ${ruleConfig.scoreColor}`}>
-                                  {row.score}%
+                                  {typeof row.score === 'number' ? `${row.score}%` : '—'}
                                 </span>
                               </td>
                               <td className="py-5 text-center">
@@ -223,13 +249,23 @@ export default function AdminDashboard({ onLogout, onNavigateToResults }) {
                 <div className="bg-white rounded-[25px] p-7 sm:p-9 prototype-card-border custom-card-shadow">
                   <h2 className="text-[32px] font-semibold text-gray-900 tracking-tight mb-9 ">Quick Actions</h2>
                   <div className="space-y-2">
-                    <button className="w-[323px] h-[45px] bg-[#FDF2FA] text-[#890080] py-3.5 px-5 rounded-2xl text-left font-regular flex items-center gap-4 transition-all cursor-pointer hover:bg-pink-100">
+                    <button
+                      onClick={() => setCurrentView('dashboard')}
+                      className={`w-[323px] h-[45px] py-3.5 px-5 rounded-2xl text-left font-regular flex items-center gap-4 transition-all cursor-pointer ${currentView === 'dashboard' ? 'bg-[#FDF2FA] text-[#890080] hover:bg-pink-100' : 'bg-transparent hover:bg-gray-50 text-gray-900'}`}
+                    >
+                      <LayoutDashboard size={25} strokeWidth={2} />
+                      <span className="text-[21px]">Dashboard</span>
+                    </button>
+                    <button
+                      onClick={() => setCurrentView('careers')}
+                      className={`w-[323px] h-[45px] py-3.5 px-5 rounded-2xl text-left font-regular flex items-center gap-4 transition-all cursor-pointer ${currentView === 'careers' ? 'bg-[#FDF2FA] text-[#890080] hover:bg-pink-100' : 'bg-transparent hover:bg-gray-50 text-gray-900'}`}
+                    >
                       <Briefcase size={25} strokeWidth={2} />
                       <span className="text-[21px]">Manage Careers</span>
                     </button>
-                    <button 
+                    <button
                       onClick={() => setCurrentView('quiz')}
-                      className="w-[323px] h-[45px] bg-transparent hover:bg-gray-50 text-gray-900 py-3.5 px-5 rounded-2xl text-left font-regular flex items-center gap-4 transition-all cursor-pointer"
+                      className={`w-[323px] h-[45px] py-3.5 px-5 rounded-2xl text-left font-regular flex items-center gap-4 transition-all cursor-pointer ${currentView === 'quiz' ? 'bg-[#FDF2FA] text-[#890080] hover:bg-pink-100' : 'bg-transparent hover:bg-gray-50 text-gray-900'}`}
                     >
                       <ClipboardList size={25} strokeWidth={2} />
                       <span className="text-[21px]">Manage Quiz</span>
@@ -241,9 +277,23 @@ export default function AdminDashboard({ onLogout, onNavigateToResults }) {
                       <FileText size={25} strokeWidth={2} />
                       <span className="text-[21px]">Students Results</span>
                     </button>
-                    <button 
+                    <button
+                      onClick={() => setCurrentView('total-students')}
+                      className={`w-[323px] h-[45px] py-3.5 px-5 rounded-2xl text-left font-regular flex items-center gap-4 transition-all cursor-pointer ${currentView === 'total-students' ? 'bg-[#FDF2FA] text-[#890080] hover:bg-pink-100' : 'bg-transparent hover:bg-gray-50 text-gray-900'}`}
+                    >
+                      <Users size={25} strokeWidth={2} />
+                      <span className="text-[21px]">Total Students</span>
+                    </button>
+                    <button
+                      onClick={() => setCurrentView('recent-activity')}
+                      className={`w-[323px] h-[45px] py-3.5 px-5 rounded-2xl text-left font-regular flex items-center gap-4 transition-all cursor-pointer ${currentView === 'recent-activity' ? 'bg-[#FDF2FA] text-[#890080] hover:bg-pink-100' : 'bg-transparent hover:bg-gray-50 text-gray-900'}`}
+                    >
+                      <Activity size={25} strokeWidth={2} />
+                      <span className="text-[21px]">Recent Activity</span>
+                    </button>
+                    <button
                       onClick={() => setCurrentView('settings')}
-                      className="w-[323px] h-[45px] bg-transparent hover:bg-gray-50 text-gray-900 py-3.5 px-5 rounded-2xl text-left font-regular flex items-center gap-4 transition-all cursor-pointer"
+                      className={`w-[323px] h-[45px] py-3.5 px-5 rounded-2xl text-left font-regular flex items-center gap-4 transition-all cursor-pointer ${currentView === 'settings' ? 'bg-[#FDF2FA] text-[#890080] hover:bg-pink-100' : 'bg-transparent hover:bg-gray-50 text-gray-900'}`}
                     >
                       <Settings size={25} strokeWidth={2} />
                       <span className="text-[21px]">Settings</span>
@@ -294,6 +344,9 @@ export default function AdminDashboard({ onLogout, onNavigateToResults }) {
 
         {currentView === 'quiz' && <ManageQuiz onNavigate={setCurrentView} onLogout={onLogout} />}
         {currentView === 'settings' && <SystemSettings onBack={() => setCurrentView('dashboard')} />}
+        {currentView === 'careers' && <ManageCareers onNavigate={setCurrentView} />}
+        {currentView === 'total-students' && <TotalStudents onBack={() => setCurrentView('dashboard')} />}
+        {currentView === 'recent-activity' && <RecentActivity onBack={() => setCurrentView('dashboard')} />}
 
       </main>
     </div>
