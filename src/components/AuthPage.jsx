@@ -6,6 +6,7 @@ import AuthImage from '../assets/Authentication.PNG';
 export default function AuthPage({ mode, setMode, onBackHome }) {
   const [role, setRole] = useState('student'); 
   const [showPass, setShowPass] = useState(false);
+  const [showConfirmPass, setShowConfirmPass] = useState(false);
   const [showAdminPass, setShowAdminPass] = useState(false);
   
   const [countriesList, setCountriesList] = useState([]);
@@ -87,8 +88,15 @@ export default function AuthPage({ mode, setMode, onBackHome }) {
     }
   }, [isCountryOpen]);
 
+  const toTitleCase = (value) =>
+    value.toLowerCase().replace(/(^|[\s'-])(\p{L})/gu, (_, sep, char) => sep + char.toUpperCase());
+
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: name === 'name' ? toTitleCase(value) : value,
+    }));
   };
 
   const handleSelectCountry = (country) => {
@@ -129,9 +137,14 @@ export default function AuthPage({ mode, setMode, onBackHome }) {
 
     const endpoint = isLogin ? '/api/login' : '/api/register';
     
-    const payload = isLogin 
-      ? { email: formData.email, password: formData.password, role } 
-      : { 
+    const payload = isLogin
+      ? {
+          email: formData.email,
+          password: formData.password,
+          role,
+          ...(role === 'admin' && { admin_id: formData.admin_id })
+        }
+      : {
           name: formData.name, 
           email: formData.email, 
           country_name: selectedCountry?.name || '',
@@ -202,6 +215,8 @@ export default function AuthPage({ mode, setMode, onBackHome }) {
         }
       } else if (!isLogin && role === 'admin' && (lowerMsg.includes('passcode') || lowerMsg.includes('admin') || lowerMsg.includes('unauthorized') || lowerMsg.includes('invalid id'))) {
         setErrorMsg('Invalid Admin ID or Security Passcode.');
+      } else if (isLogin && role === 'admin' && lowerMsg.includes('admin id')) {
+        setErrorMsg('Invalid Admin ID for this account.');
       } else if (isLogin || lowerMsg.match(/(email|password|role|unauthorized|credentials)/)) {
         setErrorMsg('Invalid email or password.');
       } else {
@@ -260,26 +275,28 @@ export default function AuthPage({ mode, setMode, onBackHome }) {
 
           <form onSubmit={handleFormSubmit} className="space-y-5 mt-[30px]">
             
-            {!isLogin && role === 'admin' && (
+            {role === 'admin' && (
               <>
                 <div className="space-y-1">
-                  <label className="text-[16px] font-semibold text-black block">Admin ID / Reg No</label>
-                  <input type="text" name="admin_id" value={formData.admin_id} onChange={handleChange} required placeholder="Enter Admin ID (e.g. XYZ-2026-09)" className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-4 py-3.5 text-[14px] font-medium focus:outline-none focus:border-pink-300 focus:ring-1 focus:ring-pink-300 placeholder-gray-400" />
+                  <label className="text-[16px] font-semibold text-black block">Admin ID</label>
+                  <input type="text" name="admin_id" value={formData.admin_id} onChange={handleChange} required placeholder="Enter Admin ID" className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-4 py-3.5 text-[14px] font-medium focus:outline-none focus:border-pink-300 focus:ring-1 focus:ring-pink-300 placeholder-gray-400" />
                 </div>
-                <div className="space-y-1">
-                  <label className="text-[16px] font-semibold text-black block">Security Passcode</label>
-                  <div className="relative">
-                    <input type={showAdminPass ? "text" : "password"} name="security_passcode" value={formData.security_passcode} onChange={handleChange} required placeholder="Enter Security Passcode" className="w-full bg-gray-50/50 border border-gray-200 rounded-xl pl-4 pr-12 py-3.5 text-[14px] font-medium focus:outline-none focus:border-pink-300 focus:ring-1 focus:ring-pink-300 placeholder-gray-400" />
-                    <button type="button" onClick={() => setShowAdminPass(!showAdminPass)} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer">{showAdminPass ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}</button>
+                {!isLogin && (
+                  <div className="space-y-1">
+                    <label className="text-[16px] font-semibold text-black block">Security Passcode</label>
+                    <div className="relative">
+                      <input type={showAdminPass ? "text" : "password"} name="security_passcode" value={formData.security_passcode} onChange={handleChange} required placeholder="Enter Security Passcode" className="w-full bg-gray-50/50 border border-gray-200 rounded-xl pl-4 pr-12 py-3.5 text-[14px] font-medium focus:outline-none focus:border-pink-300 focus:ring-1 focus:ring-pink-300 placeholder-gray-400" />
+                      <button type="button" onClick={() => setShowAdminPass(!showAdminPass)} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer">{showAdminPass ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}</button>
+                    </div>
                   </div>
-                </div>
+                )}
               </>
             )}
 
             {!isLogin && (
               <div className="space-y-1">
                 <label className="text-[16px] font-semibold text-black block">Full Name</label>
-                <input type="text" name="name" value={formData.name} onChange={handleChange} required placeholder="Enter Full Name" className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-4 py-3.5 text-[14px] font-medium focus:outline-none focus:border-pink-300 focus:ring-1 focus:ring-pink-300 placeholder-gray-400" />
+                <input type="text" name="name" value={formData.name} onChange={handleChange} required autoCapitalize="words" placeholder="Enter Full Name" className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-4 py-3.5 text-[14px] font-medium focus:outline-none focus:border-pink-300 focus:ring-1 focus:ring-pink-300 placeholder-gray-400" />
               </div>
             )}
 
@@ -331,7 +348,8 @@ export default function AuthPage({ mode, setMode, onBackHome }) {
               <div className="space-y-1">
                 <label className="text-[16px] font-semibold text-black block">Confirm Password</label>
                 <div className="relative">
-                  <input type="password" name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} required placeholder="Enter Confirm Password" className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-4 py-3.5 text-[14px] font-medium focus:outline-none focus:border-pink-300 focus:ring-1 focus:ring-pink-300 placeholder-gray-400" />
+                  <input type={showConfirmPass ? "text" : "password"} name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} required placeholder="Enter Confirm Password" className="w-full bg-gray-50/50 border border-gray-200 rounded-xl pl-4 pr-12 py-3.5 text-[14px] font-medium focus:outline-none focus:border-pink-300 focus:ring-1 focus:ring-pink-300 placeholder-gray-400" />
+                  <button type="button" onClick={() => setShowConfirmPass(!showConfirmPass)} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer">{showConfirmPass ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}</button>
                 </div>
               </div>
             )}
