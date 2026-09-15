@@ -36,6 +36,17 @@ export default function AuthPage({ mode, setMode, onBackHome, onForgotPassword }
 
   const isLogin = mode === 'login';
 
+  const [adminAuthStep, setAdminAuthStep] = useState('email');
+  const [otpDigits, setOtpDigits] = useState(['', '', '', '', '']);
+  const otpRefs = useRef([]);
+  const inAdminGate = isLogin && role === 'admin' && adminAuthStep !== 'credentials';
+
+  useEffect(() => {
+    if (adminAuthStep === 'otp' && otpRefs.current[0]) {
+      otpRefs.current[0].focus();
+    }
+  }, [adminAuthStep]);
+
   useEffect(() => {
     const fetchCountries = async () => {
       try {
@@ -71,6 +82,9 @@ export default function AuthPage({ mode, setMode, onBackHome, onForgotPassword }
       admin_id: '',
       security_passcode: ''
     }));
+
+    setAdminAuthStep('email');
+    setOtpDigits(['', '', '', '', '']);
   }, [mode, role]);
 
   useEffect(() => {
@@ -82,6 +96,13 @@ export default function AuthPage({ mode, setMode, onBackHome, onForgotPassword }
       return () => clearTimeout(timer);
     }
   }, [errorMsg]);
+
+  useEffect(() => {
+    if (successMsg) {
+      const timer = setTimeout(() => setSuccessMsg(''), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [successMsg]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -238,6 +259,77 @@ export default function AuthPage({ mode, setMode, onBackHome, onForgotPassword }
     }
   };
 
+  const handleRequestOtp = async (e) => {
+    e.preventDefault();
+    setErrorMsg('');
+    setSuccessMsg('');
+    setLoading(true);
+    try {
+      await axios.post('http://localhost:8000/api/admin/otp/request', { email: formData.email });
+      setLoading(false);
+      setSuccessMsg('Verification code sent to your email.');
+      setAdminAuthStep('otp');
+    } catch (err) {
+      setLoading(false);
+      setErrorMsg(err.response?.data?.message || 'Failed to send verification code. Please try again.');
+    }
+  };
+
+  const handleResendOtp = async () => {
+    setErrorMsg('');
+    setSuccessMsg('');
+    setLoading(true);
+    try {
+      await axios.post('http://localhost:8000/api/admin/otp/request', { email: formData.email });
+      setLoading(false);
+      setSuccessMsg('A new verification code has been sent.');
+      setOtpDigits(['', '', '', '', '']);
+      if (otpRefs.current[0]) otpRefs.current[0].focus();
+    } catch (err) {
+      setLoading(false);
+      setErrorMsg(err.response?.data?.message || 'Failed to resend verification code.');
+    }
+  };
+
+  const handleVerifyOtp = async (e) => {
+    e.preventDefault();
+    setErrorMsg('');
+    setSuccessMsg('');
+    const code = otpDigits.join('');
+    if (code.length !== 5) {
+      setErrorMsg('Please enter the 5-digit verification code.');
+      return;
+    }
+    setLoading(true);
+    try {
+      await axios.post('http://localhost:8000/api/admin/otp/verify', { email: formData.email, code });
+      setLoading(false);
+      setSuccessMsg('');
+      setAdminAuthStep('credentials');
+    } catch (err) {
+      setLoading(false);
+      setErrorMsg(err.response?.data?.message || 'Invalid or expired verification code.');
+    }
+  };
+
+  const handleOtpDigitChange = (index, rawValue) => {
+    const value = rawValue.replace(/\D/g, '').slice(-1);
+    setOtpDigits((prev) => {
+      const next = [...prev];
+      next[index] = value;
+      return next;
+    });
+    if (value && index < otpDigits.length - 1 && otpRefs.current[index + 1]) {
+      otpRefs.current[index + 1].focus();
+    }
+  };
+
+  const handleOtpKeyDown = (index, e) => {
+    if (e.key === 'Backspace' && !otpDigits[index] && index > 0 && otpRefs.current[index - 1]) {
+      otpRefs.current[index - 1].focus();
+    }
+  };
+
   const handleBackAction = () => {
     if (isLogin) {
       if (onBackHome) onBackHome();
@@ -286,6 +378,52 @@ export default function AuthPage({ mode, setMode, onBackHome, onForgotPassword }
             </div>
           )}
 
+          {inAdminGate && adminAuthStep === 'email' && (
+            <form onSubmit={handleRequestOtp} autoComplete="off" className="space-y-5 mt-[30px]">
+              <div className="space-y-1">
+                <label htmlFor="admin-gate-email" className="text-[16px] font-semibold text-black block">Admin Email</label>
+                <input id="admin-gate-email" type="email" name="admin_gate_email" data-field="email" value={formData.email} onChange={handleChange} required autoComplete="username" placeholder="Enter your registered admin email" className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-4 py-3.5 text-[14px] font-medium focus:outline-none focus:border-pink-300 focus:ring-1 focus:ring-pink-300 placeholder-gray-400" />
+              </div>
+              <p className="text-[13px] text-gray-500 leading-relaxed">For security, we'll email a verification code to confirm it's really you before showing the admin login form.</p>
+              <button type="submit" disabled={loading} className="w-full bg-[#ffa3f5] hover:bg-[#f88def] text-[#890080] font-medium py-3.5 rounded-full text-[18px] tracking-wider cursor-pointer disabled:opacity-50">
+                {loading ? 'Sending...' : 'Send Verification Code'}
+              </button>
+            </form>
+          )}
+
+          {inAdminGate && adminAuthStep === 'otp' && (
+            <form onSubmit={handleVerifyOtp} autoComplete="off" className="space-y-5 mt-[30px]">
+              <div className="space-y-2">
+                <label className="text-[16px] font-semibold text-black block">Verification Code</label>
+                <p className="text-[13px] text-gray-500">Enter the 5-digit code sent to <span className="font-semibold text-black">{formData.email}</span></p>
+                <div className="flex items-center justify-center gap-3 pt-2">
+                  {otpDigits.map((digit, idx) => (
+                    <input
+                      key={idx}
+                      ref={(el) => (otpRefs.current[idx] = el)}
+                      type="text"
+                      inputMode="numeric"
+                      maxLength={1}
+                      value={digit}
+                      onChange={(e) => handleOtpDigitChange(idx, e.target.value)}
+                      onKeyDown={(e) => handleOtpKeyDown(idx, e)}
+                      className="w-12 h-14 text-center text-[22px] font-bold bg-gray-50/50 border border-gray-200 rounded-xl focus:outline-none focus:border-pink-300 focus:ring-1 focus:ring-pink-300"
+                    />
+                  ))}
+                </div>
+              </div>
+              <button type="submit" disabled={loading} className="w-full bg-[#ffa3f5] hover:bg-[#f88def] text-[#890080] font-medium py-3.5 rounded-full text-[18px] tracking-wider cursor-pointer disabled:opacity-50">
+                {loading ? 'Verifying...' : 'Verify Code'}
+              </button>
+              <div className="flex items-center justify-between text-[14px] pt-1">
+                <button type="button" onClick={() => { setAdminAuthStep('email'); setOtpDigits(['', '', '', '', '']); }} className="text-gray-500 font-medium hover:underline cursor-pointer">Change email</button>
+                <button type="button" onClick={handleResendOtp} disabled={loading} className="text-[#0063CC] font-medium hover:underline cursor-pointer disabled:opacity-50">Resend Code</button>
+              </div>
+            </form>
+          )}
+
+          {!inAdminGate && (
+          <>
           <form key={`${role}-${mode}`} onSubmit={handleFormSubmit} autoComplete="off" className="space-y-5 mt-[30px]">
 
             {role === 'admin' && (
@@ -398,6 +536,8 @@ export default function AuthPage({ mode, setMode, onBackHome, onForgotPassword }
             {isLogin ? "Don't have an account?" : "Already have an account?"}{' '}
             <button type="button" onClick={() => setMode(isLogin ? 'signup' : 'login')} className="text-[#0063CC] font-normal hover:underline ml-1 cursor-pointer">{isLogin ? 'Sign Up' : 'Login'}</button>
           </p>
+          </>
+          )}
         </div>
       </div>
 
