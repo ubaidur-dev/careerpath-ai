@@ -3,7 +3,7 @@ import { Eye, EyeOff, XCircle, CheckCircle2, ChevronDown, Search } from 'lucide-
 import axios from 'axios';
 import AuthImage from '../assets/Authentication.PNG'; 
 
-export default function AuthPage({ mode, setMode, onBackHome }) {
+export default function AuthPage({ mode, setMode, onBackHome, onForgotPassword }) {
   const [role, setRole] = useState('student'); 
   const [showPass, setShowPass] = useState(false);
   const [showConfirmPass, setShowConfirmPass] = useState(false);
@@ -60,6 +60,17 @@ export default function AuthPage({ mode, setMode, onBackHome }) {
     }
     setErrorMsg('');
     setSuccessMsg('');
+
+    setFormData(prev => ({
+      name: '',
+      email: '',
+      country_code: prev.country_code,
+      phone: '',
+      password: '',
+      confirmPassword: '',
+      admin_id: '',
+      security_passcode: ''
+    }));
   }, [mode, role]);
 
   useEffect(() => {
@@ -92,10 +103,12 @@ export default function AuthPage({ mode, setMode, onBackHome }) {
     value.toLowerCase().replace(/(^|[\s'-])(\p{L})/gu, (_, sep, char) => sep + char.toUpperCase());
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { value } = e.target;
+  
+    const field = e.target.dataset.field || e.target.name;
     setFormData(prev => ({
       ...prev,
-      [name]: name === 'name' ? toTitleCase(value) : value,
+      [field]: field === 'name' ? toTitleCase(value) : value,
     }));
   };
 
@@ -273,19 +286,19 @@ export default function AuthPage({ mode, setMode, onBackHome }) {
             </div>
           )}
 
-          <form onSubmit={handleFormSubmit} className="space-y-5 mt-[30px]">
-            
+          <form key={`${role}-${mode}`} onSubmit={handleFormSubmit} autoComplete="off" className="space-y-5 mt-[30px]">
+
             {role === 'admin' && (
               <>
                 <div className="space-y-1">
-                  <label className="text-[16px] font-semibold text-black block">Admin ID</label>
-                  <input type="text" name="admin_id" value={formData.admin_id} onChange={handleChange} required placeholder="Enter Admin ID" className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-4 py-3.5 text-[14px] font-medium focus:outline-none focus:border-pink-300 focus:ring-1 focus:ring-pink-300 placeholder-gray-400" />
+                  <label htmlFor={`${role}-${mode}-admin_id`} className="text-[16px] font-semibold text-black block">Admin ID</label>
+                  <input id={`${role}-${mode}-admin_id`} type="text" name={`admin_id_${mode}`} data-field="admin_id" value={formData.admin_id} onChange={handleChange} required autoComplete="off" placeholder="Enter Admin ID" className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-4 py-3.5 text-[14px] font-medium focus:outline-none focus:border-pink-300 focus:ring-1 focus:ring-pink-300 placeholder-gray-400" />
                 </div>
                 {!isLogin && (
                   <div className="space-y-1">
-                    <label className="text-[16px] font-semibold text-black block">Security Passcode</label>
+                    <label htmlFor={`${role}-${mode}-security_passcode`} className="text-[16px] font-semibold text-black block">Security Passcode</label>
                     <div className="relative">
-                      <input type={showAdminPass ? "text" : "password"} name="security_passcode" value={formData.security_passcode} onChange={handleChange} required placeholder="Enter Security Passcode" className="w-full bg-gray-50/50 border border-gray-200 rounded-xl pl-4 pr-12 py-3.5 text-[14px] font-medium focus:outline-none focus:border-pink-300 focus:ring-1 focus:ring-pink-300 placeholder-gray-400" />
+                      <input id={`${role}-${mode}-security_passcode`} type={showAdminPass ? "text" : "password"} name="admin_security_passcode" data-field="security_passcode" value={formData.security_passcode} onChange={handleChange} required autoComplete="new-password" placeholder="Enter Security Passcode" className="w-full bg-gray-50/50 border border-gray-200 rounded-xl pl-4 pr-12 py-3.5 text-[14px] font-medium focus:outline-none focus:border-pink-300 focus:ring-1 focus:ring-pink-300 placeholder-gray-400" />
                       <button type="button" onClick={() => setShowAdminPass(!showAdminPass)} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer">{showAdminPass ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}</button>
                     </div>
                   </div>
@@ -295,14 +308,14 @@ export default function AuthPage({ mode, setMode, onBackHome }) {
 
             {!isLogin && (
               <div className="space-y-1">
-                <label className="text-[16px] font-semibold text-black block">Full Name</label>
-                <input type="text" name="name" value={formData.name} onChange={handleChange} required autoCapitalize="words" placeholder="Enter Full Name" className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-4 py-3.5 text-[14px] font-medium focus:outline-none focus:border-pink-300 focus:ring-1 focus:ring-pink-300 placeholder-gray-400" />
+                <label htmlFor={`${role}-${mode}-name`} className="text-[16px] font-semibold text-black block">Full Name</label>
+                <input id={`${role}-${mode}-name`} type="text" name={`${role}_name`} data-field="name" value={formData.name} onChange={handleChange} required autoCapitalize="words" autoComplete="name" placeholder="Enter Full Name" className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-4 py-3.5 text-[14px] font-medium focus:outline-none focus:border-pink-300 focus:ring-1 focus:ring-pink-300 placeholder-gray-400" />
               </div>
             )}
 
             <div className="space-y-1">
-              <label className="text-[16px] font-semibold text-black block">Email</label>
-              <input type="email" name="email" value={formData.email} onChange={handleChange} required placeholder="Enter email address" className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-4 py-3.5 text-[14px] font-medium focus:outline-none focus:border-pink-300 focus:ring-1 focus:ring-pink-300 placeholder-gray-400" />
+              <label htmlFor={`${role}-${mode}-email`} className="text-[16px] font-semibold text-black block">Email</label>
+              <input id={`${role}-${mode}-email`} type="email" name={`${role}_email`} data-field="email" value={formData.email} onChange={handleChange} required autoComplete={isLogin ? 'username' : 'email'} placeholder="Enter email address" className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-4 py-3.5 text-[14px] font-medium focus:outline-none focus:border-pink-300 focus:ring-1 focus:ring-pink-300 placeholder-gray-400" />
             </div>
 
             {!isLogin && selectedCountry && (
@@ -331,24 +344,24 @@ export default function AuthPage({ mode, setMode, onBackHome }) {
                       </div>
                     )}
                   </div>
-                  <input type="tel" name="phone" value={formData.phone} onChange={handlePhoneChange} required placeholder={selectedCountry.placeholder} className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-4 py-3.5 text-[14px] font-medium focus:outline-none focus:border-pink-300 focus:ring-1 focus:ring-pink-300 placeholder-gray-400" />
+                  <input type="tel" name="phone" value={formData.phone} onChange={handlePhoneChange} required autoComplete="tel-national" placeholder={selectedCountry.placeholder} className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-4 py-3.5 text-[14px] font-medium focus:outline-none focus:border-pink-300 focus:ring-1 focus:ring-pink-300 placeholder-gray-400" />
                 </div>
               </div>
             )}
 
             <div className="space-y-1">
-              <label className="text-[16px] font-semibold text-black block">Password</label>
+              <label htmlFor={`${role}-${mode}-password`} className="text-[16px] font-semibold text-black block">Password</label>
               <div className="relative">
-                <input type={showPass ? "text" : "password"} name="password" value={formData.password} onChange={handleChange} required placeholder="Enter Password" className="w-full bg-gray-50/50 border border-gray-200 rounded-xl pl-4 pr-12 py-3.5 text-[14px] font-medium focus:outline-none focus:border-pink-300 focus:ring-1 focus:ring-pink-300 placeholder-gray-400" />
+                <input id={`${role}-${mode}-password`} type={showPass ? "text" : "password"} name={`${role}_password`} data-field="password" value={formData.password} onChange={handleChange} required autoComplete={isLogin ? 'current-password' : 'new-password'} placeholder="Enter Password" className="w-full bg-gray-50/50 border border-gray-200 rounded-xl pl-4 pr-12 py-3.5 text-[14px] font-medium focus:outline-none focus:border-pink-300 focus:ring-1 focus:ring-pink-300 placeholder-gray-400" />
                 <button type="button" onClick={() => setShowPass(!showPass)} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer">{showPass ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}</button>
               </div>
             </div>
 
             {!isLogin && (
               <div className="space-y-1">
-                <label className="text-[16px] font-semibold text-black block">Confirm Password</label>
+                <label htmlFor={`${role}-${mode}-confirmPassword`} className="text-[16px] font-semibold text-black block">Confirm Password</label>
                 <div className="relative">
-                  <input type={showConfirmPass ? "text" : "password"} name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} required placeholder="Enter Confirm Password" className="w-full bg-gray-50/50 border border-gray-200 rounded-xl pl-4 pr-12 py-3.5 text-[14px] font-medium focus:outline-none focus:border-pink-300 focus:ring-1 focus:ring-pink-300 placeholder-gray-400" />
+                  <input id={`${role}-${mode}-confirmPassword`} type={showConfirmPass ? "text" : "password"} name={`${role}_confirm_password`} data-field="confirmPassword" value={formData.confirmPassword} onChange={handleChange} required autoComplete="new-password" placeholder="Enter Confirm Password" className="w-full bg-gray-50/50 border border-gray-200 rounded-xl pl-4 pr-12 py-3.5 text-[14px] font-medium focus:outline-none focus:border-pink-300 focus:ring-1 focus:ring-pink-300 placeholder-gray-400" />
                   <button type="button" onClick={() => setShowConfirmPass(!showConfirmPass)} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer">{showConfirmPass ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}</button>
                 </div>
               </div>
@@ -357,7 +370,7 @@ export default function AuthPage({ mode, setMode, onBackHome }) {
             {isLogin ? (
               <div className="flex items-center justify-between text-[15px] pt-1">
                 <label className="flex items-center gap-2 cursor-pointer font-medium text-black text-[14px]"><input type="checkbox" className="rounded border-gray-300 w-4 h-4" /> Remember Me</label>
-                <button type="button" className="text-red-500 font-medium text-[14px] hover:underline cursor-pointer">Forgot Password?</button>
+                <button type="button" onClick={() => onForgotPassword && onForgotPassword(role)} className="text-red-500 font-medium text-[14px] hover:underline cursor-pointer">Forgot Password?</button>
               </div>
             ) : (
               <div className="flex items-start gap-2 text-[12px] pt-1 leading-normal text-gray-600 font-medium text-[14px]">
