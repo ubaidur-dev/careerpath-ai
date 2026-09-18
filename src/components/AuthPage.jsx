@@ -36,16 +36,49 @@ export default function AuthPage({ mode, setMode, onBackHome, onForgotPassword }
 
   const isLogin = mode === 'login';
 
-  const [adminAuthStep, setAdminAuthStep] = useState('email');
+  const [adminAuthStep, setAdminAuthStep] = useState('credentials');
+  const [studentOtpStep, setStudentOtpStep] = useState('credentials');
   const [otpDigits, setOtpDigits] = useState(['', '', '', '', '']);
   const otpRefs = useRef([]);
-  const inAdminGate = isLogin && role === 'admin' && adminAuthStep !== 'credentials';
+  const inAdminGate = isLogin && role === 'admin' && adminAuthStep === 'otp';
+  const inStudentOtpGate = isLogin && role === 'student' && studentOtpStep === 'otp';
+
+  const [resendCooldown, setResendCooldown] = useState(0);
+  const cooldownIntervalRef = useRef(null);
+
+  const startResendCooldown = (seconds) => {
+    clearInterval(cooldownIntervalRef.current);
+    setResendCooldown(seconds);
+    cooldownIntervalRef.current = setInterval(() => {
+      setResendCooldown((prev) => {
+        if (prev <= 1) {
+          clearInterval(cooldownIntervalRef.current);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+  };
+
+  const formatCooldown = (totalSeconds) => {
+    const m = Math.floor(totalSeconds / 60);
+    const s = totalSeconds % 60;
+    return `${m}:${String(s).padStart(2, '0')}`;
+  };
 
   useEffect(() => {
     if (adminAuthStep === 'otp' && otpRefs.current[0]) {
       otpRefs.current[0].focus();
     }
   }, [adminAuthStep]);
+
+  useEffect(() => {
+    if (studentOtpStep === 'otp' && otpRefs.current[0]) {
+      otpRefs.current[0].focus();
+    }
+  }, [studentOtpStep]);
+
+  useEffect(() => () => clearInterval(cooldownIntervalRef.current), []);
 
   useEffect(() => {
     const fetchCountries = async () => {
@@ -84,7 +117,10 @@ export default function AuthPage({ mode, setMode, onBackHome, onForgotPassword }
     }));
 
     setAdminAuthStep('email');
+    setStudentOtpStep('credentials');
     setOtpDigits(['', '', '', '', '']);
+    clearInterval(cooldownIntervalRef.current);
+    setResendCooldown(0);
   }, [mode, role]);
 
   useEffect(() => {
@@ -156,6 +192,23 @@ export default function AuthPage({ mode, setMode, onBackHome, onForgotPassword }
     return c.name.toLowerCase().includes(query) || c.code.replace('+', '').includes(query);
   });
 
+  const completeAuthSuccess = (response) => {
+    if (response.data?.login_history_id) {
+      sessionStorage.setItem('login_history_id', response.data.login_history_id);
+    }
+    if (response.data?.token) {
+      sessionStorage.setItem('token', response.data.token);
+    }
+    if (response.data?.user) {
+      sessionStorage.setItem('user', JSON.stringify(response.data.user));
+    }
+    if (response.data?.token) {
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
+    }
+  };
+
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     setErrorMsg('');
@@ -165,6 +218,14 @@ export default function AuthPage({ mode, setMode, onBackHome, onForgotPassword }
       setErrorMsg('Passwords do not match. Please try again.');
       setFormData(prev => ({ ...prev, password: '', confirmPassword: '' }));
       return;
+    }
+
+    if (isLogin && role === 'student') {
+      return handleRequestStudentOtp();
+    }
+
+    if (isLogin && role === 'admin') {
+      return handleRequestAdminOtp();
     }
 
     setLoading(true);
@@ -196,24 +257,7 @@ export default function AuthPage({ mode, setMode, onBackHome, onForgotPassword }
       const response = await axios.post(`http://localhost:8000${endpoint}`, payload);
       setLoading(false);
       setSuccessMsg(isLogin ? 'Login successful!' : 'Account created successfully!');
-
-      if (response.data?.login_history_id) {
-        sessionStorage.setItem('login_history_id', response.data.login_history_id);
-      }
-
-      if (response.data?.token) {
-        sessionStorage.setItem('token', response.data.token);
-      }
-      if (response.data?.user) {
-        sessionStorage.setItem('user', JSON.stringify(response.data.user));
-      }
-
-      if (response.data?.token) {
-        setTimeout(() => {
-        
-          window.location.reload();
-        }, 1000);
-      }
+      completeAuthSuccess(response);
     } catch (err) {
       setLoading(false);
 
@@ -259,39 +303,56 @@ export default function AuthPage({ mode, setMode, onBackHome, onForgotPassword }
     }
   };
 
-  const handleRequestOtp = async (e) => {
-    e.preventDefault();
+  const handleRequestAdminOtp = async () => {
     setErrorMsg('');
     setSuccessMsg('');
     setLoading(true);
     try {
-      await axios.post('http://localhost:8000/api/admin/otp/request', { email: formData.email });
+      const res = await axios.post('http://localhost:8000/api/admin/otp/request', {
+        email: formData.email,
+        password: formData.password,
+        admin_id: formData.admin_id,
+      });
       setLoading(false);
       setSuccessMsg('Verification code sent to your email.');
       setAdminAuthStep('otp');
+      setOtpDigits(['', '', '', '', '']);
+      startResendCooldown(res.data?.retry_after ?? 120);
     } catch (err) {
       setLoading(false);
+      setFormData(prev => ({ ...prev, password: '' }));
       setErrorMsg(err.response?.data?.message || 'Failed to send verification code. Please try again.');
     }
   };
 
-  const handleResendOtp = async () => {
+  const handleResendAdminOtp = async () => {
+    if (resendCooldown > 0) return;
     setErrorMsg('');
     setSuccessMsg('');
     setLoading(true);
     try {
-      await axios.post('http://localhost:8000/api/admin/otp/request', { email: formData.email });
+      const res = await axios.post('http://localhost:8000/api/admin/otp/request', {
+        email: formData.email,
+        password: formData.password,
+        admin_id: formData.admin_id,
+      });
       setLoading(false);
       setSuccessMsg('A new verification code has been sent.');
       setOtpDigits(['', '', '', '', '']);
       if (otpRefs.current[0]) otpRefs.current[0].focus();
+      startResendCooldown(res.data?.retry_after ?? 120);
     } catch (err) {
       setLoading(false);
-      setErrorMsg(err.response?.data?.message || 'Failed to resend verification code.');
+      if (err.response?.status === 429) {
+        if (err.response.data?.retry_after) startResendCooldown(err.response.data.retry_after);
+        setErrorMsg(err.response.data?.message || 'Please wait before requesting another code.');
+      } else {
+        setErrorMsg(err.response?.data?.message || 'Failed to resend verification code.');
+      }
     }
   };
 
-  const handleVerifyOtp = async (e) => {
+  const handleVerifyAdminOtp = async (e) => {
     e.preventDefault();
     setErrorMsg('');
     setSuccessMsg('');
@@ -302,10 +363,84 @@ export default function AuthPage({ mode, setMode, onBackHome, onForgotPassword }
     }
     setLoading(true);
     try {
-      await axios.post('http://localhost:8000/api/admin/otp/verify', { email: formData.email, code });
+      const response = await axios.post('http://localhost:8000/api/admin/otp/verify', { email: formData.email, code });
       setLoading(false);
-      setSuccessMsg('');
-      setAdminAuthStep('credentials');
+      setSuccessMsg('Login successful!');
+      completeAuthSuccess(response);
+    } catch (err) {
+      setLoading(false);
+      setErrorMsg(err.response?.data?.message || 'Invalid or expired verification code.');
+    }
+  };
+
+  const handleRequestStudentOtp = async () => {
+    if (resendCooldown > 0) return;
+    setErrorMsg('');
+    setSuccessMsg('');
+    setLoading(true);
+    try {
+      const res = await axios.post('http://localhost:8000/api/student/otp/request', {
+        email: formData.email,
+        password: formData.password,
+      });
+      setLoading(false);
+      setSuccessMsg('Verification code sent to your email.');
+      setStudentOtpStep('otp');
+      setOtpDigits(['', '', '', '', '']);
+      startResendCooldown(res.data?.retry_after ?? 120);
+    } catch (err) {
+      setLoading(false);
+      setFormData(prev => ({ ...prev, password: '' }));
+      if (err.response?.status === 429) {
+        if (err.response.data?.retry_after) startResendCooldown(err.response.data.retry_after);
+        setErrorMsg(err.response.data?.message || 'Please wait before requesting another code.');
+      } else {
+        setErrorMsg('Invalid email or password.');
+      }
+    }
+  };
+
+  const handleResendStudentOtp = async () => {
+    if (resendCooldown > 0) return;
+    setErrorMsg('');
+    setSuccessMsg('');
+    setLoading(true);
+    try {
+      const res = await axios.post('http://localhost:8000/api/student/otp/request', {
+        email: formData.email,
+        password: formData.password,
+      });
+      setLoading(false);
+      setSuccessMsg('A new verification code has been sent.');
+      setOtpDigits(['', '', '', '', '']);
+      if (otpRefs.current[0]) otpRefs.current[0].focus();
+      startResendCooldown(res.data?.retry_after ?? 120);
+    } catch (err) {
+      setLoading(false);
+      if (err.response?.status === 429) {
+        if (err.response.data?.retry_after) startResendCooldown(err.response.data.retry_after);
+        setErrorMsg(err.response.data?.message || 'Please wait before requesting another code.');
+      } else {
+        setErrorMsg(err.response?.data?.message || 'Failed to resend verification code.');
+      }
+    }
+  };
+
+  const handleVerifyStudentOtp = async (e) => {
+    e.preventDefault();
+    setErrorMsg('');
+    setSuccessMsg('');
+    const code = otpDigits.join('');
+    if (code.length !== 5) {
+      setErrorMsg('Please enter the 5-digit verification code.');
+      return;
+    }
+    setLoading(true);
+    try {
+      const response = await axios.post('http://localhost:8000/api/student/otp/verify', { email: formData.email, code });
+      setLoading(false);
+      setSuccessMsg('Login successful!');
+      completeAuthSuccess(response);
     } catch (err) {
       setLoading(false);
       setErrorMsg(err.response?.data?.message || 'Invalid or expired verification code.');
@@ -350,49 +485,40 @@ export default function AuthPage({ mode, setMode, onBackHome, onForgotPassword }
       <div ref={scrollContainerRef} className={`w-full lg:w-[55%] flex flex-col justify-start items-center px-8 sm:px-16 lg:px-24 py-10 lg:py-16 h-screen overflow-y-auto ${isLogin ? 'order-1' : 'order-2'}`}>
         <div className="w-full max-w-[420px] space-y-6 pt-4">
           
-          <div className="text-center space-y-2 mt-4 lg:mt-6">
-            <h1 className="text-[30px] lg:text-[35px] font-bold text-black tracking-tight">
-              {isLogin ? 'Welcome Back' : 'Create Your Account'}
+          <div className={`text-center space-y-2 mt-4 lg:mt-6 ${!isLogin ? 'lg:w-[560px] lg:-mx-[70px]' : ''}`}>
+            <h1 className={`font-bold text-black tracking-tight ${isLogin ? 'text-[30px] lg:text-[35px]' : 'text-[22px] sm:text-[26px] lg:text-[35px] lg:whitespace-nowrap'}`}>
+              {isLogin ? 'Welcome Back' : (role === 'admin' ? 'Create Your Admin Account' : 'Create Your Student Account')}
             </h1>
             <p className="text-[20px] font-light text-[#000000]">
-              {isLogin ? 'Sign in to continue your career journey' : 'Start your journey to your dream career'}
+              {isLogin
+                ? (role === 'admin' ? 'Sign in to access the admin dashboard' : 'Sign in to continue your career journey')
+                : (role === 'admin' ? 'Get started managing your platform' : 'Start your journey to your dream career')}
             </p>
           </div>
 
-          <div className="flex bg-gray-100/80 p-1.5 rounded-full items-center w-[320px] mx-auto border border-gray-200 mt-[30px]">
-            <button type="button" onClick={() => setRole('student')} className={`flex-1 py-2 text-[20px] font-semibold rounded-full cursor-pointer ${role === 'student' ? 'bg-white text-[#83047A] shadow-sm' : 'text-black'}`}>Student</button>
-            <button type="button" onClick={() => setRole('admin')} className={`flex-1 py-2 text-[20px] font-semibold rounded-full cursor-pointer ${role === 'admin' ? 'bg-white text-[#83047A] shadow-sm' : 'text-black'}`}>Admin</button>
-          </div>
+          {isLogin && (
+            <div className="flex bg-gray-100/80 p-1.5 rounded-full items-center w-[320px] mx-auto border border-gray-200 mt-[30px]">
+              <button type="button" onClick={() => setRole('student')} className={`flex-1 py-2 text-[20px] font-semibold rounded-full cursor-pointer ${role === 'student' ? 'bg-white text-[#83047A] shadow-sm' : 'text-black'}`}>Student</button>
+              <button type="button" onClick={() => setRole('admin')} className={`flex-1 py-2 text-[20px] font-semibold rounded-full cursor-pointer ${role === 'admin' ? 'bg-white text-[#83047A] shadow-sm' : 'text-black'}`}>Admin</button>
+            </div>
+          )}
 
           {errorMsg && (
-            <div className="bg-red-50 border border-red-200 text-red-600 text-[12px] sm:text-[13px] font-medium py-2.5 px-3 rounded-xl flex items-center justify-center gap-2 shadow-sm animate-fade-in whitespace-nowrap">
+            <div className="bg-red-50 border border-red-200 text-red-600 text-[12px] sm:text-[13px] font-medium py-2.5 px-3.5 rounded-xl flex items-center justify-center gap-2 shadow-sm animate-fade-in">
               <XCircle className="w-4 h-4 sm:w-5 sm:h-5 text-red-600 shrink-0" />
-              <span>{errorMsg}</span>
+              <span className="text-center leading-snug">{errorMsg}</span>
             </div>
           )}
 
           {successMsg && (
-            <div className="bg-green-50 border border-green-200 text-green-700 text-[12px] sm:text-[13px] font-medium py-2.5 px-3 rounded-xl flex items-center justify-center gap-2 shadow-sm animate-fade-in whitespace-nowrap">
+            <div className="bg-green-50 border border-green-200 text-green-700 text-[12px] sm:text-[13px] font-medium py-2.5 px-3.5 rounded-xl flex items-center justify-center gap-2 shadow-sm animate-fade-in">
               <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-green-600 shrink-0" />
-              <span>{successMsg}</span>
+              <span className="text-center leading-snug">{successMsg}</span>
             </div>
           )}
 
-          {inAdminGate && adminAuthStep === 'email' && (
-            <form onSubmit={handleRequestOtp} autoComplete="off" className="space-y-5 mt-[30px]">
-              <div className="space-y-1">
-                <label htmlFor="admin-gate-email" className="text-[16px] font-semibold text-black block">Admin Email</label>
-                <input id="admin-gate-email" type="email" name="admin_gate_email" data-field="email" value={formData.email} onChange={handleChange} required autoComplete="username" placeholder="Enter your registered admin email" className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-4 py-3.5 text-[14px] font-medium focus:outline-none focus:border-pink-300 focus:ring-1 focus:ring-pink-300 placeholder-gray-400" />
-              </div>
-              <p className="text-[13px] text-gray-500 leading-relaxed">For security, we'll email a verification code to confirm it's really you before showing the admin login form.</p>
-              <button type="submit" disabled={loading} className="w-full bg-[#ffa3f5] hover:bg-[#f88def] text-[#890080] font-medium py-3.5 rounded-full text-[18px] tracking-wider cursor-pointer disabled:opacity-50">
-                {loading ? 'Sending...' : 'Send Verification Code'}
-              </button>
-            </form>
-          )}
-
-          {inAdminGate && adminAuthStep === 'otp' && (
-            <form onSubmit={handleVerifyOtp} autoComplete="off" className="space-y-5 mt-[30px]">
+          {inAdminGate && (
+            <form onSubmit={handleVerifyAdminOtp} autoComplete="off" className="space-y-5 mt-[30px] animate-step-in">
               <div className="space-y-2">
                 <label className="text-[16px] font-semibold text-black block">Verification Code</label>
                 <p className="text-[13px] text-gray-500">Enter the 5-digit code sent to <span className="font-semibold text-black">{formData.email}</span></p>
@@ -416,15 +542,56 @@ export default function AuthPage({ mode, setMode, onBackHome, onForgotPassword }
                 {loading ? 'Verifying...' : 'Verify Code'}
               </button>
               <div className="flex items-center justify-between text-[14px] pt-1">
-                <button type="button" onClick={() => { setAdminAuthStep('email'); setOtpDigits(['', '', '', '', '']); }} className="text-gray-500 font-medium hover:underline cursor-pointer">Change email</button>
-                <button type="button" onClick={handleResendOtp} disabled={loading} className="text-[#0063CC] font-medium hover:underline cursor-pointer disabled:opacity-50">Resend Code</button>
+                <button type="button" onClick={() => { setAdminAuthStep('credentials'); setOtpDigits(['', '', '', '', '']); clearInterval(cooldownIntervalRef.current); setResendCooldown(0); }} className="text-gray-500 font-medium hover:underline cursor-pointer">Change details</button>
+                <div className="flex items-center gap-2">
+                  {resendCooldown > 0 && (
+                    <span className="text-gray-400 font-medium text-[13px] tabular-nums">{formatCooldown(resendCooldown)}</span>
+                  )}
+                  <button type="button" onClick={handleResendAdminOtp} disabled={loading || resendCooldown > 0} className="text-[#0063CC] font-medium hover:underline cursor-pointer disabled:opacity-50 disabled:text-gray-400 disabled:no-underline disabled:cursor-not-allowed">Resend Code</button>
+                </div>
               </div>
             </form>
           )}
 
-          {!inAdminGate && (
+          {inStudentOtpGate && (
+            <form onSubmit={handleVerifyStudentOtp} autoComplete="off" className="space-y-5 mt-[30px] animate-step-in">
+              <div className="space-y-2">
+                <label className="text-[16px] font-semibold text-black block">Verification Code</label>
+                <p className="text-[13px] text-gray-500">Enter the 5-digit code sent to <span className="font-semibold text-black">{formData.email}</span></p>
+                <div className="flex items-center justify-center gap-3 pt-2">
+                  {otpDigits.map((digit, idx) => (
+                    <input
+                      key={idx}
+                      ref={(el) => (otpRefs.current[idx] = el)}
+                      type="text"
+                      inputMode="numeric"
+                      maxLength={1}
+                      value={digit}
+                      onChange={(e) => handleOtpDigitChange(idx, e.target.value)}
+                      onKeyDown={(e) => handleOtpKeyDown(idx, e)}
+                      className="w-12 h-14 text-center text-[22px] font-bold bg-gray-50/50 border border-gray-200 rounded-xl focus:outline-none focus:border-pink-300 focus:ring-1 focus:ring-pink-300"
+                    />
+                  ))}
+                </div>
+              </div>
+              <button type="submit" disabled={loading} className="w-full bg-[#ffa3f5] hover:bg-[#f88def] text-[#890080] font-medium py-3.5 rounded-full text-[18px] tracking-wider cursor-pointer disabled:opacity-50">
+                {loading ? 'Verifying...' : 'Verify Code'}
+              </button>
+              <div className="flex items-center justify-between text-[14px] pt-1">
+                <button type="button" onClick={() => { setStudentOtpStep('credentials'); setOtpDigits(['', '', '', '', '']); clearInterval(cooldownIntervalRef.current); setResendCooldown(0); }} className="text-gray-500 font-medium hover:underline cursor-pointer">Change email</button>
+                <div className="flex items-center gap-2">
+                  {resendCooldown > 0 && (
+                    <span className="text-gray-400 font-medium text-[13px] tabular-nums">{formatCooldown(resendCooldown)}</span>
+                  )}
+                  <button type="button" onClick={handleResendStudentOtp} disabled={loading || resendCooldown > 0} className="text-[#0063CC] font-medium hover:underline cursor-pointer disabled:opacity-50 disabled:text-gray-400 disabled:no-underline disabled:cursor-not-allowed">Resend Code</button>
+                </div>
+              </div>
+            </form>
+          )}
+
+          {!inAdminGate && !inStudentOtpGate && (
           <>
-          <form key={`${role}-${mode}`} onSubmit={handleFormSubmit} autoComplete="off" className="space-y-5 mt-[30px]">
+          <form key={`${role}-${mode}`} onSubmit={handleFormSubmit} autoComplete="off" className={`space-y-5 ${isLogin ? 'mt-[30px]' : 'mt-[52px]'}`}>
 
             {role === 'admin' && (
               <>
@@ -533,8 +700,12 @@ export default function AuthPage({ mode, setMode, onBackHome, onForgotPassword }
           </button>
 
           <p className="text-center text-[15px] font-normal text-black mt-[20px]">
-            {isLogin ? "Don't have an account?" : "Already have an account?"}{' '}
-            <button type="button" onClick={() => setMode(isLogin ? 'signup' : 'login')} className="text-[#0063CC] font-normal hover:underline ml-1 cursor-pointer">{isLogin ? 'Sign Up' : 'Login'}</button>
+            {isLogin
+              ? (role === 'admin' ? 'New administrator?' : "Don't have an account?")
+              : "Already have an account?"}{' '}
+            <button type="button" onClick={() => setMode(isLogin ? 'signup' : 'login')} className="text-[#0063CC] font-normal hover:underline ml-1 cursor-pointer">
+              {isLogin ? (role === 'admin' ? 'Create Admin Account' : 'Sign Up') : 'Login'}
+            </button>
           </p>
           </>
           )}
