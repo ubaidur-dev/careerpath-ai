@@ -8,7 +8,9 @@ import {
   AlertTriangle,
   Layers,
   Tag,
-  Gauge
+  Gauge,
+  Filter,
+  RotateCcw
 } from 'lucide-react';
 import AddNewQuestion from './AddNewQuestion';
 import EditQuestion from './EditQuestion';
@@ -30,7 +32,10 @@ const ManageQuiz = ({ onNavigate, onLogout, initialView = 'list' }) => {
   const [selectedType, setSelectedType] = useState('All Types');
   const [selectedStatus, setSelectedStatus] = useState('All Status');
   const [selectedWeight, setSelectedWeight] = useState('All Weights');
-  
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 7;
+
   const [editingId, setEditingId] = useState(null);
 
   const [toastMessage, setToastMessage] = useState('');
@@ -76,6 +81,31 @@ const ManageQuiz = ({ onNavigate, onLogout, initialView = 'list' }) => {
     return matchCategory && matchType && matchStatus && matchWeight;
   });
 
+  const hasActiveFilter = selectedCategory !== 'All Categories'
+    || selectedType !== 'All Types'
+    || selectedStatus !== 'All Status'
+    || selectedWeight !== 'All Weights';
+
+  const handleResetFilters = () => {
+    setSelectedCategory('All Categories');
+    setSelectedType('All Types');
+    setSelectedStatus('All Status');
+    setSelectedWeight('All Weights');
+    setCurrentPage(1);
+  };
+
+  const totalPages = Math.ceil(filteredQuestions.length / itemsPerPage) || 1;
+  const activePage = currentPage > totalPages ? totalPages : currentPage;
+  const startIndex = (activePage - 1) * itemsPerPage;
+  const endIndex = Math.min(startIndex + itemsPerPage, filteredQuestions.length);
+  const paginatedQuestions = filteredQuestions.slice(startIndex, endIndex);
+
+  const handlePageChange = (pageNum) => {
+    if (pageNum >= 1 && pageNum <= totalPages) {
+      setCurrentPage(pageNum);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
 
   const handleSaveEditedQuestion = async (updatedQuestion) => {
     try {
@@ -206,7 +236,7 @@ const ManageQuiz = ({ onNavigate, onLogout, initialView = 'list' }) => {
           <h1 className="text-4xl font-bold tracking-tight text-gray-900 inline-flex items-center gap-2">
             Manage Quiz Questions
           </h1>
-          <p className="text-[#000000] font-light text-[21.3px] mt-[5px] mb-[15px]">
+          <p className="text-[#525252] font-light text-[21.3px] mt-[5px] mb-[15px]">
             Manage your AI Career Advisor platform
           </p>
         </div>
@@ -252,29 +282,49 @@ const ManageQuiz = ({ onNavigate, onLogout, initialView = 'list' }) => {
         ))}
       </div>
 
-      <div className="w-full h-auto min-h-[130px] rounded-[25px] bg-white p-6 shadow-[3px_6px_6px_0.5px_rgba(0,0,0,0.25)] flex flex-wrap items-center gap-4 border border-[#FFD2F7]">
-        {[
-          { label: 'Category', state: selectedCategory, setState: setSelectedCategory, options: dynamicCategories },
-          { label: 'Type', state: selectedType, setState: setSelectedType, options: ['All Types', 'Multiple Choice'] },
-          { label: 'Status', state: selectedStatus, setState: setSelectedStatus, options: ['All Status', 'Active', 'Inactive'] },
-          { label: 'Weight', state: selectedWeight, setState: setSelectedWeight, options: ['All Weights', 'High', 'Medium', 'Low'] }
-        ].map((filter, idx) => (
-          <Dropdown
-            key={idx}
-            value={filter.state}
-            onChange={filter.setState}
-            options={filter.options}
-            ariaLabel={`Filter by ${filter.label}`}
-            className="w-full sm:w-[214px] flex-shrink-0"
-          />
-        ))}
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white p-6 rounded-[25px] prototype-card-border shadow-[3px_6px_6px_0.5px_rgba(0,0,0,0.25)]">
+        <div className="flex items-center gap-3 flex-wrap sm:flex-nowrap w-full sm:w-auto sm:flex-1">
+          {[
+            { label: 'Category', state: selectedCategory, setState: setSelectedCategory, options: dynamicCategories, width: 'sm:w-[200px]' },
+            { label: 'Type', state: selectedType, setState: setSelectedType, options: ['All Types', 'Multiple Choice'], width: 'sm:w-[160px]' },
+            { label: 'Status', state: selectedStatus, setState: setSelectedStatus, options: ['All Status', 'Active', 'Inactive'], width: 'sm:w-[160px]' },
+            { label: 'Weight', state: selectedWeight, setState: setSelectedWeight, options: ['All Weights', 'High', 'Medium', 'Low'], width: 'sm:w-[160px]' }
+          ].map((filter, idx) => (
+            <Dropdown
+              key={idx}
+              value={filter.state}
+              onChange={(v) => { filter.setState(v); setCurrentPage(1); }}
+              options={filter.options}
+              ariaLabel={`Filter by ${filter.label}`}
+              className={`w-full ${filter.width} flex-shrink-0`}
+              triggerClassName="bg-[#FCF8FE] border-[#FFD2F7] rounded-xl px-4 py-3 text-[16px]"
+            />
+          ))}
+          {hasActiveFilter && (
+            <button
+              type="button"
+              onClick={handleResetFilters}
+              className="flex items-center justify-center gap-2 py-3 px-4 rounded-xl border border-gray-300 hover:bg-gray-100 text-gray-700 text-[15px] font-semibold transition-colors cursor-pointer flex-shrink-0"
+            >
+              <RotateCcw size={16} />
+              Reset
+            </button>
+          )}
+        </div>
+
+        <div className="text-[16px] font-normal text-[#545454] flex items-center gap-2 flex-shrink-0">
+          <Filter size={18} className="text-gray-400" />
+          <span>
+            Showing <strong className="text-gray-900 font-semibold">{filteredQuestions.length === 0 ? 0 : startIndex + 1}</strong> - <strong className="text-gray-900 font-semibold">{endIndex}</strong> of <strong className="text-gray-900 font-semibold">{filteredQuestions.length}</strong>
+          </span>
+        </div>
       </div>
 
       <div className="space-y-6">
         {loading ? (
           <div className="bg-white rounded-3xl p-16 text-center text-gray-500 text-lg">Loading questions...</div>
         ) : filteredQuestions.length > 0 ? (
-          filteredQuestions.map((q, index) => (
+          paginatedQuestions.map((q, index) => (
             <div
               key={q.id}
               className="bg-white rounded-[25px] prototype-card-border shadow-[0_4px_20px_-4px_rgba(137,0,128,0.12)] p-7 sm:p-9 flex flex-col lg:flex-row lg:items-start justify-between gap-6"
@@ -282,7 +332,7 @@ const ManageQuiz = ({ onNavigate, onLogout, initialView = 'list' }) => {
               <div className="space-y-4 flex-1 min-w-0">
                 <div className="flex items-start gap-4">
                   <div className="w-9 h-9 rounded-full bg-[#890080] text-white font-bold text-sm flex items-center justify-center flex-shrink-0 shadow-xs mt-0.5">
-                    {index + 1}
+                    {startIndex + index + 1}
                   </div>
                   <h2 className="text-[22px] font-bold text-gray-900 tracking-tight leading-snug break-words">
                     {q.question_text || q.questionText}
@@ -350,6 +400,48 @@ const ManageQuiz = ({ onNavigate, onLogout, initialView = 'list' }) => {
           </div>
         )}
       </div>
+
+      {!loading && filteredQuestions.length > 0 && (
+        <div className="flex justify-center items-center gap-2 pt-2">
+          <button
+            type="button"
+            onClick={() => handlePageChange(activePage - 1)}
+            disabled={activePage === 1}
+            className="px-6 py-2 rounded-full border border-[#F45EE4]/40 text-[#890080] bg-[#FFE1FD] hover:bg-[#fae6f4] text-[16px] font-medium transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            Previous
+          </button>
+
+          <div className="flex items-center gap-2 mx-1">
+            {[...Array(totalPages)].map((_, index) => {
+              const pageNum = index + 1;
+              return (
+                <button
+                  key={pageNum}
+                  type="button"
+                  onClick={() => handlePageChange(pageNum)}
+                  className={`w-10 h-10 rounded-full flex items-center justify-center text-[16px] font-medium transition-all cursor-pointer ${
+                    activePage === pageNum
+                      ? 'bg-[#F45EE4] text-white shadow-sm'
+                      : 'bg-white text-gray-700 border border-gray-200 hover:border-[#F45EE4] hover:text-[#890080]'
+                  }`}
+                >
+                  {pageNum}
+                </button>
+              );
+            })}
+          </div>
+
+          <button
+            type="button"
+            onClick={() => handlePageChange(activePage + 1)}
+            disabled={activePage === totalPages}
+            className="px-6 py-2 rounded-full border border-[#F45EE4]/40 text-[#890080] bg-[#FFE1FD] hover:bg-[#fae6f4] text-[16px] font-medium transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            Next
+          </button>
+        </div>
+      )}
     </div>
   );
 };
