@@ -1,18 +1,16 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import axios from 'axios';
+import Header from './Header';
 import {
-  LayoutDashboard,
-  User,
-  LogOut,
   ChevronRight,
-  Check,
   CheckCircle,
   Sparkles,
   AlertCircle,
+  XCircle,
   Zap
 } from 'lucide-react';
 
-export default function CareerAssessment({ onNavigate }) {
+export default function CareerAssessment({ onNavigate, onLogout }) {
   const [steps, setSteps] = useState([]);
   const [totalQuestions, setTotalQuestions] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -22,10 +20,11 @@ export default function CareerAssessment({ onNavigate }) {
   const [error, setError] = useState('');
 
   const [answers, setAnswers] = useState({});
+  const hasStartedQuizRef = useRef(false);
 
-  const loadAssessment = useCallback(async () => {
+  const loadAssessment = useCallback(async ({ silent = false } = {}) => {
     try {
-      setLoading(true);
+      if (!silent) setLoading(true);
       const res = await axios.get('/quiz/assessment');
       const nextSteps = Array.isArray(res.data?.steps) ? res.data.steps : [];
       setSteps(nextSteps);
@@ -34,19 +33,24 @@ export default function CareerAssessment({ onNavigate }) {
       setCurrentStep((prev) => Math.min(Math.max(prev, 1), nextSteps.length || 1));
 
       const token = sessionStorage.getItem('token');
-      if (token && nextSteps.length > 0) {
+      if (token && nextSteps.length > 0 && !hasStartedQuizRef.current) {
+        hasStartedQuizRef.current = true;
         axios.post('/quiz/start', {}, { headers: { Authorization: `Bearer ${token}` } }).catch(() => {});
       }
     } catch (err) {
-      console.error('Failed to load assessment', err);
-      setLoadError('Unable to load the assessment right now. Please try again.');
+      if (!silent) {
+        console.error('Failed to load assessment', err);
+        setLoadError('Unable to load the assessment right now. Please try again.');
+      }
     } finally {
-      setLoading(false);
+      if (!silent) setLoading(false);
     }
   }, []);
 
   useEffect(() => {
     loadAssessment();
+    const refreshInterval = setInterval(() => loadAssessment({ silent: true }), 5000);
+    return () => clearInterval(refreshInterval);
   }, [loadAssessment]);
 
   const goingToResults = useRef(false);
@@ -69,6 +73,15 @@ export default function CareerAssessment({ onNavigate }) {
     if (onNavigate) onNavigate(destination);
   }, [abandonQuiz, onNavigate]);
 
+  const handleLogout = useCallback(() => {
+    abandonQuiz();
+    if (onLogout) {
+      onLogout();
+    } else if (onNavigate) {
+      onNavigate('home');
+    }
+  }, [abandonQuiz, onLogout, onNavigate]);
+
   useEffect(() => {
     const token = sessionStorage.getItem('token');
     if (!token) return;
@@ -89,6 +102,17 @@ export default function CareerAssessment({ onNavigate }) {
       window.removeEventListener('pagehide', abandonQuiz);
     };
   }, [abandonQuiz]);
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [currentStep]);
+
+  useEffect(() => {
+    if (!error) return;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    const timer = setTimeout(() => setError(''), 5000);
+    return () => clearTimeout(timer);
+  }, [error]);
 
   const totalSteps = steps.length;
   const safeStep = Math.min(Math.max(currentStep, 1), totalSteps || 1);
@@ -128,6 +152,7 @@ export default function CareerAssessment({ onNavigate }) {
           ? 'Please complete all remaining questions to get your career suggestions.'
           : 'Please answer all questions on this step before proceeding.'
       );
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       return false;
     }
     return true;
@@ -155,32 +180,9 @@ export default function CareerAssessment({ onNavigate }) {
   const showForm = !loading && !loadError && totalSteps > 0;
 
   return (
-    <div className="min-h-screen bg-[#fcf8fe] text-gray-800 antialiased">
+    <div className="min-h-screen bg-[#fcf8fe] text-gray-800 antialiased font-poppins">
 
-      <header className="sticky top-0 z-50 bg-white border-b border-gray-100 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2 cursor-pointer" onClick={() => leaveQuiz('dashboard')}>
-            <div className="w-8 h-8 rounded-lg bg-[#bd24df] flex items-center justify-center text-white font-bold text-xl">¢</div>
-            <span className="font-bold text-xl tracking-tight text-gray-900">CareerPath<span className="text-[#bd24df]">AI</span></span>
-          </div>
-          <div className="flex items-center gap-4 sm:gap-6">
-            <button onClick={() => leaveQuiz('dashboard')} className="flex items-center gap-2 text-gray-600 hover:text-[#bd24df] px-4 py-2 rounded-xl text-sm font-semibold transition cursor-pointer">
-              <LayoutDashboard size={18} />
-              <span className="hidden sm:inline">Dashboard</span>
-            </button>
-            <div className="flex items-center gap-2 text-[#bd24df] font-semibold text-sm border-l border-r border-gray-200 px-4 bg-purple-50/50 py-2 rounded-lg cursor-pointer" onClick={() => leaveQuiz('profile')}>
-              <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden border border-[#f2c6fa]">
-                <User size={18} className="text-[#bd24df]" />
-              </div>
-              <span className="hidden sm:inline">Ahmed!</span>
-            </div>
-            <button onClick={() => leaveQuiz('home')} className="flex items-center gap-1.5 text-gray-500 hover:text-red-600 text-sm font-medium transition cursor-pointer">
-              <LogOut size={18} />
-              <span className="hidden sm:inline">Logout</span>
-            </button>
-          </div>
-        </div>
-      </header>
+      <Header onNavigate={leaveQuiz} onLogout={handleLogout} userRole="student" currentView="quiz" />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-[32px]">
 
@@ -204,15 +206,15 @@ export default function CareerAssessment({ onNavigate }) {
         <div className="max-w-6xl mx-auto w-full space-y-6 pt-13">
 
           <div className="text-center space-y-3">
-          <div className="inline-flex items-center justify-center gap-2  w-[239px] h-[31px] px-3 py-1.5 bg-white border border-[#FF00ED] rounded-full shadow-sm text-gray-800 font-light">
-            <Sparkles
-              size={13}
-              className="text-[#83047A] flex-shrink-0 animate-pulse"
-            />
-            <span className="leading-none text-[#000000] flex items-center text-[15px] whitespace-nowrap">
-              AI Career Assessment Form
-            </span>
-          </div>
+            <div className="inline-flex items-center justify-center gap-2 w-[239px] h-[31px] px-3 py-1.5 bg-white border border-[#FF00ED] rounded-full shadow-sm text-gray-800 font-light">
+              <Sparkles
+                size={13}
+                className="text-[#83047A] flex-shrink-0 animate-pulse"
+              />
+              <span className="leading-none text-[#000000] flex items-center text-[15px] whitespace-nowrap">
+                AI Career Assessment Form
+              </span>
+            </div>
 
             <h1 className="text-[semi-bold] tracking-tight text-[31px] font-[600]">
               Your Top Career Matches
@@ -223,7 +225,7 @@ export default function CareerAssessment({ onNavigate }) {
             </p>
           </div>
 
-         {showForm && (
+          {showForm && (
             <div className="flex flex-wrap items-center justify-center gap-y-3 max-w-3xl mx-auto py-6 relative">
               {steps.map((stepItem, idx) => {
                 const stepNumber = idx + 1;
@@ -236,6 +238,7 @@ export default function CareerAssessment({ onNavigate }) {
                           setCurrentStep(stepNumber);
                           setError('');
                         } else if (stepNumber === safeStep) {
+                          window.scrollTo({ top: 0, behavior: 'smooth' });
                         } else {
                           validateCurrentStep();
                         }
@@ -274,16 +277,13 @@ export default function CareerAssessment({ onNavigate }) {
           )}
 
           {error && (
-            <div className="bg-red-50 border border-red-200 rounded-2xl p-4 flex items-center gap-3 text-red-700 text-sm font-semibold shadow-sm animate-fade-in text-left">
-              <AlertCircle size={20} className="text-red-500 flex-shrink-0" />
-              <span className="">{error}</span>
+            <div className="w-fit max-w-[92%] mx-auto bg-red-50 border border-red-200 text-red-600 px-8 py-3 rounded-xl flex items-center justify-center gap-2.5 shadow-sm animate-fade-in text-[15.5px] font-medium">
+              <XCircle className="w-5 h-5 text-red-600 shrink-0" />
+              <span className="text-center leading-snug">{error}</span>
             </div>
           )}
 
-            <div className={`bg-white border-[1px] border-[#FFD2F7] rounded-3xl p-6 sm:p-10 space-y-8 text-left transition-all duration-300 mx-auto w-full max-w-[1050px] min-h-[520px] shadow-[4px_6px_6px_1px_rgba(0,0,0,0.25)] ${
-                error ? 'border-red-300 ring-4 ring-red-50' : 'border-[#fae8ff]'
-              }`}
-            >
+          <div className="bg-white border-[1px] border-[#FFD2F7] rounded-3xl p-6 sm:p-10 space-y-8 text-left transition-all duration-300 mx-auto w-full max-w-[1050px] min-h-[520px] shadow-[4px_6px_6px_1px_rgba(0,0,0,0.25)]">
 
             {loading && (
               <div className="flex flex-col items-center justify-center py-24 gap-4">
@@ -317,46 +317,53 @@ export default function CareerAssessment({ onNavigate }) {
             )}
 
             {showForm && currentStepData && (
-            <>
-              <div className="mb-6">
-                <h2 className="text-black tracking-tight text-[25px] font-[600] mb-[4px]">
-                  {currentStepData.category}
-                </h2>
-                <p className="text-[#4B4B4B] text-[16px] font-regular">
-                  Step {safeStep} of {totalSteps}
-                </p>
-              </div>
+              <>
+                <div className="mb-6">
+                  <h2 className="text-black tracking-tight text-[25px] font-[600] mb-[4px]">
+                    {currentStepData.category}
+                  </h2>
+                  <p className="text-[#4B4B4B] text-[16px] font-regular">
+                    Step {safeStep} of {totalSteps}
+                  </p>
+                </div>
 
-              <div className="space-y-8">
-                {currentStepData.questions.map((q, qIdx) => (
-                  <div key={q.id} className="space-y-4">
-                    <p className="text-[#303030] text-[16.5px] font-regular mb-[12px] text-left">
-                      {qIdx + 1}. {q.questionText}
-                    </p>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-32 gap-y-4 w-full">
-                      {(q.options || []).map((opt, oIdx) => {
-                        const isSelected = Array.isArray(answers[q.id]) && answers[q.id].includes(opt);
-                        return (
-                          <button
-                            key={oIdx}
-                            onClick={() => handleOptionSelect(q.id, opt)}
-                            className={`flex items-center justify-between text-left border transition cursor-pointer w-full min-h-[47px] pt-[16px] pb-[16px] pl-[20px] pr-[20px] text-[16.5px] font-[400] rounded-[15px] ${
-                              isSelected
-                                ? 'bg-[#FFF0FB] border-[0.5px] border-[#83047A] text-[#83047A]'
-                                : 'bg-[#FDFDFD] border-[0.5px] border-[#A8A8A8] text-gray-700 hover:bg-gray-50'
-                            }`}
-                          >
-                            <span className="">{opt}</span>
-                            {isSelected && <CheckCircle size={20} className="text-[#83047A] flex-shrink-0" />}
-                          </button>
-                        );
-                      })}
+                <div className="space-y-8">
+                  {currentStepData.questions.map((q, qIdx) => (
+                    <div key={q.id} className="space-y-4">
+                      <p className="text-[#303030] text-[16.5px] font-regular mb-[12px] text-left">
+                        {qIdx + 1}. {q.questionText}
+                      </p>
+                      <div className="flex flex-col md:flex-row gap-x-32 gap-y-4 w-full">
+                        {[0, 1].map((colIdx) => (
+                          <div key={colIdx} className="flex-1 space-y-4 min-w-0">
+                            {(q.options || [])
+                              .map((opt, oIdx) => ({ opt, oIdx }))
+                              .filter(({ oIdx }) => oIdx % 2 === colIdx)
+                              .map(({ opt, oIdx }) => {
+                                const isSelected = Array.isArray(answers[q.id]) && answers[q.id].includes(opt);
+                                return (
+                                  <button
+                                    key={oIdx}
+                                    onClick={() => handleOptionSelect(q.id, opt)}
+                                    className={`flex items-start justify-between gap-3 text-left border transition cursor-pointer w-full min-h-[47px] pt-[16px] pb-[16px] pl-[20px] pr-[20px] text-[16.5px] font-[400] rounded-[15px] ${
+                                      isSelected
+                                        ? 'bg-[#FFF0FB] border-[0.5px] border-[#83047A] text-[#83047A]'
+                                        : 'bg-[#FDFDFD] border-[0.5px] border-[#A8A8A8] text-gray-700 hover:bg-gray-50'
+                                    }`}
+                                  >
+                                    <span className="leading-relaxed">{opt}</span>
+                                    {isSelected && <CheckCircle size={20} className="text-[#83047A] flex-shrink-0 mt-[2px]" />}
+                                  </button>
+                                );
+                              })}
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-            </>
-          )}
+                  ))}
+                </div>
+              </>
+            )}
 
           </div>
 
@@ -367,7 +374,8 @@ export default function CareerAssessment({ onNavigate }) {
                 <button
                   onClick={handlePrevious}
                   disabled={safeStep === 1}
-                  className="flex items-center justify-center w-[120px] h-[50px] ml-[57px] rounded-[16px] text-[19px] font-[500] bg-white border border-[#83047A] text-[#83047A] hover:bg-gray-50 hover:-translate-y-1 transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"              >
+                  className="flex items-center justify-center w-[120px] h-[50px] ml-[57px] rounded-[16px] text-[19px] font-[500] bg-white border border-[#83047A] text-[#83047A] hover:bg-gray-50 hover:-translate-y-1 transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+                >
                   Previous
                 </button>
 
@@ -378,9 +386,9 @@ export default function CareerAssessment({ onNavigate }) {
                 {safeStep < totalSteps ? (
                   <button
                     onClick={handleNext}
-                    className="flex items-center justify-center gap-[6px] w-[100px] h-[50px] mr-[57px] rounded-[16px] text-[19px] font-[400] bg-[#FFD0F3] text-[#83047A] border-[0.3px] border-[#83047A] hover:bg-[#fbcfe8] hover:-translate-y-1 transition-all duration-300 cursor-pointer"                >
+                    className="flex items-center justify-center gap-[6px] w-[100px] h-[50px] mr-[57px] rounded-[16px] text-[19px] font-[400] bg-[#FFD0F3] text-[#83047A] border-[0.3px] border-[#83047A] hover:bg-[#fbcfe8] hover:-translate-y-1 transition-all duration-300 cursor-pointer"
+                  >
                     <span className="leading-none">Next</span>
-
                     <ChevronRight size={19} strokeWidth={2} className="text-[#83047A] flex-shrink-0" />
                   </button>
                 ) : (
