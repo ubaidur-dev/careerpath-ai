@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { X, Trash2, Plus, Check } from 'lucide-react';
+import Dropdown from './Dropdown';
 
 const AddNewQuestion = ({ onSave, onCancel }) => {
   const [newQuestionText, setNewQuestionText] = useState('');
@@ -8,6 +9,7 @@ const AddNewQuestion = ({ onSave, onCancel }) => {
   const [isCustomCategory, setIsCustomCategory] = useState(false);
   const [customCategoryInput, setCustomCategoryInput] = useState('');
   const [newWeight, setNewWeight] = useState('Medium');
+  const [newStatus, setNewStatus] = useState('Active');
   const [options, setOptions] = useState(['', '']);
 
   const handleCategorySelectChange = (e) => {
@@ -50,8 +52,9 @@ const AddNewQuestion = ({ onSave, onCancel }) => {
       type: 'Multiple Choice',
       category: finalCategory,
       weight: newWeight,
-      status: 'Active',
-      options: cleanedOptions.length > 0 ? cleanedOptions : ['Option 1']
+      status: newStatus,
+      options: cleanedOptions.length > 0 ? cleanedOptions : ['Option 1'],
+      correct_answer: cleanedOptions[0] || 'Option 1'
     });
   };
 
@@ -60,12 +63,12 @@ const AddNewQuestion = ({ onSave, onCancel }) => {
       className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 p-4 sm:p-6 backdrop-blur-sm animate-in fade-in duration-200 cursor-pointer"
       onClick={onCancel}
     >
-      <div 
-        className="bg-white rounded-[32px] p-6 sm:p-10 max-w-3xl w-full shadow-[0_20px_50px_rgba(0,0,0,0.15)] border-[1.5px] border-[#FFD2F7] max-h-[90vh] overflow-y-auto modal-scrollbar cursor-default"
+      <div
+        className="bg-white rounded-[32px] max-w-3xl w-full shadow-[0_20px_50px_rgba(0,0,0,0.15)] border-[1.5px] border-[#FFD2F7] max-h-[90vh] flex flex-col cursor-default"
         onClick={(e) => e.stopPropagation()}
       >
-        
-        <div className="flex justify-between items-start mb-8 border-b border-gray-100 pb-6 text-left">
+
+        <div className="flex justify-between items-start p-6 sm:p-10 pb-6 border-b border-gray-100 text-left flex-shrink-0">
           <div className="space-y-1">
             <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-gray-900 inline-flex items-center gap-2">
               Add New Question
@@ -74,9 +77,9 @@ const AddNewQuestion = ({ onSave, onCancel }) => {
               Create a new career indicator
             </p>
           </div>
-          <button 
+          <button
             type="button"
-            onClick={onCancel} 
+            onClick={onCancel}
             className="w-11 h-11 rounded-full border-[0.7px] border-[#FF34DC] bg-[#FFEDF8] flex items-center justify-center text-[#890080] hover:bg-[#ffdef9] transition-all cursor-pointer shadow-sm flex-shrink-0"
             title="Close"
           >
@@ -84,8 +87,8 @@ const AddNewQuestion = ({ onSave, onCancel }) => {
           </button>
         </div>
 
-        <div className="space-y-6 sm:space-y-8">
-          
+        <div className="overflow-y-auto modal-scrollbar px-6 sm:px-10 py-6 sm:py-8 space-y-6 sm:space-y-8">
+
           <div className="space-y-3">
             <label className="text-base sm:text-lg font-semibold text-gray-800 block">Question Title / Text</label>
             <input 
@@ -123,37 +126,44 @@ const AddNewQuestion = ({ onSave, onCancel }) => {
                   autoFocus
                 />
               ) : (
-                <div className="relative">
-                  <select 
-                    value={newCategory} 
-                    onChange={handleCategorySelectChange} 
-                    className="w-full bg-[#F9F9F9] border border-gray-200 rounded-[18px] px-5 py-4 text-[17px] sm:text-[18px] focus:outline-none focus:border-[#FF34DC] focus:bg-white transition-all text-gray-900 font-medium shadow-sm appearance-none cursor-pointer"
-                    style={{ backgroundImage: `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M6 9l6 6 6-6'/></svg>")`, backgroundPosition: 'right 20px center', backgroundRepeat: 'no-repeat' }}
-                  >
-                    {categories.map((cat) => (
-                      <option key={cat} value={cat}>{cat}</option>
-                    ))}
-                    <option value="__ADD_NEW__">+ Add Custom Category...</option>
-                  </select>
-                </div>
+                <Dropdown
+                  variant="form"
+                  value={newCategory}
+                  onChange={(v) => handleCategorySelectChange({ target: { value: v } })}
+                  options={[
+                    ...categories.map((cat) => ({ value: cat, label: cat })),
+                    { value: '__ADD_NEW__', label: '+ Add Custom Category...' },
+                  ]}
+                  ariaLabel="Question category"
+                />
               )}
             </div>
 
             <div className="space-y-3">
               <label className="text-base sm:text-lg font-semibold text-gray-800 block">Evaluation Weight</label>
-              <div className="relative">
-                <select 
-                  value={newWeight} 
-                  onChange={(e) => setNewWeight(e.target.value)} 
-                  className="w-full bg-[#F9F9F9] border border-gray-200 rounded-[18px] px-5 py-4 text-[17px] sm:text-[18px] focus:outline-none focus:border-[#FF34DC] focus:bg-white transition-all text-gray-900 font-medium shadow-sm appearance-none cursor-pointer"
-                  style={{ backgroundImage: `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M6 9l6 6 6-6'/></svg>")`, backgroundPosition: 'right 20px center', backgroundRepeat: 'no-repeat' }}
-                >
-                  <option value="High">High</option>
-                  <option value="Medium">Medium</option>
-                  <option value="Low">Low</option>
-                </select>
-              </div>
+              <Dropdown
+                variant="form"
+                value={newWeight}
+                onChange={setNewWeight}
+                options={['High', 'Medium', 'Low']}
+                ariaLabel="Evaluation weight"
+              />
             </div>
+          </div>
+
+          {/* Status Toggle Section */}
+          <div className="flex items-center justify-between bg-[#F9F9F9] border border-gray-200 rounded-[18px] px-5 py-4">
+            <div>
+              <label className="text-base sm:text-lg font-semibold text-gray-800 block">Question Status</label>
+              <p className="text-sm text-gray-500">Enable or disable this question for student assessments</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setNewStatus(newStatus === 'Active' ? 'Inactive' : 'Active')}
+              className={`relative inline-flex h-8 w-14 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${newStatus === 'Active' ? 'bg-[#890080]' : 'bg-gray-300'}`}
+            >
+              <span className={`pointer-events-none inline-block h-7 w-7 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out ${newStatus === 'Active' ? 'translate-x-6' : 'translate-x-0'}`} />
+            </button>
           </div>
 
           <div className="space-y-4 bg-[#fdfdfd] border border-gray-100 p-6 sm:p-8 rounded-[24px]">
@@ -196,15 +206,15 @@ const AddNewQuestion = ({ onSave, onCancel }) => {
           </div>
         </div>
 
-        <div className="flex justify-end items-center gap-4 pt-8 mt-6 border-t border-gray-100">
-          <button 
+        <div className="flex justify-end items-center gap-4 p-6 sm:p-10 pt-6 border-t border-gray-100 flex-shrink-0">
+          <button
             type="button"
-            onClick={onCancel} 
+            onClick={onCancel}
             className="px-7 py-3.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-[16px] transition-colors cursor-pointer text-[17px] sm:text-[18px]"
           >
             Cancel
           </button>
-          <button 
+          <button
             type="button"
             onClick={handleSave}
             style={{ backgroundColor: '#FFD7FC', color: '#890080' }}
