@@ -133,8 +133,9 @@ export default function CareerAssessment({ onNavigate, onLogout }) {
   const handleOptionSelect = (questionId, optionValue) => {
     setError('');
     setAnswers((prev) => {
-      const current = Array.isArray(prev[questionId]) ? prev[questionId] : [];
-      const next = current.includes(optionValue)
+      const current = Array.isArray(prev[questionId]) ? prev[questionId] : (prev[questionId] ? [prev[questionId]] : []);
+      const isAlreadySelected = current.includes(optionValue);
+      const next = isAlreadySelected
         ? current.filter((opt) => opt !== optionValue)
         : [...current, optionValue];
       return { ...prev, [questionId]: next };
@@ -318,7 +319,7 @@ export default function CareerAssessment({ onNavigate, onLogout }) {
 
             {showForm && currentStepData && (
               <>
-                <div className="mb-6">
+                <div className="mb-8">
                   <h2 className="text-black tracking-tight text-[25px] font-[600] mb-[4px]">
                     {currentStepData.category}
                   </h2>
@@ -329,8 +330,10 @@ export default function CareerAssessment({ onNavigate, onLogout }) {
 
                 <div className="space-y-8">
                   {currentStepData.questions.map((q, qIdx) => (
-                    <div key={q.id} className="space-y-4">
-                      <p className="text-[#303030] text-[16.5px] font-regular mb-[12px] text-left">
+                    <React.Fragment key={q.id}>
+                    {qIdx > 0 && <hr className="mx-6 border-0 border-t border-[#FFD2F7]" />}
+                    <div className="space-y-4">
+                      <p className="text-[#303030] text-[16.5px] font-medium mb-[20px] text-left">
                         {qIdx + 1}. {q.questionText}
                       </p>
                       <div className="flex flex-col md:flex-row gap-x-32 gap-y-4 w-full">
@@ -360,6 +363,7 @@ export default function CareerAssessment({ onNavigate, onLogout }) {
                         ))}
                       </div>
                     </div>
+                    </React.Fragment>
                   ))}
                 </div>
               </>
