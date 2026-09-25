@@ -4,10 +4,11 @@ import Header from './Header';
 import { Search, Zap, ArrowRight, Filter } from 'lucide-react';
 import {
   getCareerIcon,
-  getDemandStyles,
+  getDemandBadgeProps,
   CAREER_CARD_ICON_BG,
   CAREER_CARD_ICON_COLOR
 } from '../utils/careerVisuals';
+import BackToDashboardButton from './BackToDashboardButton';
 
 export default function BrowseCareers({ onNavigate, onLogout, activeCareerId }) {
   const [careers, setCareers] = useState([]);
@@ -43,6 +44,11 @@ export default function BrowseCareers({ onNavigate, onLogout, activeCareerId }) 
 
   const totalPages = Math.ceil(careers.length / itemsPerPage) || 1;
   const activePage = currentPage > totalPages ? totalPages : currentPage;
+  const maxVisiblePages = 9;
+  let pageWindowStart = Math.max(1, activePage - Math.floor(maxVisiblePages / 2));
+  let pageWindowEnd = Math.min(totalPages, pageWindowStart + maxVisiblePages - 1);
+  pageWindowStart = Math.max(1, pageWindowEnd - maxVisiblePages + 1);
+  const visiblePageNumbers = Array.from({ length: pageWindowEnd - pageWindowStart + 1 }, (_, i) => pageWindowStart + i);
   const startIndex = (activePage - 1) * itemsPerPage;
   const endIndex = Math.min(startIndex + itemsPerPage, careers.length);
   const displayedCareers = careers.slice(startIndex, endIndex);
@@ -74,27 +80,11 @@ export default function BrowseCareers({ onNavigate, onLogout, activeCareerId }) 
         `}
       </style>
 
-      <Header onNavigate={onNavigate} onLogout={onLogout} />
+      <Header onNavigate={onNavigate} onLogout={onLogout} currentView="browse" />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10 relative">
 
-        <div className="absolute hidden lg:block top-6 left-8 z-40">
-          <button
-            onClick={() => onNavigate('dashboard')}
-            className="flex items-center gap-2 px-4 py-2 border border-gray-200 bg-white hover:bg-gray-50 rounded-xl text-sm font-semibold text-gray-700 hover:scale-[1.02] hover:shadow-md active:scale-[0.98] transition-all duration-300 cursor-pointer"
-          >
-            &larr; Back To Dashboard
-          </button>
-        </div>
-
-        <div className="block lg:hidden w-full text-left mb-2">
-          <button
-            onClick={() => onNavigate('dashboard')}
-            className="inline-flex items-center gap-2 px-4 py-2 border border-gray-200 bg-white hover:bg-gray-50 rounded-xl text-sm font-semibold text-gray-700 hover:scale-[1.02] hover:shadow-md active:scale-[0.98] transition-all duration-300 cursor-pointer"
-          >
-            &larr; Back To Dashboard
-          </button>
-        </div>
+        <BackToDashboardButton onClick={() => onNavigate('dashboard')} />
 
         <div className="text-center space-y-4 max-w-2xl mx-auto">
           <div
@@ -172,7 +162,8 @@ export default function BrowseCareers({ onNavigate, onLogout, activeCareerId }) 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-9 px-2">
           {displayedCareers.map((career) => {
             const CareerCardIcon = getCareerIcon(career.icon);
-            const { badgeClasses, stroke: demandBadgeStroke } = getDemandStyles(career.demand);
+            const demandBadge = getDemandBadgeProps(career.demand);
+            const DemandIcon = demandBadge.Icon;
 
             return (
               <div
@@ -188,9 +179,9 @@ export default function BrowseCareers({ onNavigate, onLogout, activeCareerId }) 
                     <div className="text-left space-y-1.5 pt-0.5 flex-1 min-w-0">
                       <h3 className="font-semibold text-gray-900 text-lg leading-snug break-words">{career.title}</h3>
                       <span
-                        style={{ border: `0.3px solid ${demandBadgeStroke}` }}
-                        className={`inline-block text-[11px] font-medium px-2.5 py-0.5 rounded-[12px] border border-[0.1px] ${badgeClasses}`}
+                        className={`inline-flex items-center gap-1 text-[11px] font-medium tracking-wide px-2.5 py-0.5 rounded-full border whitespace-nowrap ${demandBadge.textClass} ${demandBadge.bgClass} ${demandBadge.borderClass}`}
                       >
+                        <DemandIcon size={12} className={`${demandBadge.iconColor} flex-shrink-0`} />
                         {career.demand}
                       </span>
                     </div>
@@ -222,14 +213,14 @@ export default function BrowseCareers({ onNavigate, onLogout, activeCareerId }) 
                 </div>
 
                 <div className="mt-6 space-y-4">
-                  <div className="grid grid-cols-2 gap-3 text-left">
-                    <div className="bg-[#F9F9F9] px-3 py-1.5 rounded-xl border border-gray-100 flex flex-col justify-center min-h-[45px]">
+                  <div className="grid grid-cols-5 gap-3 text-left">
+                    <div className="col-span-3 bg-[#F9F9F9] px-3 py-1.5 rounded-xl border border-gray-100 flex flex-col justify-center min-h-[45px] overflow-hidden">
                       <span className="text-[13px] font-normal text-[#525252] block leading-tight mb-0.5">Salary</span>
-                      <span className="text-[13px] font-bold text-gray-800 leading-tight">{career.salary}</span>
+                      <span className="text-[12.5px] font-bold text-gray-800 leading-tight whitespace-nowrap">{career.salary}</span>
                     </div>
-                    <div className="bg-[#F9F9F9] px-3 py-1.5 rounded-xl border border-gray-100 flex flex-col justify-center min-h-[45px]">
+                    <div className="col-span-2 bg-[#F9F9F9] px-3 py-1.5 rounded-xl border border-gray-100 flex flex-col justify-center min-h-[45px] overflow-hidden">
                       <span className="text-[13px] font-normal text-[#525252] block leading-tight mb-0.5">Growth</span>
-                      <span className="text-[13px] font-bold text-gray-800 leading-tight">{career.growth}</span>
+                      <span className="text-[13px] font-bold text-gray-800 leading-tight whitespace-nowrap">{career.growth}</span>
                     </div>
                   </div>
 
@@ -261,8 +252,7 @@ export default function BrowseCareers({ onNavigate, onLogout, activeCareerId }) 
             </button>
 
             <div className="flex items-center gap-2 mx-1">
-              {[...Array(totalPages)].map((_, index) => {
-                const pageNum = index + 1;
+              {visiblePageNumbers.map((pageNum) => {
                 return (
                   <button
                     key={pageNum}
