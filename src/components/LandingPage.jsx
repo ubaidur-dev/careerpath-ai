@@ -1,7 +1,6 @@
 import React from 'react';
-import { LogIn, Mail, MapPin, Phone, Lock } from 'lucide-react';
-import HomeImage from '../assets/Home.png'; 
-import { TrendingUp } from 'lucide-react';
+import { LogIn, Mail, MapPin, Phone, Lock, Target, ClipboardCheck, Route, CheckCircle2 } from 'lucide-react';
+import HomeImage from '../assets/Home.png';
 
 export default function LandingPage({ onNavigate }) {
   const scrollToSection = (sectionId) => {
@@ -71,10 +70,10 @@ export default function LandingPage({ onNavigate }) {
 
         <header className="w-full max-w-7xl mx-auto px-6 sm:px-12 lg:px-16 py-6 flex items-center justify-between relative z-30">
           <div className="flex items-center select-none cursor-pointer" onClick={() => scrollToSection('home')}>
-            <img 
-              src="/logoo.png" 
-              alt="CareerPath AI Logo" 
-              className="h-10 sm:h-12 lg:h-16 w-auto object-contain transition-transform hover:scale-105" 
+            <img
+              src="/logoo.png"
+              alt="CareerPath AI Logo"
+              className="h-11 sm:h-14 lg:h-[68px] w-auto object-contain transition-transform hover:scale-105 drop-shadow-[0_2px_18px_rgba(255,255,255,0.45)]"
             />
           </div>
 
@@ -108,7 +107,7 @@ export default function LandingPage({ onNavigate }) {
 
             <button 
               onClick={() => onNavigate('login')} 
-              className="flex items-center gap-2 px-7 py-3 rounded-[20px] text-base lg:text-lg font-bold bg-[#f08fe7] hover:bg-[#fa9eed] text-gray-950 shadow-[0_0_25px_rgba(240,143,231,0.5)] transition cursor-pointer hover:scale-105"
+              className="flex items-center gap-2 px-7 py-3 rounded-[20px] text-base lg:text-lg font-bold bg-[#f08fe7] hover:bg-[#fa9eed] text-gray-950 shadow-[0_4px_25px_rgba(217,70,239,0.4)] hover:shadow-[0_6px_30px_rgba(217,70,239,0.75)] transition-all duration-300 cursor-pointer hover:scale-[1.01]"
             >
               <LogIn size={20} />
               <span>Login</span>
@@ -118,37 +117,33 @@ export default function LandingPage({ onNavigate }) {
 
         <div className="w-full max-w-7xl mx-auto px-6 sm:px-12 lg:px-16 pt-6 pb-20 space-y-20 relative z-20">
           
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-            <div className="w-[720px] h-[475px] max-w-none shrink-0 col-span-1 lg:col-span-7 xl:col-span-6">
-              <div className="w-[720px] h-[475px] max-w-none shrink-0 bg-black/1 backdrop-blur-[05px] border border-white/20 rounded-[32px] p-8 sm:p-12 shadow-[0_30px_80px_-15px_rgba(0,0,0,0.8)] space-y-6 sm:space-y-8 animate-fadeIn">
-                
-                <h1 className="w-[660px] h-[116px] max-w-[678px] font-semibold sm:text-[46px] xl:text-[48px] tracking-tight leading-[1.12] text-white font-poppins">
-                  Your Dream Career with AI Guidance
-                </h1>
-                
-                <p className="w-[660px] h-[120px] max-w-[678px] text-[16px] sm:text-[22px] text-gray-200 font-regular tracking-wide leading-relaxed">
-                  Your personal co-pilot for professional growth. We analyze your interests and skills to build a customized roadmap that leads you to success.
-                </p>
+          <div className="flex justify-center lg:justify-start">
+            <div className="w-full max-w-[720px] bg-black/40 backdrop-blur-md border border-white/20 rounded-[32px] p-8 sm:p-12 shadow-[0_30px_80px_-15px_rgba(0,0,0,0.8)] space-y-6 sm:space-y-8 animate-fadeIn">
 
-                <div className="pt-2">
-                  <button 
-                    onClick={() => onNavigate('login')} 
-                    className="w-full sm:w-[300px] h-[75px] px-8 py-4 rounded-full bg-[#f08fe7] hover:bg-[#fa9eed] text-[#5B0055] text-[21px] font-semibold tracking-wide transition-all duration-300 shadow-[0_4px_25px_rgba(217,70,239,0.4)] hover:shadow-[0_6px_30px_rgba(217,70,239,0.75)] cursor-pointer hover:scale-[1.01]"
-                  >
-                    Find My Career Path
-                  </button>
-                </div>
+              <h1 className="max-w-[678px] font-semibold text-[32px] sm:text-[46px] xl:text-[48px] tracking-tight leading-[1.12] text-white font-poppins">
+                Your Dream Career with AI Guidance
+              </h1>
 
+              <p className="max-w-[678px] text-[16px] sm:text-[22px] text-gray-200 font-regular tracking-wide leading-relaxed">
+                Your personal co-pilot for professional growth. We analyze your interests and skills to build a customized roadmap that leads you to success.
+              </p>
+
+              <div className="pt-2">
+                <button
+                  onClick={() => onNavigate('login')}
+                  className="w-full sm:w-[300px] h-[75px] px-8 py-4 rounded-full bg-[#f08fe7] hover:bg-[#fa9eed] text-[#5B0055] text-[21px] font-semibold tracking-wide transition-all duration-300 shadow-[0_4px_25px_rgba(217,70,239,0.4)] hover:shadow-[0_6px_30px_rgba(217,70,239,0.75)] cursor-pointer hover:scale-[1.01]"
+                >
+                  Find My Career Path
+                </button>
               </div>
-            </div>
 
-            <div className="hidden lg:grid lg:col-span-5 xl:col-span-6 h-10 select-none pointer-events-none"></div>
+            </div>
           </div>
 
-          <div className="w-full bg-black/1 backdrop-blur-[05px] border border-white/20 rounded-[24px] p-6 sm:p-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-6 shadow-[0_30px_80px_-15px_rgba(0,0,0,0.8)] animate-fadeIn">
+          <div className="w-full bg-black/40 backdrop-blur-md border border-white/20 rounded-[24px] p-6 sm:p-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-6 shadow-[0_30px_80px_-15px_rgba(0,0,0,0.8)] animate-fadeIn">
             <div className="space-y-3 group cursor-pointer lg:border-r lg:border-white/20 lg:pr-6" onClick={() => onNavigate('login')}>
-              <div className="text-cyan-400 font-bold space-y-2">
-                <TrendingUp size={23} color="#FEB2F1" className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+              <div className="font-bold space-y-2">
+                <Target size={23} color="#FEB2F1" className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                 <h3 className="text-[#ffffff] text-[21px] sm:text-[21px] font-[600] tracking-wide font-poppins">Find Your Path</h3>
               </div>
               <p className="text-[#ffffff] text-[14.5px] font-regular tracking-wide leading-relaxed">
@@ -157,9 +152,9 @@ export default function LandingPage({ onNavigate }) {
             </div>
 
             <div className="space-y-3 group cursor-pointer lg:border-r lg:border-white/20 lg:pr-6" onClick={() => onNavigate('login')}>
-              <div className="text-cyan-400 font-bold space-y-2">
-                <TrendingUp size={23} color="#FEB2F1" className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-                <h3 className="text-[#ffffff] text-[21px] sm:text-[21px] font-[600] tracking-wide font-poppins">Quick Quiz</h3>
+              <div className="font-bold space-y-2">
+                <ClipboardCheck size={23} color="#FEB2F1" className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                <h3 className="text-[#ffffff] text-[21px] sm:text-[21px] font-[600] tracking-wide font-poppins">Quick Assessment</h3>
               </div>
               <p className="text-[#ffffff] text-[14.5px] font-regular tracking-wide leading-relaxed">
                 Answer a few logical questions to unlock personalized career insights.
@@ -167,8 +162,8 @@ export default function LandingPage({ onNavigate }) {
             </div>
 
             <div className="space-y-3 group cursor-pointer lg:border-r lg:border-white/20 lg:pr-6" onClick={() => onNavigate('login')}>
-              <div className="text-cyan-400 font-bold space-y-2">
-                <TrendingUp size={23} color="#FEB2F1" className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+              <div className="font-bold space-y-2">
+                <Route size={23} color="#FEB2F1" className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                 <h3 className="text-[#ffffff] text-[21px] sm:text-[21px] font-[600] tracking-wide font-poppins">Growth Maps</h3>
               </div>
               <p className="text-[#ffffff] text-[14.5px] font-regular tracking-wide leading-relaxed">
@@ -177,8 +172,8 @@ export default function LandingPage({ onNavigate }) {
             </div>
 
             <div className="space-y-3 group cursor-pointer" onClick={() => onNavigate('login')}>
-              <div className="text-cyan-400 font-bold space-y-2">
-                <TrendingUp size={23} color="#FEB2F1" className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+              <div className="font-bold space-y-2">
+                <CheckCircle2 size={23} color="#FEB2F1" className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                 <h3 className="text-[#ffffff] text-[21px] sm:text-[21px] font-[600] tracking-wide font-poppins">Skill Checker</h3>
               </div>
               <p className="text-[#ffffff] text-[14.5px] font-regular tracking-wide leading-relaxed">
@@ -297,7 +292,7 @@ export default function LandingPage({ onNavigate }) {
                   <label className="block text-xs font-semibold uppercase text-gray-400 mb-1">Message</label>
                   <textarea rows="4" placeholder="Type your message here..." className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-fuchsia-500 text-sm resize-none"></textarea>
                 </div>
-                <button className="w-full sm:w-auto px-8 py-3 rounded-xl bg-[#f08fe7] hover:bg-[#fa9eed] text-gray-950 font-bold transition shadow-lg cursor-pointer">
+                <button className="w-full sm:w-auto px-8 py-3 rounded-xl bg-[#f08fe7] hover:bg-[#fa9eed] text-gray-950 font-bold shadow-[0_4px_25px_rgba(217,70,239,0.4)] hover:shadow-[0_6px_30px_rgba(217,70,239,0.75)] transition-all duration-300 cursor-pointer hover:scale-[1.01]">
                   Send Message
                 </button>
               </div>
@@ -335,10 +330,10 @@ export default function LandingPage({ onNavigate }) {
         <div className="grid grid-cols-1 md:grid-cols-12 gap-10 items-start justify-between">
           
           <div className="md:col-span-5 space-y-5">
-            <img 
-              src="/logoo.png" 
-              alt="CareerPath AI Logo" 
-              className="h-16 sm:h-20 w-auto object-contain select-none" 
+            <img
+              src="/logoo.png"
+              alt="CareerPath AI Logo"
+              className="h-16 sm:h-20 w-auto object-contain select-none drop-shadow-[0_2px_18px_rgba(255,255,255,0.45)]"
             />
             <p className="text-gray-300 text-base leading-relaxed max-w-md font-medium">
               Your personal co-pilot for professional growth, powered by advanced AI guidance and cutting-edge career pathways.
