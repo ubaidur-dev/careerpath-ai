@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Eye, EyeOff, XCircle, CheckCircle2, ChevronDown, Search } from 'lucide-react';
 import axios from 'axios';
+import { parsePhoneNumberFromString } from 'libphonenumber-js';
 import AuthImage from '../assets/Authentication.PNG'; 
 
 export default function AuthPage({ mode, setMode, onBackHome, onForgotPassword }) {
@@ -33,6 +34,7 @@ export default function AuthPage({ mode, setMode, onBackHome, onForgotPassword }
   const [errorMsg, setErrorMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
 
   const isLogin = mode === 'login';
 
@@ -116,7 +118,7 @@ export default function AuthPage({ mode, setMode, onBackHome, onForgotPassword }
       security_passcode: ''
     }));
 
-    setAdminAuthStep('email');
+    setAdminAuthStep('credentials');
     setStudentOtpStep('credentials');
     setOtpDigits(['', '', '', '', '']);
     clearInterval(cooldownIntervalRef.current);
@@ -182,7 +184,8 @@ export default function AuthPage({ mode, setMode, onBackHome, onForgotPassword }
 
   const handlePhoneChange = (e) => {
     const rawVal = e.target.value.replace(/\D/g, ''); 
-    if (selectedCountry && rawVal.length <= selectedCountry.maxLen) {
+    const maxLen = selectedCountry ? selectedCountry.maxLen + (rawVal.startsWith('0') ? 1 : 0) : 0;
+    if (selectedCountry && rawVal.length <= maxLen) {
       setFormData(prev => ({ ...prev, phone: rawVal }));
     }
   };
@@ -204,8 +207,62 @@ export default function AuthPage({ mode, setMode, onBackHome, onForgotPassword }
     }
     if (response.data?.token) {
       setTimeout(() => {
+        sessionStorage.setItem('skip_next_unload_logout', '1');
         window.location.reload();
       }, 1000);
+    }
+  };
+
+  const loadGoogleScript = () => new Promise((resolve, reject) => {
+    if (window.google?.accounts?.oauth2) { resolve(); return; }
+    const existing = document.getElementById('google-identity-script');
+    const script = existing || document.createElement('script');
+    script.addEventListener('load', () => resolve());
+    script.addEventListener('error', () => reject(new Error('Google script failed to load')));
+    if (!existing) {
+      script.id = 'google-identity-script';
+      script.src = 'https://accounts.google.com/gsi/client';
+      script.async = true;
+      document.head.appendChild(script);
+    }
+  });
+
+  const handleGoogleSignIn = async () => {
+    setErrorMsg('');
+    setSuccessMsg('');
+    const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+    if (!clientId) {
+      setErrorMsg('Google sign-in is not configured yet. Please use your email and password.');
+      return;
+    }
+    setGoogleLoading(true);
+    try {
+      await loadGoogleScript();
+      const tokenClient = window.google.accounts.oauth2.initTokenClient({
+        client_id: clientId,
+        scope: 'openid email profile',
+        prompt: 'select_account',
+        callback: async (tokenResponse) => {
+          if (tokenResponse?.error || !tokenResponse?.access_token) {
+            setGoogleLoading(false);
+            if (tokenResponse?.error !== 'access_denied') setErrorMsg('Google sign-in was not completed. Please try again.');
+            return;
+          }
+          try {
+            const response = await axios.post('/auth/google', { access_token: tokenResponse.access_token });
+            setSuccessMsg('Signed in with Google! Redirecting...');
+            completeAuthSuccess(response);
+          } catch (err) {
+            setErrorMsg(err?.response?.data?.message || 'Google sign-in failed. Please try again.');
+            setGoogleLoading(false);
+          }
+        },
+        error_callback: () => setGoogleLoading(false),
+      });
+      tokenClient.requestAccessToken();
+    } catch {
+      setErrorMsg('Could not open Google sign-in. Check your internet connection and try again.');
+      setGoogleLoading(false);
     }
   };
 
@@ -218,6 +275,14 @@ export default function AuthPage({ mode, setMode, onBackHome, onForgotPassword }
       setErrorMsg('Passwords do not match. Please try again.');
       setFormData(prev => ({ ...prev, password: '', confirmPassword: '' }));
       return;
+    }
+
+    if (!isLogin && formData.phone) {
+      const parsed = parsePhoneNumberFromString(formData.phone, { defaultCallingCode: formData.country_code.replace('+', '') });
+      if (!parsed || !parsed.isValid()) {
+        setErrorMsg(`Please enter a valid ${selectedCountry?.name || ''} phone number.`.replace('  ', ' '));
+        return;
+      }
     }
 
     if (isLogin && role === 'student') {
@@ -278,7 +343,8 @@ export default function AuthPage({ mode, setMode, onBackHome, onForgotPassword }
         } else if (validationErrors.email) {
           setErrorMsg('This email address is already registered.');
         } else if (validationErrors.phone) {
-          setErrorMsg('This phone number is already registered.');
+          const phoneMsg = validationErrors.phone[0] || '';
+          setErrorMsg(/valid/i.test(phoneMsg) ? phoneMsg : 'This phone number is already registered.');
         } else {
           setErrorMsg(Object.values(validationErrors)[0][0] || 'Validation error occurred.');
         }
@@ -689,15 +755,24 @@ export default function AuthPage({ mode, setMode, onBackHome, onForgotPassword }
             </button>
           </form>
           
-          <div className="relative flex items-center justify-center py-2">
-            <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-gray-200"></div></div>
-            <span className="relative bg-[#ffffff] px-4 text-[16px] font-normal text-gray-500 lowercase">or continue with</span>
-          </div>
+          {role === 'student' && (
+            <>
+              <div className="relative flex items-center justify-center py-2">
+                <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-gray-200"></div></div>
+                <span className="relative bg-[#ffffff] px-4 text-[16px] font-normal text-gray-500 lowercase">or continue with</span>
+              </div>
 
-          <button type="button" className="w-full border border-gray-200 bg-white hover:bg-gray-50 text-black py-3 rounded-[20px] font-medium flex items-center justify-center gap-3 cursor-pointer shadow-sm">
-            <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" className="w-5 h-5" />
-            <span className="font-medium text-[20px]">{isLogin ? 'Sign in with Google' : 'Sign up with Google'}</span>
-          </button>
+              <button
+                type="button"
+                onClick={handleGoogleSignIn}
+                disabled={googleLoading || loading}
+                className="w-full border border-gray-200 bg-white hover:bg-gray-50 text-black py-3 rounded-[20px] font-medium flex items-center justify-center gap-3 cursor-pointer shadow-sm disabled:opacity-60 disabled:cursor-wait"
+              >
+                <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" className="w-5 h-5" />
+                <span className="font-medium text-[20px]">{googleLoading ? 'Connecting to Google...' : (isLogin ? 'Sign in with Google' : 'Sign up with Google')}</span>
+              </button>
+            </>
+          )}
 
           <p className="text-center text-[15px] font-normal text-black mt-[20px]">
             {isLogin
