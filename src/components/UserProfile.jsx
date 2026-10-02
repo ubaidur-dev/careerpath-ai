@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import axios from 'axios';
-import { parsePhoneNumberFromString } from 'libphonenumber-js';
+import { parsePhoneNumberFromString, validatePhoneNumberLength } from 'libphonenumber-js';
 import Header from './Header';
 import Dropdown from './Dropdown';
 import SearchSelect from './SearchSelect';
@@ -18,6 +18,7 @@ import {
   Camera,
   Trash2,
   Edit2,
+  AlertTriangle,
   Key,
   Lock,
   X,
@@ -60,7 +61,7 @@ const emptyProfile = {
   country: "",
   address: "",
   dob: "",
-  gender: "Male",
+  gender: "",
   currentEducation: "",
   fieldOfStudy: "",
   university: "",
@@ -105,11 +106,6 @@ const MAX_TAGS = 15;
 const MAX_TAG_LENGTH = 60;
 const LINK_PATTERN = /^(https?:\/\/)?[\w.-]+\.[a-z]{2,}(\/\S*)?$/i;
 
-const EDUCATION_OPTIONS = [
-  'Matric / O-Levels', 'Intermediate / A-Levels', 'FSc Pre-Medical', 'FSc Pre-Engineering', 'ICS (Computer Science)',
-  'I.Com (Commerce)', 'FA (Humanities)', 'DAE / Diploma', 'Pursuing Bachelor\'s', 'BS / BSc', 'BBA', 'BE / BSc Engineering',
-  'MBBS / BDS', 'LLB', 'Bachelor\'s Completed', 'MS / MSc / MPhil', 'MBA', 'PhD',
-];
 const GRADUATION_YEARS = Array.from({ length: new Date().getFullYear() + 10 - 1950 + 1 }, (_, i) => String(new Date().getFullYear() + 10 - i));
 
 const loadGraduationYears = async (query) => ({
@@ -117,14 +113,36 @@ const loadGraduationYears = async (query) => ({
   hasMore: false,
 });
 
+const normalizePhone = (phone, countryCode = '') => {
+  const raw = String(phone || '').trim();
+  if (!raw) return '';
+  const parsed = parsePhoneNumberFromString(raw, { defaultCallingCode: String(countryCode).replace('+', '') || undefined });
+  return parsed ? parsed.number : raw.replace(/[^\d+]/g, '');
+};
+
+const MAX_PHONE_LENGTH = 20;
+
+const acceptPhoneInput = (next, prev, countryCode = '') => {
+  if (!/^\+?[\d\s()-]*$/.test(next) || next.length > MAX_PHONE_LENGTH) return false;
+  const opts = { defaultCallingCode: String(countryCode).replace('+', '') || undefined };
+  const digits = (v) => v.replace(/\D/g, '').length;
+  if (digits(next) <= digits(prev)) return true;
+  if (validatePhoneNumberLength(next, opts) === 'TOO_LONG') return false;
+  const wasValid = !!parsePhoneNumberFromString(prev, opts)?.isValid();
+  const isValid = !!parsePhoneNumberFromString(next, opts)?.isValid();
+  return !(wasValid && !isValid);
+};
+
 const validateProfile = (data, countryCode = '') => {
   const errors = {};
   if (!String(data.fullName || '').trim()) errors.fullName = 'Full name is required.';
   if (!String(data.email || '').trim()) errors.email = 'Email address is required.';
-  else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) errors.email = 'Enter a valid email address.';
+  else if (!/^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(data.email)) errors.email = 'Enter a valid email address, like name@example.com.';
   if (String(data.phone || '').trim()) {
     const parsed = parsePhoneNumberFromString(String(data.phone).trim(), { defaultCallingCode: String(countryCode).replace('+', '') || undefined });
-    if (!parsed || !parsed.isValid()) errors.phone = 'Enter a valid phone number with country code, like +923001234567.';
+    const lengthIssue = validatePhoneNumberLength(String(data.phone).trim(), { defaultCallingCode: String(countryCode).replace('+', '') || undefined });
+    if (lengthIssue === 'TOO_SHORT') errors.phone = 'Phone number is incomplete. Enter the full number with country code, like +923001234567.';
+    else if (!parsed || !parsed.isValid()) errors.phone = 'Enter a valid phone number with country code, like +923001234567.';
   }
   if (data.dob && new Date(data.dob) >= new Date(new Date().toDateString())) errors.dob = 'Date of birth must be in the past.';
   if (data.cgpa && !/^\d{1,3}(\.\d{1,2})?\s*(%|\/\s*\d{1,3}(\.\d{1,2})?)?$/.test(String(data.cgpa).trim())) {
@@ -160,9 +178,11 @@ export default function UserProfile({ onNavigate, onLogout, autoEdit = false }) 
   }, []);
 
   const [fieldsOfStudy, setFieldsOfStudy] = useState([]);
+  const [educationLevels, setEducationLevels] = useState([]);
 
   useEffect(() => {
     axios.get('/fields-of-study').then((res) => setFieldsOfStudy(res.data || [])).catch(() => {});
+    axios.get('/education-levels').then((res) => setEducationLevels(res.data || [])).catch(() => {});
   }, []);
 
   const loadFieldsOfStudy = useCallback(async (query, page) => {
@@ -175,6 +195,17 @@ export default function UserProfile({ onNavigate, onLogout, autoEdit = false }) 
     const items = matches.slice(0, page * 100).slice((page - 1) * 100).map((name) => ({ value: name, label: name }));
     return { items, hasMore: page * 100 < matches.length };
   }, [fieldsOfStudy]);
+
+  const loadEducationLevels = useCallback(async (query, page) => {
+    const q = query.toLowerCase();
+    const matches = q
+      ? educationLevels
+        .filter((name) => name.toLowerCase().includes(q))
+        .sort((a, b) => (b.toLowerCase().startsWith(q) - a.toLowerCase().startsWith(q)) || a.localeCompare(b))
+      : educationLevels;
+    const items = matches.slice(0, page * 100).slice((page - 1) * 100).map((name) => ({ value: name, label: name }));
+    return { items, hasMore: page * 100 < matches.length };
+  }, [educationLevels]);
 
   const selectedCountryIso = countries.find((c) => c.name === profileData.country)?.iso2 || '';
 
@@ -271,7 +302,7 @@ export default function UserProfile({ onNavigate, onLogout, autoEdit = false }) 
       country: user.country || "",
       address: profile.address || "",
       dob: profile.dob || "",
-      gender: profile.gender || "Male",
+      gender: profile.gender || "",
       currentEducation: profile.currentEducation || "",
       fieldOfStudy: profile.fieldOfStudy || "",
       university: profile.university || "",
@@ -990,7 +1021,13 @@ export default function UserProfile({ onNavigate, onLogout, autoEdit = false }) 
                       type="email"
                       name="email"
                       value={profileData.email}
-                      onChange={handleInputChange}
+                      maxLength={254}
+                      onChange={(e) => {
+                        const value = e.target.value.replace(/\s/g, '');
+                        handleInputChange({ target: { name: 'email', value } });
+                        if (fieldErrors.email) setFieldErrors((prev) => ({ ...prev, email: validateProfile({ email: value }).email || null }));
+                      }}
+                      onBlur={(e) => setFieldErrors((prev) => ({ ...prev, email: validateProfile({ email: e.target.value }).email || null }))}
                       disabled={!canEdit('basic')}
                       data-field="email"
                       className={`w-full h-[45px] bg-[#FDFDFD] border border-gray-200/90 focus:border-[#890080] focus:ring-2 focus:ring-[#FFD2F7] text-[15px] font-medium px-4 py-2.5 rounded-[14px] outline-none text-gray-800 disabled:bg-gray-50/60 disabled:text-gray-600 transition-all${errorBorder('email')}`}
@@ -1011,7 +1048,13 @@ export default function UserProfile({ onNavigate, onLogout, autoEdit = false }) 
                       type="tel"
                       name="phone"
                       value={profileData.phone}
-                      onChange={handleInputChange}
+                      maxLength={MAX_PHONE_LENGTH}
+                      onChange={(e) => {
+                        if (!acceptPhoneInput(e.target.value, String(profileData.phone || ''), countryCode)) return;
+                        handleInputChange(e);
+                        if (fieldErrors.phone) setFieldErrors((prev) => ({ ...prev, phone: validateProfile({ phone: e.target.value }, countryCode).phone || null }));
+                      }}
+                      onBlur={(e) => setFieldErrors((prev) => ({ ...prev, phone: validateProfile({ phone: e.target.value }, countryCode).phone || null }))}
                       placeholder="+923001234567"
                       autoComplete="tel"
                       disabled={!canEdit('basic')}
@@ -1019,6 +1062,15 @@ export default function UserProfile({ onNavigate, onLogout, autoEdit = false }) 
                       className={`w-full h-[45px] bg-[#FDFDFD] border border-gray-200/90 focus:border-[#890080] focus:ring-2 focus:ring-[#FFD2F7] text-[15px] font-medium px-4 py-2.5 rounded-[14px] outline-none text-gray-800 disabled:bg-gray-50/60 disabled:text-gray-600 transition-all${errorBorder('phone')}`}
                     />
                     {renderFieldError('phone')}
+                    {canEdit('basic') && !fieldErrors.phone
+                      && String(profileData.phone || '').replace(/[^\d+]/g, '') !== ''
+                      && !validateProfile({ phone: profileData.phone }, countryCode).phone
+                      && normalizePhone(profileData.phone, countryCode) !== normalizePhone(savedSnapshotRef.current?.phone, countryCode) && (
+                      <p className="flex items-start gap-1.5 text-[13px] font-medium text-red-600 mt-1">
+                        <AlertCircle size={14} className="flex-shrink-0 mt-[2px]" />
+                        <span>Changing your phone number sends a verification code to the new number.</span>
+                      </p>
+                    )}
                   </div>
 
                   <div className="space-y-1">
@@ -1095,7 +1147,8 @@ export default function UserProfile({ onNavigate, onLogout, autoEdit = false }) 
                   <div className="space-y-1 md:col-span-2">
                     <label className="text-[17px] font-medium text-[#000000]">Gender</label>
                     <Dropdown
-                      triggerClassName="bg-[#FDFDFD] rounded-[14px] h-[45px] px-4 py-2.5 text-[15px]"
+                      variant="profile"
+                      placeholder="Select gender"
                       value={profileData.gender}
                       onChange={(v) => handleInputChange({ target: { name: 'gender', value: v } })}
                       options={[
@@ -1125,15 +1178,18 @@ export default function UserProfile({ onNavigate, onLogout, autoEdit = false }) 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-1">
                     <label className="text-[17px] font-medium text-[#000000]">Current Education / Degree</label>
-                    <input
-                      type="text"
-                      name="currentEducation"
+                    <SearchSelect
                       value={profileData.currentEducation}
-                      onChange={handleInputChange}
+                      onChange={(v) => handleInputChange({ target: { name: 'currentEducation', value: v } })}
+                      loadOptions={loadEducationLevels}
                       disabled={!canEdit('education')}
-                      data-field="currentEducation"
-                      list="currentEducation-options"
-                      className={`w-full h-[45px] bg-[#FDFDFD] border border-gray-200/90 focus:border-[#890080] focus:ring-2 focus:ring-[#FFD2F7] text-[15px] font-medium px-4 py-2.5 rounded-[14px] outline-none text-gray-800 disabled:bg-gray-50/60 disabled:text-gray-600 transition-all${errorBorder('currentEducation')}`}
+                      placeholder="Select your education / degree"
+                      searchPlaceholder="Search degree..."
+                      emptyText="No degree found"
+                      allowCustom
+                      hasError={!!fieldErrors.currentEducation}
+                      dataField="currentEducation"
+                      ariaLabel="Current Education / Degree"
                     />
                     {renderFieldError('currentEducation')}
                   </div>
@@ -1481,9 +1537,6 @@ export default function UserProfile({ onNavigate, onLogout, autoEdit = false }) 
                 </div>
               </div>
 
-              <datalist id="currentEducation-options">
-                {EDUCATION_OPTIONS.map((option) => <option key={option} value={option} />)}
-              </datalist>
             </form>
           </div>
 
@@ -1496,23 +1549,25 @@ export default function UserProfile({ onNavigate, onLogout, autoEdit = false }) 
             className="bg-white border border-[#FFD2F7] rounded-[28px] p-6 sm:p-8 max-w-md w-full shadow-[3px_6px_12px_0.5px_rgba(0,0,0,0.2)] text-left space-y-6 relative"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between pb-2 border-b border-gray-100">
-              <div className="flex items-center gap-2.5 text-[25px] font-semibold text-[#000000]">
-                <Edit2 size={26} className="text-[#890080]" />
-                <span>Unsaved Changes</span>
+            <button type="button" onClick={() => setDiscardPrompt(null)} className="absolute top-5 right-5 text-gray-400 hover:text-gray-700 p-1 rounded-full transition cursor-pointer" title="Close">
+              <X size={20} />
+            </button>
+            <div className="flex items-start gap-4 pr-6">
+              <div className="w-12 h-12 rounded-full bg-[#FFECEC] border border-[#F3C9C9] flex items-center justify-center flex-shrink-0">
+                <AlertTriangle size={22} strokeWidth={2} className="text-[#DC2626]" />
               </div>
-              <button type="button" onClick={() => setDiscardPrompt(null)} className="text-gray-400 hover:text-gray-700 p-1 rounded-full transition cursor-pointer">
-                <X size={20} />
-              </button>
+              <div className="space-y-1.5 pt-0.5">
+                <h3 className="text-[21px] font-semibold text-[#000000] leading-tight">Unsaved Changes</h3>
+                <p className="text-[15px] text-gray-600 leading-relaxed">
+                  You have changes that haven't been saved. If you leave now, they will be lost.
+                </p>
+              </div>
             </div>
-            <p className="text-[15px] text-gray-600 leading-relaxed">
-              You have changes that haven't been saved. If you leave now, they will be lost.
-            </p>
-            <div className="flex items-center justify-end gap-3 pt-2">
+            <div className="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-end gap-3 pt-1">
               <button
                 type="button"
                 onClick={() => setDiscardPrompt(null)}
-                className="px-5 py-2.5 rounded-full text-[14px] font-medium text-gray-600 hover:bg-gray-100 transition cursor-pointer"
+                className="px-5 py-2.5 rounded-full text-[14px] font-semibold text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 hover:border-gray-400 transition-all cursor-pointer"
               >
                 Keep Editing
               </button>
@@ -1524,7 +1579,7 @@ export default function UserProfile({ onNavigate, onLogout, autoEdit = false }) 
                   cancelEditing();
                   proceed();
                 }}
-                className="px-6 py-2.5 rounded-full text-[14px] font-semibold text-white bg-red-600 hover:bg-red-700 transition shadow-sm cursor-pointer"
+                className="px-6 py-2.5 rounded-full text-[14px] font-semibold text-white bg-[#DC2626] hover:bg-[#B91C1C] shadow-sm transition-all cursor-pointer"
               >
                 Discard Changes
               </button>
