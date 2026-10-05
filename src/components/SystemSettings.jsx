@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
+import Dropdown from './Dropdown';
 import { 
   User,
   Settings, 
@@ -10,16 +11,49 @@ import {
   Lock, 
   KeyRound,
   Check,
-  ChevronDown,
   Eye,
-  EyeOff,
-  Camera,
-  Trash2,
-  Upload
+  EyeOff
 } from 'lucide-react';
+import BackToDashboardButton from './BackToDashboardButton';
+import AvatarPicker from './AvatarPicker';
+
+const DEFAULT_GENERAL_SETTINGS = {
+  siteName: 'AI Career Advisor',
+  supportEmail: 'support@aicareeradvisor.com',
+  allowRegistration: true,
+  emailVerification: true,
+  maintenanceMode: false,
+  language: 'English',
+  timezone: 'UTC+5 (Pakistan)',
+  dateFormat: 'DD/MM/YYYY'
+};
+
+const DEFAULT_SECURITY_SETTINGS = {
+  twoFactorAuth: false,
+  sessionTimeout: '35',
+  minPasswordLength: '8'
+};
+
+const SAVED_SETTINGS_KEY = 'admin_system_settings';
+
+const loadSavedSettings = () => {
+  try {
+    const saved = JSON.parse(localStorage.getItem(SAVED_SETTINGS_KEY) || '{}');
+    return {
+      general: { ...DEFAULT_GENERAL_SETTINGS, ...(saved.general || {}) },
+      security: { ...DEFAULT_SECURITY_SETTINGS, ...(saved.security || {}) },
+    };
+  } catch {
+    return { general: DEFAULT_GENERAL_SETTINGS, security: DEFAULT_SECURITY_SETTINGS };
+  }
+};
 
 export default function SystemSettings({ onBack }) {
-  const [activeTab, setActiveTab] = useState('Admin Profile'); 
+  const [activeTab, setActiveTab] = useState('Admin Profile');
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, [activeTab]);
 
   const [profile, setProfile] = useState({
     fullName: '',
@@ -37,22 +71,30 @@ export default function SystemSettings({ onBack }) {
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const [generalSettings, setGeneralSettings] = useState({
-    siteName: 'AI Career Advisor',
-    supportEmail: 'support@aicareeradvisor.com',
-    allowRegistration: true,
-    emailVerification: true,
-    maintenanceMode: false,
-    language: 'English',
-    timezone: 'UTC+5 (Pakistan)',
-    dateFormat: 'DD/MM/YYYY'
-  });
+  const [initialSaved] = useState(loadSavedSettings);
+  const savedRef = useRef({ profile: { fullName: '', email: '' }, avatar: null, ...initialSaved });
 
-  const [security, setSecurity] = useState({
-    twoFactorAuth: false,
-    sessionTimeout: '35',
-    minPasswordLength: '8'
-  });
+  const [generalSettings, setGeneralSettings] = useState(initialSaved.general);
+  const [security, setSecurity] = useState(initialSaved.security);
+
+  const discardUnsavedChanges = () => {
+    const saved = savedRef.current;
+    setProfile({ ...saved.profile, currentPassword: '', newPassword: '', confirmPassword: '' });
+    setAvatarPreview(saved.avatar);
+    setAvatarFile(null);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+    setShowCurrentPassword(false);
+    setShowNewPassword(false);
+    setShowConfirmPassword(false);
+    setGeneralSettings(saved.general);
+    setSecurity(saved.security);
+  };
+
+  const switchTab = (tab) => {
+    if (tab === activeTab) return;
+    discardUnsavedChanges();
+    setActiveTab(tab);
+  };
 
   const [toastMessage, setToastMessage] = useState('');
   const [showToast, setShowToast] = useState(false);
@@ -123,6 +165,11 @@ export default function SystemSettings({ onBack }) {
             email: response.data.email || ''
           }));
           setAvatarPreview(response.data.avatar || null);
+          savedRef.current = {
+            ...savedRef.current,
+            profile: { fullName: response.data.name || response.data.full_name || '', email: response.data.email || '' },
+            avatar: response.data.avatar || null,
+          };
           syncStoredUser({
             name: response.data.name || response.data.full_name,
             email: response.data.email,
@@ -158,7 +205,7 @@ export default function SystemSettings({ onBack }) {
   };
 
   const handleDeleteImage = (e) => {
-    e.stopPropagation(); 
+    e?.stopPropagation();
     setAvatarPreview(null);
     setAvatarFile('DELETE');
     if (fileInputRef.current) {
@@ -240,6 +287,17 @@ export default function SystemSettings({ onBack }) {
       });
 
       setAvatarFile(null);
+
+      savedRef.current = {
+        profile: { fullName: response.data.name ?? profile.fullName, email: response.data.email ?? profile.email },
+        avatar: response.data.avatar || null,
+        general: generalSettings,
+        security,
+      };
+      try {
+        localStorage.setItem(SAVED_SETTINGS_KEY, JSON.stringify({ general: generalSettings, security }));
+      } catch {
+      }
     } catch (error) {
       console.error(error);
       triggerToast(error.response?.data?.message || "Failed to update profile settings");
@@ -269,12 +327,14 @@ export default function SystemSettings({ onBack }) {
         </div>
       )}
 
+      <BackToDashboardButton onClick={() => onBack && onBack()} />
+
       <div className="pt-1 flex flex-col sm:flex-row sm:items-center justify-between gap-6 text-left">
         <div className="space-y-2"> 
           <h1 className="text-4xl font-bold tracking-tight text-gray-900 inline-flex items-center gap-2">
             System Settings
           </h1>
-          <p className="text-[#000000] font-light text-[21.3px] mt-[5px] mb-[15px]">
+          <p className="text-[#525252] font-light text-[21.3px] mt-[5px] mb-[15px]">
             Configure platform settings and preferences
           </p>
         </div>
@@ -287,7 +347,7 @@ export default function SystemSettings({ onBack }) {
             
             <button
               type="button"
-              onClick={() => setActiveTab('Admin Profile')}
+              onClick={() => switchTab('Admin Profile')}
               className={`w-[203px] h-[45px] mx-auto flex items-center gap-3 px-5 py-3.5 rounded-[16px] text-[16px] transition-all cursor-pointer ${
                 activeTab === 'Admin Profile'
                   ? 'bg-[#FFEDF9] text-[#890080] font-medium border-[0.2px] border-[#DBD9D9]'
@@ -300,7 +360,7 @@ export default function SystemSettings({ onBack }) {
 
             <button
               type="button"
-              onClick={() => setActiveTab('General')}
+              onClick={() => switchTab('General')}
               className={`w-[203px] h-[45px] mx-auto flex items-center gap-3 px-5 py-3.5 rounded-[16px] text-[16px] transition-all cursor-pointer ${
                 activeTab === 'General'
                   ? 'bg-[#FFEDF9] text-[#890080] font-medium border-[0.2px] border-[#DBD9D9]'
@@ -313,7 +373,7 @@ export default function SystemSettings({ onBack }) {
 
             <button
               type="button"
-              onClick={() => setActiveTab('Security')}
+              onClick={() => switchTab('Security')}
               className={`w-[203px] h-[45px] mx-auto flex items-center gap-3 px-5 py-3.5 rounded-[16px] text-[16px] transition-all cursor-pointer ${
                 activeTab === 'Security'
                   ? 'bg-[#FFEDF9] text-[#890080] font-medium border-[0.2px] border-[#DBD9D9]'
@@ -362,42 +422,17 @@ export default function SystemSettings({ onBack }) {
                   className="hidden"
                 />
 
-                <div className="relative group flex-shrink-0">
-                  <div className="w-[120px] h-[120px] rounded-full bg-[#FFBFF4] text-[#000000] font-extrabold text-[32px] flex items-center justify-center shadow-sm overflow-hidden relative">
-                    {avatarPreview ? (
-                      <>
-                        <img
-                          src={avatarPreview}
-                          alt="Admin Avatar"
-                          className="w-full h-full object-cover"
-                          onError={() => setAvatarPreview(null)}
-                        />
-                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-200">
-                          <button 
-                            type="button"
-                            onClick={handleDeleteImage}
-                            className="p-2 bg-red-600 text-white rounded-full hover:bg-red-700 transition transform hover:scale-110 cursor-pointer"
-                            title="Delete Picture"
-                          >
-                            <Trash2 size={16} />
-                          </button>
-                        </div>
-                      </>
-                    ) : (
-                      getInitials(profile.fullName)
-                    )}
-                  </div>
-
-                  {!avatarPreview && (
-                    <button 
-                      type="button"
-                      onClick={() => fileInputRef.current.click()}
-                      className="absolute bottom-0 right-0 w-[42px] h-[42px] flex items-center justify-center bg-white border border-gray-300 text-gray-600 hover:text-[#bd24df] rounded-full shadow-md transition cursor-pointer"
-                      title="Upload Picture"
-                    >
-                      <Camera size={18} />
-                    </button>
-                  )}
+                <div className="flex-shrink-0">
+                  <AvatarPicker
+                    src={avatarPreview}
+                    onUpload={() => fileInputRef.current?.click()}
+                    onRemove={handleDeleteImage}
+                    onImageError={() => setAvatarPreview(null)}
+                    confirmRemove={false}
+                    sizeClass="w-[120px] h-[120px]"
+                    circleClass="text-[32px]"
+                    fallback={getInitials(profile.fullName)}
+                  />
                 </div>
 
                 <div className="space-y-1.5 text-center sm:text-left">
@@ -405,26 +440,6 @@ export default function SystemSettings({ onBack }) {
                   <p className="text-[15px] font-regular text-[#707070]">
                     Upload a picture to personalize your account. JPG, PNG or GIF up to 5MB.
                   </p>
-                  <div className="pt-1.5 flex items-center gap-3 justify-center sm:justify-start">
-                    <button
-                      type="button"
-                      onClick={() => fileInputRef.current.click()}
-                      className="px-4 py-2 bg-[#FFEDF9] text-[#bd24df] border border-[#f2c6fa] hover:bg-[#bd24df] hover:text-white rounded-[12px] text-[14px] font-semibold transition cursor-pointer inline-flex items-center gap-2"
-                    >
-                      <Upload size={16} strokeWidth={2} />
-                      <span>{avatarPreview ? "Change Photo" : "Upload Photo"}</span>
-                    </button>
-                    {avatarPreview && (
-                      <button
-                        type="button"
-                        onClick={handleDeleteImage}
-                        className="px-4 py-2 bg-red-50 text-red-600 border border-red-200 hover:bg-red-600 hover:text-white rounded-[12px] text-[14px] font-medium transition cursor-pointer inline-flex items-center gap-2"
-                      >
-                        <Trash2 size={16} strokeWidth={2} />
-                        <span>Remove Photo</span>
-                      </button>
-                    )}
-                  </div>
                 </div>
               </div>
 
@@ -435,22 +450,22 @@ export default function SystemSettings({ onBack }) {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-1.5">
-                    <label className="text-[17px] font-medium text-[#000000]">Full Name</label>
-                    <input 
+                  <div className="space-y-1">
+                    <label className="text-[16px] font-semibold text-black block">Full Name</label>
+                    <input
                       type="text"
                       value={profile.fullName}
                       onChange={(e) => handleProfileChange('fullName', e.target.value)}
-                      className="w-full h-[45px] bg-[#FDFDFD] border-[#A8A8A8] border-[0.5px] text-[15px] font-medium px-4 py-2.5 rounded-[10px] outline-none transition-all text-gray-800"
+                      className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-4 py-3.5 text-[14px] font-medium focus:outline-none focus:border-pink-300 focus:ring-1 focus:ring-pink-300 placeholder-gray-400 text-gray-800"
                     />
                   </div>
-                  <div className="space-y-1.5">
-                    <label className="text-[17px] font-medium text-[#000000]">Email Address</label>
-                    <input 
+                  <div className="space-y-1">
+                    <label className="text-[16px] font-semibold text-black block">Email Address</label>
+                    <input
                       type="email"
                       value={profile.email}
                       onChange={(e) => handleProfileChange('email', e.target.value)}
-                      className="w-full h-[45px] bg-[#FDFDFD] border-[#A8A8A8] border-[0.5px] text-[15px] font-medium px-4 py-2.5 rounded-[10px] outline-none transition-all text-gray-800"
+                      className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-4 py-3.5 text-[14px] font-medium focus:outline-none focus:border-pink-300 focus:ring-1 focus:ring-pink-300 placeholder-gray-400 text-gray-800"
                     />
                   </div>
                 </div>
@@ -463,9 +478,8 @@ export default function SystemSettings({ onBack }) {
                 </div>
 
                 <div className="space-y-4">
-                  {/* Current Password */}
-                  <div className="space-y-1.5">
-                    <label className="text-[17px] font-medium text-[#000000]">Current Password</label>
+                  <div className="space-y-1">
+                    <label className="text-[16px] font-semibold text-black block">Current Password</label>
                     <div className="relative">
                       <input
                         type={showCurrentPassword ? "text" : "password"}
@@ -476,7 +490,7 @@ export default function SystemSettings({ onBack }) {
                         name="admin-current-password"
                         readOnly
                         onFocus={(e) => e.target.removeAttribute('readonly')}
-                        className="w-full h-[45px] bg-[#FDFDFD] border-[#A8A8A8] border-[0.5px] text-[15px] font-medium pl-4 pr-11 py-2.5 rounded-[10px] outline-none transition-all text-gray-800"
+                        className="w-full bg-gray-50/50 border border-gray-200 rounded-xl pl-4 pr-12 py-3.5 text-[14px] font-medium focus:outline-none focus:border-pink-300 focus:ring-1 focus:ring-pink-300 placeholder-gray-400 text-gray-800"
                       />
                       <button
                         type="button"
@@ -489,9 +503,8 @@ export default function SystemSettings({ onBack }) {
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {/* New Password */}
-                    <div className="space-y-1.5">
-                      <label className="text-[17px] font-medium text-[#000000]">New Password</label>
+                    <div className="space-y-1">
+                      <label className="text-[16px] font-semibold text-black block">New Password</label>
                       <div className="relative">
                         <input
                           type={showNewPassword ? "text" : "password"}
@@ -500,7 +513,7 @@ export default function SystemSettings({ onBack }) {
                           onChange={(e) => handleProfileChange('newPassword', e.target.value)}
                           autoComplete="new-password"
                           name="admin-new-password"
-                          className="w-full h-[45px] bg-[#FDFDFD] border-[#A8A8A8] border-[0.5px] text-[15px] font-medium pl-4 pr-11 py-2.5 rounded-[10px] outline-none transition-all text-gray-800"
+                          className="w-full bg-gray-50/50 border border-gray-200 rounded-xl pl-4 pr-12 py-3.5 text-[14px] font-medium focus:outline-none focus:border-pink-300 focus:ring-1 focus:ring-pink-300 placeholder-gray-400 text-gray-800"
                         />
                         <button
                           type="button"
@@ -512,8 +525,8 @@ export default function SystemSettings({ onBack }) {
                       </div>
                     </div>
 
-                    <div className="space-y-1.5">
-                      <label className="text-[17px] font-medium text-[#000000]">Confirm New Password</label>
+                    <div className="space-y-1">
+                      <label className="text-[16px] font-semibold text-black block">Confirm New Password</label>
                       <div className="relative">
                         <input
                           type={showConfirmPassword ? "text" : "password"}
@@ -522,7 +535,7 @@ export default function SystemSettings({ onBack }) {
                           onChange={(e) => handleProfileChange('confirmPassword', e.target.value)}
                           autoComplete="new-password"
                           name="admin-confirm-password"
-                          className="w-full h-[45px] bg-[#FDFDFD] border-[#A8A8A8] border-[0.5px] text-[15px] font-medium pl-4 pr-11 py-2.5 rounded-[10px] outline-none transition-all text-gray-800"
+                          className="w-full bg-gray-50/50 border border-gray-200 rounded-xl pl-4 pr-12 py-3.5 text-[14px] font-medium focus:outline-none focus:border-pink-300 focus:ring-1 focus:ring-pink-300 placeholder-gray-400 text-gray-800"
                         />
                         <button
                           type="button"
@@ -561,22 +574,22 @@ export default function SystemSettings({ onBack }) {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-1.5">
-                    <label className="text-[17px] font-medium text-[#000000]">Site Name</label>
-                    <input 
+                  <div className="space-y-1">
+                    <label className="text-[16px] font-semibold text-black block">Site Name</label>
+                    <input
                       type="text"
                       value={generalSettings.siteName}
                       onChange={(e) => handleGeneralChange('siteName', e.target.value)}
-                      className="w-full h-[45px] bg-[#FDFDFD] border-[#A8A8A8] border-[0.5px] text-[15px] font-medium px-4 py-2.5 rounded-[10px] outline-none transition-all text-gray-800"
+                      className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-4 py-3.5 text-[14px] font-medium focus:outline-none focus:border-pink-300 focus:ring-1 focus:ring-pink-300 placeholder-gray-400 text-gray-800"
                     />
                   </div>
-                  <div className="space-y-1.5">
-                    <label className="text-[17px] font-medium text-[#000000]">Support Email</label>
-                    <input 
+                  <div className="space-y-1">
+                    <label className="text-[16px] font-semibold text-black block">Support Email</label>
+                    <input
                       type="email"
                       value={generalSettings.supportEmail}
                       onChange={(e) => handleGeneralChange('supportEmail', e.target.value)}
-                      className="w-full h-[45px] bg-[#FDFDFD] border-[#A8A8A8] border-[0.5px] text-[15px] font-medium px-4 py-2.5 rounded-[10px] outline-none transition-all text-gray-800"
+                      className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-4 py-3.5 text-[14px] font-medium focus:outline-none focus:border-pink-300 focus:ring-1 focus:ring-pink-300 placeholder-gray-400 text-gray-800"
                     />
                   </div>
                 </div>
@@ -640,53 +653,41 @@ export default function SystemSettings({ onBack }) {
                 <div className="text-[20px] font-semibold text-[#000000]">Regional Settings</div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-1.5">
-                    <label className="text-[17px] font-medium text-[#000000]">Language</label>
-                    <div className="relative">
-                      <select
-                        value={generalSettings.language}
-                        onChange={(e) => handleGeneralChange('language', e.target.value)}
-                        className="w-full h-[45px] bg-[#FDFDFD] border border-gray-200/90 focus:border-[#5B50E5] text-[15px] font-medium px-4 py-2.5 rounded-[12px] appearance-none cursor-pointer outline-none text-gray-800 pr-10"
-                      >
-                        <option value="English">English</option>
-                        <option value="Urdu">Urdu</option>
-                        <option value="Spanish">Spanish</option>
-                      </select>
-                      <ChevronDown size={18} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
-                    </div>
+                  <div className="space-y-1">
+                    <label className="text-[16px] font-semibold text-black block">Language</label>
+                    <Dropdown
+                      variant="settings"
+                      triggerClassName="bg-gray-50/50 rounded-xl px-4 py-3.5 text-[14px] font-medium"
+                      value={generalSettings.language}
+                      onChange={(v) => handleGeneralChange('language', v)}
+                      options={['English', 'Urdu', 'Spanish']}
+                      ariaLabel="Language"
+                    />
                   </div>
 
-                  <div className="space-y-1.5">
-                    <label className="text-[17px] font-medium text-[#000000]">Timezone</label>
-                    <div className="relative">
-                      <select
-                        value={generalSettings.timezone}
-                        onChange={(e) => handleGeneralChange('timezone', e.target.value)}
-                        className="w-full h-[45px] bg-[#FDFDFD] border border-gray-200/90 focus:border-[#5B50E5] text-[15px] font-medium px-4 py-2.5 rounded-[12px] appearance-none cursor-pointer outline-none text-gray-800 pr-10"
-                      >
-                        <option value="UTC+5 (Pakistan)">UTC+5 (Pakistan)</option>
-                        <option value="UTC+0 (GMT)">UTC+0 (GMT)</option>
-                        <option value="UTC-5 (EST)">UTC-5 (EST)</option>
-                      </select>
-                      <ChevronDown size={18} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
-                    </div>
+                  <div className="space-y-1">
+                    <label className="text-[16px] font-semibold text-black block">Timezone</label>
+                    <Dropdown
+                      variant="settings"
+                      triggerClassName="bg-gray-50/50 rounded-xl px-4 py-3.5 text-[14px] font-medium"
+                      value={generalSettings.timezone}
+                      onChange={(v) => handleGeneralChange('timezone', v)}
+                      options={['UTC+5 (Pakistan)', 'UTC+0 (GMT)', 'UTC-5 (EST)']}
+                      ariaLabel="Timezone"
+                    />
                   </div>
                 </div>
 
-                <div className="space-y-1.5 w-full md:w-1/2 pr-0 md:pr-2">
-                  <label className="text-[17px] font-medium text-[#000000]">Date Format</label>
-                  <div className="relative">
-                    <select
-                      value={generalSettings.dateFormat}
-                      onChange={(e) => handleGeneralChange('dateFormat', e.target.value)}
-                      className="w-full h-[45px] bg-[#FDFDFD] border border-gray-200/90 focus:border-[#5B50E5] text-[15px] font-medium px-4 py-2.5 rounded-[12px] appearance-none cursor-pointer outline-none text-gray-800 pr-10"
-                    >
-                      <option value="DD/MM/YYYY">DD/MM/YYYY</option>
-                      <option value="MM/DD/YYYY">MM/DD/YYYY</option>
-                      <option value="YYYY-MM-DD">YYYY-MM-DD</option>
-                    </select>
-                    <ChevronDown size={18} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
-                  </div>
+                <div className="space-y-1 w-full md:w-1/2 pr-0 md:pr-2">
+                  <label className="text-[16px] font-semibold text-black block">Date Format</label>
+                  <Dropdown
+                    variant="settings"
+                    triggerClassName="bg-gray-50/50 rounded-xl px-4 py-3.5 text-[14px] font-medium"
+                    value={generalSettings.dateFormat}
+                    onChange={(v) => handleGeneralChange('dateFormat', v)}
+                    options={['DD/MM/YYYY', 'MM/DD/YYYY', 'YYYY-MM-DD']}
+                    ariaLabel="Date format"
+                  />
                 </div>
               </div>
 
@@ -729,22 +730,22 @@ export default function SystemSettings({ onBack }) {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <label className="text-[17px] font-medium text-[#000000]">Session Timeout (minutes)</label>
-                    <input 
+                  <div className="space-y-1">
+                    <label className="text-[16px] font-semibold text-black block">Session Timeout (minutes)</label>
+                    <input
                       type="number"
                       value={security.sessionTimeout}
                       onChange={(e) => handleSecurityChange('sessionTimeout', e.target.value)}
-                      className="w-full h-[45px] bg-[#FDFDFD] border-[#A8A8A8] border-[0.5px] text-[15px] font-medium px-4 py-2.5 rounded-[10px] outline-none transition-all text-gray-800"
+                      className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-4 py-3.5 text-[14px] font-medium focus:outline-none focus:border-pink-300 focus:ring-1 focus:ring-pink-300 placeholder-gray-400 text-gray-800"
                     />
                   </div>
-                  <div className="space-y-2">
-                    <label className="text-[17px] font-medium text-[#000000]">Min Password Length</label>
-                    <input 
+                  <div className="space-y-1">
+                    <label className="text-[16px] font-semibold text-black block">Min Password Length</label>
+                    <input
                       type="number"
                       value={security.minPasswordLength}
                       onChange={(e) => handleSecurityChange('minPasswordLength', e.target.value)}
-                      className="w-full h-[45px] bg-[#FDFDFD] border-[#A8A8A8] border-[0.5px] text-[15px] font-medium px-4 py-2.5 rounded-[10px] outline-none transition-all text-gray-800"
+                      className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-4 py-3.5 text-[14px] font-medium focus:outline-none focus:border-pink-300 focus:ring-1 focus:ring-pink-300 placeholder-gray-400 text-gray-800"
                     />
                   </div>
                 </div>
