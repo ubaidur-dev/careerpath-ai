@@ -15,8 +15,6 @@ import {
   GraduationCap,
   Briefcase,
   FileText,
-  Camera,
-  Trash2,
   Edit2,
   AlertTriangle,
   Key,
@@ -34,6 +32,7 @@ import {
   EyeOff
 } from 'lucide-react';
 import BackToDashboardButton from './BackToDashboardButton';
+import AvatarPicker from './AvatarPicker';
 
 const LinkedinIcon = ({ className = "w-[18px] h-[18px]" }) => (
   <svg className={className} fill="currentColor" viewBox="0 0 24 24">
@@ -400,7 +399,7 @@ export default function UserProfile({ onNavigate, onLogout, autoEdit = false }) 
   };
 
   const handleDeleteImage = async (e) => {
-    e.stopPropagation();
+    e?.stopPropagation();
     const previous = profileImage;
     setProfileImage(null);
     if (fileInputRef.current) fileInputRef.current.value = '';
@@ -771,44 +770,17 @@ export default function UserProfile({ onNavigate, onLogout, autoEdit = false }) 
                 className="hidden"
               />
 
-              <div className="relative mt-2 group">
-                <div className="w-[140px] h-[140px] rounded-full bg-[#FFBFF4] text-[#000000] font-extrabold text-[38px] flex items-center justify-center shadow-sm overflow-hidden relative">
-                  {isUploadingImage ? (
-                    <div className="w-8 h-8 border-[3px] border-white border-t-transparent rounded-full animate-spin"></div>
-                  ) : profileImage ? (
-                    <>
-                      <img
-                        src={profileImage}
-                        alt="Profile"
-                        className="w-full h-full object-cover"
-                        onError={() => setProfileImage(null)}
-                      />
-                      <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-200">
-                        <button
-                          type="button"
-                          onClick={handleDeleteImage}
-                          className="p-2 bg-red-600 text-white rounded-full hover:bg-red-700 transition transform hover:scale-110 cursor-pointer"
-                          title="Delete Picture"
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
-                    </>
-                  ) : (
-                    getInitials(profileData.fullName) || <User size={44} className="text-white" />
-                  )}
-                </div>
-
-                {!profileImage && !isUploadingImage && (
-                  <button
-                    type="button"
-                    onClick={() => fileInputRef.current.click()}
-                    className="absolute bottom-0 right-0 w-[50px] h-[50px] flex items-center justify-center bg-white border border-gray-300 text-gray-600 hover:text-[#bd24df] rounded-full shadow-md transition cursor-pointer"
-                    title="Upload Picture"
-                  >
-                    <Camera size={20} />
-                  </button>
-                )}
+              <div className="mt-2">
+                <AvatarPicker
+                  src={profileImage}
+                  uploading={isUploadingImage}
+                  onUpload={() => fileInputRef.current?.click()}
+                  onRemove={handleDeleteImage}
+                  onImageError={() => setProfileImage(null)}
+                  sizeClass="w-[140px] h-[140px]"
+                  circleClass="text-[38px]"
+                  fallback={getInitials(profileData.fullName) || <User size={44} className="text-white" />}
+                />
               </div>
 
               <div className="mt-4 space-y-1">
