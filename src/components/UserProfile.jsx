@@ -14,6 +14,9 @@ import {
   MapPin,
   GraduationCap,
   Briefcase,
+  Building2,
+  Laptop,
+  Shuffle,
   FileText,
   Edit2,
   AlertTriangle,
@@ -22,7 +25,6 @@ import {
   X,
   Home,
   Globe,
-  Plus,
   ChevronDown,
   Check,
   CheckCircle2,
@@ -33,6 +35,9 @@ import {
 } from 'lucide-react';
 import BackToDashboardButton from './BackToDashboardButton';
 import AvatarPicker from './AvatarPicker';
+import SearchMultiSelect from './SearchMultiSelect';
+import EmailSuggestion from './EmailSuggestion';
+import { suggestEmail } from '../utils/emailSuggest';
 
 const LinkedinIcon = ({ className = "w-[18px] h-[18px]" }) => (
   <svg className={className} fill="currentColor" viewBox="0 0 24 24">
@@ -102,8 +107,32 @@ const FIELD_SECTION = {
   workPreference: 'career', bio: 'career', linkedin: 'links', github: 'links', portfolio: 'links', twitter: 'links',
 };
 const MAX_TAGS = 15;
+const BIO_MAX_LENGTH = 2000;
 const MAX_TAG_LENGTH = 60;
-const LINK_PATTERN = /^(https?:\/\/)?[\w.-]+\.[a-z]{2,}(\/\S*)?$/i;
+const WORK_MODE_ICONS = { 'On-site': Building2, Remote: Laptop, Hybrid: Shuffle };
+
+const SOCIAL_LINK_RULES = {
+  linkedin: {
+    pattern: /^(https?:\/\/)?([a-z]{2,3}\.)?linkedin\.com\/(in|pub)\/[\w%-]+\/?(\?\S*)?$/i,
+    placeholder: 'linkedin.com/in/your-name',
+    message: 'Enter your LinkedIn profile link, like linkedin.com/in/your-name.',
+  },
+  github: {
+    pattern: /^(https?:\/\/)?(www\.)?github\.com\/[a-z\d](?:[a-z\d-]{0,38})\/?$/i,
+    placeholder: 'github.com/your-username',
+    message: 'Enter your GitHub profile link, like github.com/your-username.',
+  },
+  portfolio: {
+    pattern: /^(https?:\/\/)?([a-z\d-]+\.)+[a-z]{2,}(:\d+)?(\/\S*)?$/i,
+    placeholder: 'https://your-portfolio.com',
+    message: 'Enter a valid website link, like https://your-portfolio.com.',
+  },
+  twitter: {
+    pattern: /^(https?:\/\/)?(www\.|mobile\.)?(twitter|x)\.com\/\w{1,15}\/?(\?\S*)?$/i,
+    placeholder: 'x.com/your-handle',
+    message: 'Enter your X (Twitter) profile link, like x.com/your-handle.',
+  },
+};
 
 const GRADUATION_YEARS = Array.from({ length: new Date().getFullYear() + 10 - 1950 + 1 }, (_, i) => String(new Date().getFullYear() + 10 - i));
 
@@ -154,8 +183,8 @@ const validateProfile = (data, countryCode = '') => {
   if (data.expectedGraduation && !GRADUATION_YEARS.includes(String(data.expectedGraduation).trim())) {
     errors.expectedGraduation = `Select a graduation year between ${GRADUATION_YEARS.at(-1)} and ${GRADUATION_YEARS[0]}.`;
   }
-  ['linkedin', 'github', 'portfolio'].forEach((key) => {
-    if (data[key] && !LINK_PATTERN.test(String(data[key]).trim())) errors[key] = 'Enter a valid link, like linkedin.com/in/your-name.';
+  Object.entries(SOCIAL_LINK_RULES).forEach(([key, rule]) => {
+    if (data[key] && !rule.pattern.test(String(data[key]).trim())) errors[key] = rule.message;
   });
   return errors;
 };
@@ -206,6 +235,21 @@ export default function UserProfile({ onNavigate, onLogout, autoEdit = false }) 
     return { items, hasMore: page * 100 < matches.length };
   }, [educationLevels]);
 
+  const relatedCareers = (profileData.interests || []).join('|');
+  const makeOptionsLoader = (endpoint, related = '') => async (query, page) => {
+    const res = await axios.get(endpoint, { params: { search: query, page, related } });
+    return {
+      items: (res.data?.items || []).map((name) => ({ value: name, label: name })),
+      hasMore: !!res.data?.hasMore,
+    };
+  };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const loadCareerInterests = useCallback(makeOptionsLoader('/career-interests'), []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const loadJobRoles = useCallback(makeOptionsLoader('/job-roles', relatedCareers), [relatedCareers]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const loadSkills = useCallback(makeOptionsLoader('/skills', relatedCareers), [relatedCareers]);
+
   const selectedCountryIso = countries.find((c) => c.name === profileData.country)?.iso2 || '';
 
   const loadCountries = useCallback(async (query) => {
@@ -237,12 +281,8 @@ export default function UserProfile({ onNavigate, onLogout, autoEdit = false }) 
   const [profileImage, setProfileImage] = useState(null);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const fileInputRef = useRef(null);
+  const bioRef = useRef(null);
 
-  const [tagInputs, setTagInputs] = useState({
-    interests: '',
-    targetRoles: '',
-    skills: ''
-  });
 
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
   const [passwordData, setPasswordData] = useState({
@@ -427,7 +467,6 @@ export default function UserProfile({ onNavigate, onLogout, autoEdit = false }) 
     setFieldErrors((prev) => ({ ...prev, [category]: error }));
     if (error) return;
     setProfileData(prev => ({ ...prev, [category]: [...prev[category], tag] }));
-    setTagInputs(prev => ({ ...prev, [category]: '' }));
   };
 
   const handleRemoveTag = (category, indexToRemove) => {
@@ -440,21 +479,26 @@ export default function UserProfile({ onNavigate, onLogout, autoEdit = false }) 
   const startEditing = (section) => {
     savedSnapshotRef.current = profileData;
     setFieldErrors({});
-    setTagInputs({ interests: '', targetRoles: '', skills: '' });
     setEditingSection(section);
   };
 
   const cancelEditing = () => {
     if (savedSnapshotRef.current) setProfileData(savedSnapshotRef.current);
     setFieldErrors({});
-    setTagInputs({ interests: '', targetRoles: '', skills: '' });
     setEditingSection(null);
   };
 
   const hasUnsavedChanges = isEditing && (
     JSON.stringify(profileData) !== JSON.stringify(savedSnapshotRef.current)
-    || Object.values(tagInputs).some((v) => v.trim() !== '')
   );
+
+  useEffect(() => {
+    const el = bioRef.current;
+    if (!el) return;
+    el.style.height = 'auto';
+    el.style.height = `${el.scrollHeight + 2}px`;
+    el.style.overflowY = el.scrollHeight > 360 ? 'auto' : 'hidden';
+  }, [profileData.bio, editingSection]);
 
   const scrollToField = (key) => {
     setTimeout(() => {
@@ -506,7 +550,6 @@ export default function UserProfile({ onNavigate, onLogout, autoEdit = false }) 
       const response = await axios.put('/profile', payload, { headers: authHeaders() });
       applyServerData(response.data.user, response.data.profile);
       setEditingSection(null);
-      setTagInputs({ interests: '', targetRoles: '', skills: '' });
       const nextCompletion = response.data.completion || null;
       const justUnlocked = nextCompletion?.eligible && !completion?.eligible;
       setCompletion(nextCompletion);
@@ -1005,7 +1048,16 @@ export default function UserProfile({ onNavigate, onLogout, autoEdit = false }) 
                       className={`w-full h-[45px] bg-[#FDFDFD] border border-gray-200/90 focus:border-[#890080] focus:ring-2 focus:ring-[#FFD2F7] text-[15px] font-medium px-4 py-2.5 rounded-[14px] outline-none text-gray-800 disabled:bg-gray-50/60 disabled:text-gray-600 transition-all${errorBorder('email')}`}
                     />
                     {renderFieldError('email')}
-                    {canEdit('basic') && !fieldErrors.email
+                    {canEdit('basic') && (
+                      <EmailSuggestion
+                        email={profileData.email}
+                        onAccept={(value) => {
+                          handleInputChange({ target: { name: 'email', value } });
+                          setFieldErrors((prev) => ({ ...prev, email: null }));
+                        }}
+                      />
+                    )}
+                    {canEdit('basic') && !fieldErrors.email && !suggestEmail(profileData.email)
                       && String(profileData.email || '').trim().toLowerCase() !== String(savedSnapshotRef.current?.email || '').trim().toLowerCase() && (
                       <p className="flex items-start gap-1.5 text-[13px] font-medium text-red-600 mt-1">
                         <AlertCircle size={14} className="flex-shrink-0 mt-[2px]" />
@@ -1244,170 +1296,92 @@ export default function UserProfile({ onNavigate, onLogout, autoEdit = false }) 
 
                   <div className="space-y-1">
                     <label className="text-[17px] font-medium text-[#000000]">Career Interests / Domains</label>
-                    <div className="flex flex-wrap items-center gap-2 p-3 bg-[#FDFDFD] border border-gray-200/90 focus-within:border-[#890080] focus-within:ring-2 focus-within:ring-[#FFD2F7] rounded-[14px] min-h-[50px] transition-all">
-                      {profileData.interests.map((interest, idx) => (
-                        <span key={idx} className="inline-flex items-center gap-1.5 px-3.5 py-1 bg-[#F7E8FF] text-[#890080] border border-[#FFD2F7] rounded-full text-[14px] font-semibold">
-                          {interest}
-                          {canEdit('career') && (
-                            <button
-                              type="button"
-                              onClick={() => handleRemoveTag('interests', idx)}
-                              className="hover:text-red-600 transition cursor-pointer"
-                            >
-                              <X size={14} />
-                            </button>
-                          )}
-                        </span>
-                      ))}
-                      {canEdit('career') && (
-                        <div className="flex items-center gap-1.5 flex-1 min-w-[150px]">
-                          <input
-                            type="text"
-                            data-field="interests"
-                            maxLength={MAX_TAG_LENGTH}
-                            value={tagInputs.interests}
-                            onChange={(e) => { setTagInputs(prev => ({ ...prev, interests: e.target.value })); if (fieldErrors.interests) setFieldErrors(prev => ({ ...prev, interests: null })); }}
-                            onKeyDown={(e) => {
-                              if (e.key === 'Enter') {
-                                e.preventDefault();
-                                handleAddTag('interests', tagInputs.interests);
-                              }
-                            }}
-                            placeholder="Add interest & press Enter..."
-                            className="w-full text-[14px] font-medium bg-transparent outline-none text-gray-800 placeholder-gray-400"
-                          />
-                          <button
-                            type="button"
-                            onClick={() => handleAddTag('interests', tagInputs.interests)}
-                            className="p-1 bg-[#890080] text-white rounded-full hover:bg-[#700068] transition cursor-pointer flex-shrink-0"
-                          >
-                            <Plus size={14} />
-                          </button>
-                        </div>
-                      )}
-                    </div>
+                    <SearchMultiSelect
+                      values={profileData.interests}
+                      onAdd={(v) => handleAddTag('interests', v)}
+                      onRemove={(idx) => { handleRemoveTag('interests', idx); if (fieldErrors.interests) setFieldErrors(prev => ({ ...prev, interests: null })); }}
+                      loadOptions={loadCareerInterests}
+                      disabled={!canEdit('career')}
+                      max={MAX_TAGS}
+                      placeholder="Select your career interests"
+                      searchPlaceholder="Search careers..."
+                      emptyText="No career found"
+                      allowCustom={false}
+                      hasError={!!fieldErrors.interests}
+                      dataField="interests"
+                      ariaLabel="Career Interests / Domains"
+                    />
                     {renderFieldError('interests')}
                   </div>
 
                   <div className="space-y-1">
                     <label className="text-[17px] font-medium text-[#000000]">Target Job Roles</label>
-                    <div className="flex flex-wrap items-center gap-2 p-3 bg-[#FDFDFD] border border-gray-200/90 focus-within:border-[#890080] focus-within:ring-2 focus-within:ring-[#FFD2F7] rounded-[14px] min-h-[50px] transition-all">
-                      {profileData.targetRoles.map((role, idx) => (
-                        <span key={idx} className="inline-flex items-center gap-1.5 px-3.5 py-1 bg-[#F7E8FF] text-[#890080] border border-[#FFD2F7] rounded-full text-[14px] font-semibold">
-                          {role}
-                          {canEdit('career') && (
-                            <button
-                              type="button"
-                              onClick={() => handleRemoveTag('targetRoles', idx)}
-                              className="hover:text-red-600 transition cursor-pointer"
-                            >
-                              <X size={14} />
-                            </button>
-                          )}
-                        </span>
-                      ))}
-                      {canEdit('career') && (
-                        <div className="flex items-center gap-1.5 flex-1 min-w-[150px]">
-                          <input
-                            type="text"
-                            data-field="targetRoles"
-                            maxLength={MAX_TAG_LENGTH}
-                            value={tagInputs.targetRoles}
-                            onChange={(e) => { setTagInputs(prev => ({ ...prev, targetRoles: e.target.value })); if (fieldErrors.targetRoles) setFieldErrors(prev => ({ ...prev, targetRoles: null })); }}
-                            onKeyDown={(e) => {
-                              if (e.key === 'Enter') {
-                                e.preventDefault();
-                                handleAddTag('targetRoles', tagInputs.targetRoles);
-                              }
-                            }}
-                            placeholder="Add target role & press Enter..."
-                            className="w-full text-[14px] font-medium bg-transparent outline-none text-gray-800 placeholder-gray-400"
-                          />
-                          <button
-                            type="button"
-                            onClick={() => handleAddTag('targetRoles', tagInputs.targetRoles)}
-                            className="p-1 bg-[#890080] text-white rounded-full hover:bg-[#700068] transition cursor-pointer flex-shrink-0"
-                          >
-                            <Plus size={14} />
-                          </button>
-                        </div>
-                      )}
-                    </div>
+                    <SearchMultiSelect
+                      values={profileData.targetRoles}
+                      onAdd={(v) => handleAddTag('targetRoles', v)}
+                      onRemove={(idx) => { handleRemoveTag('targetRoles', idx); if (fieldErrors.targetRoles) setFieldErrors(prev => ({ ...prev, targetRoles: null })); }}
+                      loadOptions={loadJobRoles}
+                      disabled={!canEdit('career')}
+                      max={MAX_TAGS}
+                      placeholder="Select your target job roles"
+                      searchPlaceholder="Search job roles..."
+                      emptyText="No job role found"
+                      allowCustom={true}
+                      hasError={!!fieldErrors.targetRoles}
+                      dataField="targetRoles"
+                      ariaLabel="Target Job Roles"
+                    />
                     {renderFieldError('targetRoles')}
                   </div>
 
                   <div className="space-y-1">
                     <label className="text-[17px] font-medium text-[#000000]">Core Skills & Frameworks</label>
-                    <div className="flex flex-wrap items-center gap-2 p-3 bg-[#FDFDFD] border border-gray-200/90 focus-within:border-[#890080] focus-within:ring-2 focus-within:ring-[#FFD2F7] rounded-[14px] min-h-[50px] transition-all">
-                      {profileData.skills.map((skill, idx) => (
-                        <span key={idx} className="inline-flex items-center gap-1.5 px-3.5 py-1 bg-[#F7E8FF] text-[#890080] border border-[#FFD2F7] rounded-full text-[14px] font-semibold">
-                          {skill}
-                          {canEdit('career') && (
-                            <button
-                              type="button"
-                              onClick={() => handleRemoveTag('skills', idx)}
-                              className="hover:text-red-600 transition cursor-pointer"
-                            >
-                              <X size={14} />
-                            </button>
-                          )}
-                        </span>
-                      ))}
-                      {canEdit('career') && (
-                        <div className="flex items-center gap-1.5 flex-1 min-w-[150px]">
-                          <input
-                            type="text"
-                            data-field="skills"
-                            maxLength={MAX_TAG_LENGTH}
-                            value={tagInputs.skills}
-                            onChange={(e) => { setTagInputs(prev => ({ ...prev, skills: e.target.value })); if (fieldErrors.skills) setFieldErrors(prev => ({ ...prev, skills: null })); }}
-                            onKeyDown={(e) => {
-                              if (e.key === 'Enter') {
-                                e.preventDefault();
-                                handleAddTag('skills', tagInputs.skills);
-                              }
-                            }}
-                            placeholder="Add skill & press Enter..."
-                            className="w-full text-[14px] font-medium bg-transparent outline-none text-gray-800 placeholder-gray-400"
-                          />
-                          <button
-                            type="button"
-                            onClick={() => handleAddTag('skills', tagInputs.skills)}
-                            className="p-1 bg-[#890080] text-white rounded-full hover:bg-[#700068] transition cursor-pointer flex-shrink-0"
-                          >
-                            <Plus size={14} />
-                          </button>
-                        </div>
-                      )}
-                    </div>
+                    <SearchMultiSelect
+                      values={profileData.skills}
+                      onAdd={(v) => handleAddTag('skills', v)}
+                      onRemove={(idx) => { handleRemoveTag('skills', idx); if (fieldErrors.skills) setFieldErrors(prev => ({ ...prev, skills: null })); }}
+                      loadOptions={loadSkills}
+                      disabled={!canEdit('career')}
+                      max={MAX_TAGS}
+                      placeholder="Select your skills"
+                      searchPlaceholder="Search skills..."
+                      emptyText="No skill found"
+                      allowCustom={true}
+                      hasError={!!fieldErrors.skills}
+                      dataField="skills"
+                      ariaLabel="Core Skills & Frameworks"
+                    />
                     {renderFieldError('skills')}
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1">
                     <div className="space-y-1 md:col-span-2">
                       <label className="text-[17px] font-medium text-[#000000]">Preferred Work Mode</label>
-                      <div className="flex flex-wrap gap-3 pt-1">
+                      <div className="flex flex-wrap gap-2.5 pt-1" role="group" aria-label="Preferred Work Mode">
                         {standardWorkModes.map((mode) => {
                           const isSelected = Array.isArray(profileData.workPreference) && profileData.workPreference.includes(mode);
+                          const ModeIcon = WORK_MODE_ICONS[mode];
+                          const editable = canEdit('career');
                           return (
                             <button
                               key={mode}
                               type="button"
                               onClick={() => toggleWorkPreferenceMode(mode)}
-                              disabled={!canEdit('career')}
+                              disabled={!editable}
+                              aria-pressed={isSelected}
                               data-field={mode === standardWorkModes[0] ? 'workPreference' : undefined}
-                              className={`inline-flex items-center gap-2.5 px-5 py-3 rounded-[16px] text-[15px] font-medium transition-all shadow-sm ${
+                              className={`inline-flex items-center gap-2 h-[42px] px-4 rounded-full border text-[14px] font-semibold transition-all outline-none focus-visible:ring-2 focus-visible:ring-[#FFD2F7] ${
                                 isSelected
-                                  ? 'bg-[#FDF7FF] text-[#890080] border-2 border-[#890080]'
-                                  : 'bg-white text-gray-700 border border-gray-200/90 hover:bg-[#F7E8FF]/40'
-                              } ${!canEdit('career') ? 'opacity-90 cursor-not-allowed' : 'cursor-pointer'}`}
+                                  ? 'bg-[#F7E8FF] border-[#890080] text-[#890080]'
+                                  : 'bg-white border-gray-200 text-gray-700'
+                              } ${editable
+                                ? (isSelected ? 'cursor-pointer hover:bg-[#F2DCFF]' : 'cursor-pointer hover:bg-gray-50 hover:border-gray-300')
+                                : 'cursor-default'}`}
                             >
-                              <div className={`w-5 h-5 rounded-[6px] border-2 flex items-center justify-center transition-colors ${
-                                isSelected ? 'bg-[#890080] text-white border-[#890080]' : 'border-gray-300 bg-white'
-                              }`}>
-                                {isSelected && <Check size={13} strokeWidth={3} />}
-                              </div>
-                              <span className="font-semibold">{mode}</span>
+                              {isSelected
+                                ? <Check size={16} strokeWidth={2.6} className="flex-shrink-0" />
+                                : <ModeIcon size={16} strokeWidth={2} className="flex-shrink-0 text-gray-500" />}
+                              <span>{mode}</span>
                             </button>
                           );
                         })}
@@ -1417,15 +1391,29 @@ export default function UserProfile({ onNavigate, onLogout, autoEdit = false }) 
                     <div className="space-y-1 md:col-span-2">
                       <label className="text-[17px] font-medium text-[#000000]">Professional Summary / Bio</label>
                       <textarea
+                        ref={bioRef}
                         name="bio"
                         value={profileData.bio}
                         onChange={handleInputChange}
                         disabled={!canEdit('career')}
-                      data-field="bio"
+                        data-field="bio"
                         rows={4}
-                        className={`w-full bg-[#FDFDFD] border border-gray-200/90 focus:border-[#890080] focus:ring-2 focus:ring-[#FFD2F7] text-[15px] font-medium p-4 rounded-[14px] outline-none text-gray-800 disabled:bg-gray-50/60 disabled:text-gray-600 transition-all resize-none leading-relaxed${errorBorder('bio')}`}
+                        maxLength={BIO_MAX_LENGTH}
+                        placeholder="Write a short summary about yourself: your background, key strengths, and the career you are working towards."
+                        className={`block w-full min-h-[120px] max-h-[360px] bg-[#FDFDFD] border border-gray-200/90 focus:border-[#890080] focus:ring-2 focus:ring-[#FFD2F7] text-[15px] font-normal p-4 rounded-[14px] outline-none text-gray-800 placeholder-gray-400 disabled:bg-gray-50/60 disabled:text-gray-600 transition-[border-color,box-shadow] resize-none leading-relaxed${errorBorder('bio')}`}
                       />
-                      {renderFieldError('bio')}
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex-1">{renderFieldError('bio')}</div>
+                        {canEdit('career') && (
+                          <span className={`text-[12.5px] font-medium tabular-nums mt-1 flex-shrink-0 ${
+                            (profileData.bio || '').length >= BIO_MAX_LENGTH ? 'text-[#B91C1C]'
+                              : (profileData.bio || '').length >= BIO_MAX_LENGTH * 0.9 ? 'text-[#9F5603]'
+                              : 'text-gray-400'
+                          }`}>
+                            {(profileData.bio || '').length.toLocaleString()} / {BIO_MAX_LENGTH.toLocaleString()}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -1451,7 +1439,15 @@ export default function UserProfile({ onNavigate, onLogout, autoEdit = false }) 
                       type="text"
                       name="linkedin"
                       value={profileData.linkedin}
-                      onChange={handleInputChange}
+                      placeholder={SOCIAL_LINK_RULES.linkedin.placeholder}
+                      inputMode="url"
+                      autoComplete="url"
+                      onChange={(e) => {
+                        const value = e.target.value.replace(/\s/g, '');
+                        handleInputChange({ target: { name: 'linkedin', value } });
+                        if (fieldErrors.linkedin) setFieldErrors((prev) => ({ ...prev, linkedin: validateProfile({ linkedin: value }).linkedin || null }));
+                      }}
+                      onBlur={(e) => setFieldErrors((prev) => ({ ...prev, linkedin: validateProfile({ linkedin: e.target.value }).linkedin || null }))}
                       disabled={!canEdit('links')}
                       data-field="linkedin"
                       className={`w-full h-[45px] bg-[#FDFDFD] border border-gray-200/90 focus:border-[#890080] focus:ring-2 focus:ring-[#FFD2F7] text-[15px] font-medium px-4 py-2.5 rounded-[14px] outline-none text-gray-800 disabled:bg-gray-50/60 disabled:text-gray-600 transition-all${errorBorder('linkedin')}`}
@@ -1467,7 +1463,15 @@ export default function UserProfile({ onNavigate, onLogout, autoEdit = false }) 
                       type="text"
                       name="github"
                       value={profileData.github}
-                      onChange={handleInputChange}
+                      placeholder={SOCIAL_LINK_RULES.github.placeholder}
+                      inputMode="url"
+                      autoComplete="url"
+                      onChange={(e) => {
+                        const value = e.target.value.replace(/\s/g, '');
+                        handleInputChange({ target: { name: 'github', value } });
+                        if (fieldErrors.github) setFieldErrors((prev) => ({ ...prev, github: validateProfile({ github: value }).github || null }));
+                      }}
+                      onBlur={(e) => setFieldErrors((prev) => ({ ...prev, github: validateProfile({ github: e.target.value }).github || null }))}
                       disabled={!canEdit('links')}
                       data-field="github"
                       className={`w-full h-[45px] bg-[#FDFDFD] border border-gray-200/90 focus:border-[#890080] focus:ring-2 focus:ring-[#FFD2F7] text-[15px] font-medium px-4 py-2.5 rounded-[14px] outline-none text-gray-800 disabled:bg-gray-50/60 disabled:text-gray-600 transition-all${errorBorder('github')}`}
@@ -1483,7 +1487,15 @@ export default function UserProfile({ onNavigate, onLogout, autoEdit = false }) 
                       type="text"
                       name="portfolio"
                       value={profileData.portfolio}
-                      onChange={handleInputChange}
+                      placeholder={SOCIAL_LINK_RULES.portfolio.placeholder}
+                      inputMode="url"
+                      autoComplete="url"
+                      onChange={(e) => {
+                        const value = e.target.value.replace(/\s/g, '');
+                        handleInputChange({ target: { name: 'portfolio', value } });
+                        if (fieldErrors.portfolio) setFieldErrors((prev) => ({ ...prev, portfolio: validateProfile({ portfolio: value }).portfolio || null }));
+                      }}
+                      onBlur={(e) => setFieldErrors((prev) => ({ ...prev, portfolio: validateProfile({ portfolio: e.target.value }).portfolio || null }))}
                       disabled={!canEdit('links')}
                       data-field="portfolio"
                       className={`w-full h-[45px] bg-[#FDFDFD] border border-gray-200/90 focus:border-[#890080] focus:ring-2 focus:ring-[#FFD2F7] text-[15px] font-medium px-4 py-2.5 rounded-[14px] outline-none text-gray-800 disabled:bg-gray-50/60 disabled:text-gray-600 transition-all${errorBorder('portfolio')}`}
@@ -1499,7 +1511,15 @@ export default function UserProfile({ onNavigate, onLogout, autoEdit = false }) 
                       type="text"
                       name="twitter"
                       value={profileData.twitter}
-                      onChange={handleInputChange}
+                      placeholder={SOCIAL_LINK_RULES.twitter.placeholder}
+                      inputMode="url"
+                      autoComplete="url"
+                      onChange={(e) => {
+                        const value = e.target.value.replace(/\s/g, '');
+                        handleInputChange({ target: { name: 'twitter', value } });
+                        if (fieldErrors.twitter) setFieldErrors((prev) => ({ ...prev, twitter: validateProfile({ twitter: value }).twitter || null }));
+                      }}
+                      onBlur={(e) => setFieldErrors((prev) => ({ ...prev, twitter: validateProfile({ twitter: e.target.value }).twitter || null }))}
                       disabled={!canEdit('links')}
                       data-field="twitter"
                       className={`w-full h-[45px] bg-[#FDFDFD] border border-gray-200/90 focus:border-[#890080] focus:ring-2 focus:ring-[#FFD2F7] text-[15px] font-medium px-4 py-2.5 rounded-[14px] outline-none text-gray-800 disabled:bg-gray-50/60 disabled:text-gray-600 transition-all${errorBorder('twitter')}`}
