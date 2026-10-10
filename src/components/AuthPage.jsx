@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Eye, EyeOff, XCircle, CheckCircle2, ChevronDown, Search } from 'lucide-react';
 import axios from 'axios';
 import { parsePhoneNumberFromString } from 'libphonenumber-js';
-import AuthImage from '../assets/Authentication.PNG'; 
+import AuthImage from '../assets/Authentication.PNG';
+import EmailSuggestion from './EmailSuggestion'; 
 
 export default function AuthPage({ mode, setMode, onBackHome, onForgotPassword }) {
   const [role, setRole] = useState('student'); 
@@ -687,6 +688,7 @@ export default function AuthPage({ mode, setMode, onBackHome, onForgotPassword }
             <div className="space-y-1">
               <label htmlFor={`${role}-${mode}-email`} className="text-[16px] font-semibold text-black block">Email</label>
               <input id={`${role}-${mode}-email`} type="email" name={`${role}_email`} data-field="email" value={formData.email} onChange={handleChange} required autoComplete={isLogin ? 'username' : 'email'} placeholder="Enter email address" className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-4 py-3.5 text-[14px] font-medium focus:outline-none focus:border-pink-300 focus:ring-1 focus:ring-pink-300 placeholder-gray-400" />
+              <EmailSuggestion email={formData.email} onAccept={(value) => setFormData((prev) => ({ ...prev, email: value }))} />
             </div>
 
             {!isLogin && selectedCountry && (
