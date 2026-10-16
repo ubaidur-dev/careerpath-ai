@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import BackToDashboardButton from './BackToDashboardButton';
 import AvatarPicker from './AvatarPicker';
+import EmailSuggestion from './EmailSuggestion';
 
 const DEFAULT_GENERAL_SETTINGS = {
   siteName: 'AI Career Advisor',
@@ -467,6 +468,7 @@ export default function SystemSettings({ onBack }) {
                       onChange={(e) => handleProfileChange('email', e.target.value)}
                       className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-4 py-3.5 text-[14px] font-medium focus:outline-none focus:border-pink-300 focus:ring-1 focus:ring-pink-300 placeholder-gray-400 text-gray-800"
                     />
+                    <EmailSuggestion email={profile.email} onAccept={(value) => handleProfileChange('email', value)} />
                   </div>
                 </div>
               </div>
