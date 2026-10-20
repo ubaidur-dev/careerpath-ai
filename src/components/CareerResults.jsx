@@ -17,7 +17,7 @@ const hasSubmittedAnswers = (answers) =>
   !!answers &&
   Object.entries(answers).some(([key, value]) => /^\d+$/.test(key) && Array.isArray(value) && value.length > 0);
 
-export function CareerMatchCard({ match, isTop, onNavigate }) {
+export function CareerMatchCard({ match, isTop, onNavigate, hideRoadmapButton = false }) {
   const { career } = match;
   const skills = (career.skills || []).map((s) => (typeof s === 'string' ? s : s?.name)).filter(Boolean).slice(0, 3);
 
@@ -127,15 +127,17 @@ export function CareerMatchCard({ match, isTop, onNavigate }) {
         </div>
       </div>
 
-      <div className="flex justify-end pt-13">
-        <button
-          onClick={() => onNavigate('career-details', { careerData: career })}
-          className="flex items-center justify-between px-5 w-[248px] h-[47px] rounded-[15px] text-[18px] font-regular bg-[#FFD0F3] text-[#83047A] border-[0.3px] border-[#83047A] hover:bg-[#fbcfe8] hover:-translate-y-1 transition-all duration-300 cursor-pointer"
-        >
-          <span>{isTop ? 'Get Career Roadmap' : 'View Career Roadmap'}</span>
-          <ArrowRight size={19} strokeWidth={2.5} />
-        </button>
-      </div>
+      {!hideRoadmapButton && (
+        <div className="flex justify-end pt-13">
+          <button
+            onClick={() => onNavigate('career-details', { careerData: career })}
+            className="flex items-center justify-between px-5 w-[248px] h-[47px] rounded-[15px] text-[18px] font-regular bg-[#FFD0F3] text-[#83047A] border-[0.3px] border-[#83047A] hover:bg-[#fbcfe8] hover:-translate-y-1 transition-all duration-300 cursor-pointer"
+          >
+            <span>{isTop ? 'Get Career Roadmap' : 'View Career Roadmap'}</span>
+            <ArrowRight size={19} strokeWidth={2.5} />
+          </button>
+        </div>
+      )}
 
     </div>
   );
