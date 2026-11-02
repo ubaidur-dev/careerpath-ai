@@ -7,6 +7,20 @@
   }
 }
 
+/*
+  Fluid desktop scaling: same technique as Dev-Portfolio's PC/laptop
+  responsiveness (src/index.css there) — the root font-size grows with the
+  screen's width above 1367px, so every rem-based measurement across the
+  site (layout widths, spacing, gaps) scales up together with it, the same
+  way Dev-Portfolio looks right on both a desktop monitor and a laptop
+  screen like the HP ProBook. Phones and tablets are untouched below 1367px.
+*/
+@media (min-width: 1367px) {
+  html {
+    font-size: clamp(16px, 1.1713vw, 34px);
+  }
+}
+
 .tech-glow-card {
   background: rgba(15, 23, 42, 0.45);
   backdrop-filter: blur(20px);
@@ -20,5 +34,14 @@
 
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(2px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-step-in {
+  animation: stepIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes stepIn {
+  from { opacity: 0; transform: translateY(14px); }
   to { opacity: 1; transform: translateY(0); }
 }

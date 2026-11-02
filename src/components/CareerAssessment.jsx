@@ -32,11 +32,6 @@ export default function CareerAssessment({ onNavigate, onLogout }) {
       setLoadError('');
       setCurrentStep((prev) => Math.min(Math.max(prev, 1), nextSteps.length || 1));
 
-      const token = sessionStorage.getItem('token');
-      if (token && nextSteps.length > 0 && !hasStartedQuizRef.current) {
-        hasStartedQuizRef.current = true;
-        axios.post('/quiz/start', {}, { headers: { Authorization: `Bearer ${token}` } }).catch(() => {});
-      }
     } catch (err) {
       if (!silent) {
         console.error('Failed to load assessment', err);
@@ -55,8 +50,15 @@ export default function CareerAssessment({ onNavigate, onLogout }) {
 
   const goingToResults = useRef(false);
 
+  const startQuizAttempt = useCallback(() => {
+    const token = sessionStorage.getItem('token');
+    if (!token || hasStartedQuizRef.current) return;
+    hasStartedQuizRef.current = true;
+    axios.post('/quiz/start', {}, { headers: { Authorization: `Bearer ${token}` } }).catch(() => {});
+  }, []);
+
   const abandonQuiz = useCallback(() => {
-    if (goingToResults.current) return;
+    if (goingToResults.current || !hasStartedQuizRef.current) return;
     const token = sessionStorage.getItem('token');
     if (!token) return;
 
@@ -87,7 +89,7 @@ export default function CareerAssessment({ onNavigate, onLogout }) {
     if (!token) return;
 
     const sendPing = () => {
-      if (document.visibilityState !== 'visible') return;
+      if (document.visibilityState !== 'visible' || !hasStartedQuizRef.current) return;
       axios.post('/quiz/ping', {}, { headers: { Authorization: `Bearer ${token}` } }).catch(() => {});
     };
 
@@ -163,6 +165,7 @@ export default function CareerAssessment({ onNavigate, onLogout }) {
     if (!validateCurrentStep()) return;
 
     if (safeStep < totalSteps) {
+      if (safeStep === 1) startQuizAttempt();
       setCurrentStep(safeStep + 1);
       setError('');
     } else if (onNavigate) {

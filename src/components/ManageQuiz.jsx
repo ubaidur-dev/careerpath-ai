@@ -15,6 +15,7 @@ import {
 import AddNewQuestion from './AddNewQuestion';
 import EditQuestion from './EditQuestion';
 import Dropdown from './Dropdown';
+import BackToDashboardButton from './BackToDashboardButton';
 
 const API_BASE_URL = 'http://localhost:8000/api';
 
@@ -96,6 +97,11 @@ const ManageQuiz = ({ onNavigate, onLogout, initialView = 'list' }) => {
 
   const totalPages = Math.ceil(filteredQuestions.length / itemsPerPage) || 1;
   const activePage = currentPage > totalPages ? totalPages : currentPage;
+  const maxVisiblePages = 9;
+  let pageWindowStart = Math.max(1, activePage - Math.floor(maxVisiblePages / 2));
+  let pageWindowEnd = Math.min(totalPages, pageWindowStart + maxVisiblePages - 1);
+  pageWindowStart = Math.max(1, pageWindowEnd - maxVisiblePages + 1);
+  const visiblePageNumbers = Array.from({ length: pageWindowEnd - pageWindowStart + 1 }, (_, i) => pageWindowStart + i);
   const startIndex = (activePage - 1) * itemsPerPage;
   const endIndex = Math.min(startIndex + itemsPerPage, filteredQuestions.length);
   const paginatedQuestions = filteredQuestions.slice(startIndex, endIndex);
@@ -175,8 +181,14 @@ const ManageQuiz = ({ onNavigate, onLogout, initialView = 'list' }) => {
       </style>
 
       {deleteConfirmId !== null && (
-        <div className="fixed inset-0 w-screen h-screen z-[100] flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white rounded-[24px] p-8 max-w-sm w-full shadow-2xl space-y-6 text-center border border-[#FFD2F7]">
+        <div
+          className="fixed inset-0 w-screen h-screen z-[100] flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm animate-in fade-in duration-200"
+          onClick={() => setDeleteConfirmId(null)}
+        >
+          <div
+            className="bg-white rounded-[24px] p-8 max-w-sm w-full shadow-2xl space-y-6 text-center border border-[#FFD2F7]"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="w-16 h-16 rounded-full bg-[#FFEDF8] text-[#890080] flex items-center justify-center mx-auto border border-[#FF34DC]">
               <AlertTriangle size={32} strokeWidth={2} />
             </div>
@@ -208,6 +220,7 @@ const ManageQuiz = ({ onNavigate, onLogout, initialView = 'list' }) => {
 
       {showAddForm && (
         <AddNewQuestion 
+          existingCategories={dynamicCategories.filter(c => c !== 'All Categories')}
           onSave={handleSaveNewQuestion}
           onCancel={() => setShowAddForm(false)}
         />
@@ -231,7 +244,9 @@ const ManageQuiz = ({ onNavigate, onLogout, initialView = 'list' }) => {
         </div>
       )}
 
-      <div className="pt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-6 text-left">
+      <BackToDashboardButton onClick={() => onNavigate && onNavigate('dashboard')} />
+
+      <div className="pt-1 flex flex-col sm:flex-row sm:items-center justify-between gap-6 text-left">
         <div className="space-y-2"> 
           <h1 className="text-4xl font-bold tracking-tight text-gray-900 inline-flex items-center gap-2">
             Manage Quiz Questions
@@ -252,7 +267,7 @@ const ManageQuiz = ({ onNavigate, onLogout, initialView = 'list' }) => {
         </button>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 justify-items-center">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         {[
           { id: 1, label: 'Total Questions', value: totalQuestions, emoji: '📝', trend: '+12%' },
           { id: 2, label: 'Active Questions', value: activeQuestionsCount, emoji: '⚡', trend: '+5%' },
@@ -261,7 +276,7 @@ const ManageQuiz = ({ onNavigate, onLogout, initialView = 'list' }) => {
         ].map((stat) => (
           <div 
             key={stat.id} 
-            className="relative bg-white h-[145px] w-full max-w-[303px] px-[25px] rounded-[25px] prototype-card-border shadow-[0px_5px_5px_rgba(0,0,0,0.25)] flex items-center gap-[16px] text-left"
+            className="relative bg-white h-[145px] w-full px-[25px] rounded-[25px] prototype-card-border shadow-[0px_5px_5px_rgba(0,0,0,0.25)] flex items-center gap-[16px] text-left"
           >
             <div className="absolute top-5 right-5 text-[#05A660] bg-[#E3F6ED] px-2.5 py-1 rounded-md text-xs font-bold tracking-wide">
               {stat.trend}
@@ -413,8 +428,7 @@ const ManageQuiz = ({ onNavigate, onLogout, initialView = 'list' }) => {
           </button>
 
           <div className="flex items-center gap-2 mx-1">
-            {[...Array(totalPages)].map((_, index) => {
-              const pageNum = index + 1;
+            {visiblePageNumbers.map((pageNum) => {
               return (
                 <button
                   key={pageNum}

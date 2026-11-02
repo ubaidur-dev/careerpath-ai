@@ -11,8 +11,11 @@ import StudentResults from "./components/StudentResults";
 import BrowseCareers from "./components/BrowseCareers";
 import CareerDetails from "./components/CareerDetails";
 import UserProfile from "./components/UserProfile";
-import CareerAssessment from "./components/CareerAssessment"; 
-import CareerResults from './components/CareerResults'; 
+import CareerAssessment from "./components/CareerAssessment";
+import CareerResults from './components/CareerResults';
+import CareerRoadmapProgress from './components/CareerRoadmapProgress';
+import StudentAssessmentHistory from './components/StudentAssessmentHistory';
+import ProfileCompletionModal from './components/ProfileCompletionModal';
 
 axios.defaults.baseURL = 'http://127.0.0.1:8000/api';
 
@@ -53,6 +56,22 @@ export default function App() {
   const [selectedCareerId, setSelectedCareerId] = useState(null); 
   
   const [backendStatus, setBackendStatus] = useState('checking');
+  const [profileGate, setProfileGate] = useState(null);
+  const [profileAutoEdit, setProfileAutoEdit] = useState(false);
+
+  const openQuiz = async () => {
+    try {
+      const token = sessionStorage.getItem('token');
+      const res = await axios.get('/profile/completion', { headers: { Authorization: `Bearer ${token}` } });
+      if (!res.data?.eligible) {
+        setProfileGate(res.data);
+        return;
+      }
+    } catch (err) {
+      console.error('Could not check profile completion', err);
+    }
+    setCurrentScreen('quiz');
+  };
 
   const [quizAnswers, setQuizAnswers] = useState({
     q1: null, q2: null, q3: null, q4: null, q5: null,
@@ -74,6 +93,11 @@ export default function App() {
 
   useEffect(() => {
     const handleTabClose = () => {
+      if (sessionStorage.getItem('skip_next_unload_logout')) {
+        sessionStorage.removeItem('skip_next_unload_logout');
+        return;
+      }
+
       const historyId = sessionStorage.getItem('login_history_id');
       if (historyId) {
         const url = 'http://127.0.0.1:8000/api/logout';
@@ -87,6 +111,20 @@ export default function App() {
     return () => {
       window.removeEventListener('beforeunload', handleTabClose);
     };
+  }, []);
+
+  useEffect(() => {
+    const PING_INTERVAL_MS = 20000;
+
+    const sendPing = () => {
+      const historyId = sessionStorage.getItem('login_history_id');
+      if (!historyId) return;
+      axios.post('/session/ping', { login_history_id: historyId }).catch(() => {});
+    };
+
+    sendPing();
+    const pingInterval = setInterval(sendPing, PING_INTERVAL_MS);
+    return () => clearInterval(pingInterval);
   }, []);
 
   useEffect(() => {
@@ -253,10 +291,54 @@ export default function App() {
             } else if (target === 'profile') {
               setCurrentScreen('profile');
             } else if (target === 'quiz') {
-              setCurrentScreen('quiz');
+              openQuiz();
             } else if (target === 'details') {
               setSelectedCareerData(data);
               setCurrentScreen('career-details');
+            } else if (target === 'roadmap') {
+              setCurrentScreen('career-roadmap');
+            } else if (target === 'assessment-history') {
+              setCurrentScreen('assessment-history');
+            } else {
+              setCurrentScreen('student-dash');
+            }
+          }}
+        />
+      )}
+
+      {currentScreen === 'career-roadmap' && (
+        <CareerRoadmapProgress
+          onLogout={handleLogout}
+          onNavigate={(target) => {
+            if (target === 'browse') {
+              setSelectedCareerId(null);
+              setCurrentScreen('browse-careers');
+            } else if (target === 'quiz') {
+              openQuiz();
+            } else if (target === 'profile') {
+              setCurrentScreen('profile');
+            } else if (target === 'assessment-history') {
+              setCurrentScreen('assessment-history');
+            } else {
+              setCurrentScreen('student-dash');
+            }
+          }}
+        />
+      )}
+
+      {currentScreen === 'assessment-history' && (
+        <StudentAssessmentHistory
+          onLogout={handleLogout}
+          onNavigate={(target) => {
+            if (target === 'browse') {
+              setSelectedCareerId(null);
+              setCurrentScreen('browse-careers');
+            } else if (target === 'quiz') {
+              openQuiz();
+            } else if (target === 'profile') {
+              setCurrentScreen('profile');
+            } else if (target === 'roadmap') {
+              setCurrentScreen('career-roadmap');
             } else {
               setCurrentScreen('student-dash');
             }
@@ -309,34 +391,53 @@ export default function App() {
             } else if (target === 'profile') {
               setCurrentScreen('profile'); 
             } else if (target === 'quiz') {
-              setCurrentScreen('quiz'); 
+              openQuiz(); 
             } else if (target === 'details') {
-              setSelectedCareerData(data); 
-              setCurrentScreen('career-details'); 
+              setSelectedCareerData(data);
+              setCurrentScreen('career-details');
+            } else if (target === 'roadmap') {
+              setCurrentScreen('career-roadmap');
+            } else if (target === 'assessment-history') {
+              setCurrentScreen('assessment-history');
             }
-          }} 
+          }}
         />
       )}
 
       {currentScreen === 'career-details' && (
-        <CareerDetails 
+        <CareerDetails
           careerData={selectedCareerData}
           onBack={() => setCurrentScreen('browse-careers')}
           onNavigate={(target) => {
             if (target === 'dashboard') {
               const storedUser = JSON.parse(sessionStorage.getItem('user') || '{}');
               setCurrentScreen(storedUser.role === 'admin' ? 'admin-dash' : 'student-dash');
+            } else if (target === 'browse') {
+              setCurrentScreen('browse-careers');
+            } else if (target === 'quiz') {
+              openQuiz();
+            } else if (target === 'profile') {
+              setCurrentScreen('profile');
+            } else if (target === 'roadmap') {
+              setCurrentScreen('career-roadmap');
+            } else if (target === 'assessment-history') {
+              setCurrentScreen('assessment-history');
             }
           }}
+          onLogout={handleLogout}
         />
       )}
 
       {(currentScreen === 'profile' || currentScreen === 'settings' || currentScreen === 'admin-settings') && (
         <UserProfile 
+          autoEdit={profileAutoEdit}
           onNavigate={(target) => {
             const storedUser = JSON.parse(sessionStorage.getItem('user') || '{}');
             const isAdmin = storedUser.role === 'admin';
-            if (target === 'dashboard') {
+            setProfileAutoEdit(false);
+            if (target === 'quiz' && !isAdmin) {
+              openQuiz();
+            } else if (target === 'dashboard') {
               setCurrentScreen(isAdmin ? 'admin-dash' : 'student-dash');
             } else if (isAdmin && target === 'results') {
               setCurrentScreen('student-results');
@@ -345,6 +446,10 @@ export default function App() {
               setCurrentScreen('admin-dash');
             } else if (target === 'browse') {
               setCurrentScreen('browse-careers');
+            } else if (target === 'roadmap') {
+              setCurrentScreen('career-roadmap');
+            } else if (target === 'assessment-history') {
+              setCurrentScreen('assessment-history');
             } else {
               setCurrentScreen(target);
             }
@@ -358,6 +463,9 @@ export default function App() {
           onNavigate={(target, answersData) => {
             if (target === 'dashboard') {
               setCurrentScreen('student-dash');
+            } else if (target === 'browse') {
+              setSelectedCareerId(null);
+              setCurrentScreen('browse-careers');
             } else if (target === 'profile') {
               setCurrentScreen('profile');
             } else if (target === 'home') {
@@ -365,24 +473,35 @@ export default function App() {
             } else if (target === 'career-results') {
               setQuizAnswers(answersData);
               setCurrentScreen('career-results');
+            } else if (target === 'quiz') {
+              openQuiz();
+            } else if (target === 'roadmap') {
+              setCurrentScreen('career-roadmap');
+            } else if (target === 'assessment-history') {
+              setCurrentScreen('assessment-history');
             } else {
               setCurrentScreen('student-dash');
             }
           }}
+          onLogout={handleLogout}
         />
       )}
 
       {currentScreen === 'career-results' && (
-        <CareerResults 
+        <CareerResults
           answers={quizAnswers}
           onNavigate={(target, data) => {
             if (target === 'dashboard') {
               setCurrentScreen('student-dash');
-            } else if (target === 'browse-careers') {
+            } else if (target === 'browse-careers' || target === 'browse') {
               setCurrentScreen('browse-careers');
             } else if (target === 'details' || target === 'career-details') {
               setSelectedCareerData(data?.careerData || data);
               setCurrentScreen('career-details');
+            } else if (target === 'profile') {
+              setCurrentScreen('profile');
+            } else if (target === 'quiz') {
+              openQuiz();
             } else if (target === 'home') {
               setCurrentScreen('home');
             } else if (target === 'roadmap-detail') {
@@ -390,7 +509,24 @@ export default function App() {
                 setSelectedCareerId(data.careerId);
               }
               setCurrentScreen('browse-careers');
+            } else if (target === 'roadmap') {
+              setCurrentScreen('career-roadmap');
+            } else if (target === 'assessment-history') {
+              setCurrentScreen('assessment-history');
             }
+          }}
+          onLogout={handleLogout}
+        />
+      )}
+
+      {profileGate && (
+        <ProfileCompletionModal
+          completion={profileGate}
+          onClose={() => setProfileGate(null)}
+          onGoToProfile={() => {
+            setProfileGate(null);
+            setProfileAutoEdit(true);
+            setCurrentScreen('profile');
           }}
         />
       )}
