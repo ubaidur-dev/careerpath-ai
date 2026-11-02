@@ -131,7 +131,7 @@ export default function LandingPage({ onNavigate }) {
               <div className="pt-2">
                 <button
                   onClick={() => onNavigate('login')}
-                  className="w-full sm:w-[300px] h-[75px] px-8 py-4 rounded-full bg-[#f08fe7] hover:bg-[#fa9eed] text-[#5B0055] text-[21px] font-semibold tracking-wide transition-all duration-300 shadow-[0_4px_25px_rgba(217,70,239,0.4)] hover:shadow-[0_6px_30px_rgba(217,70,239,0.75)] cursor-pointer hover:scale-[1.01]"
+                  className="w-full sm:w-auto sm:min-w-[300px] h-[75px] px-8 py-4 rounded-full bg-[#f08fe7] hover:bg-[#fa9eed] text-[#5B0055] text-[21px] font-semibold tracking-wide whitespace-nowrap transition-all duration-300 shadow-[0_4px_25px_rgba(217,70,239,0.4)] hover:shadow-[0_6px_30px_rgba(217,70,239,0.75)] cursor-pointer hover:scale-[1.01]"
                 >
                   Find My Career Path
                 </button>

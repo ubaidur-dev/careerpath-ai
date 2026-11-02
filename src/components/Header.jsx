@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { LayoutDashboard, User, LogOut, Bell, Briefcase, ClipboardList, BellOff } from 'lucide-react';
+import { LayoutDashboard, User, LogOut, Bell, Briefcase, ClipboardList, BellOff, Activity, Menu, ChevronDown, Award } from 'lucide-react';
 import axios from 'axios';
 
 const STUDENT_NOTIFICATION_STYLE = {
   career_added: { icon: Briefcase, bg: '#EAEEFF', color: '#000ACF' },
   quiz_updated: { icon: ClipboardList, bg: '#FDF2FF', color: '#890080' },
+  certificate_approved: { icon: Award, bg: '#E3F6ED', color: '#05A660' },
 };
 
 const buildStudentNotifications = (items) =>
@@ -18,7 +19,7 @@ const buildStudentNotifications = (items) =>
       title: item.text,
       text: item.detail,
       time: item.time,
-      unread: idx < 2,
+      ts: Date.parse(item.timestamp) || 0,
     };
   });
 
@@ -34,12 +35,41 @@ const ADMIN_ACTIVITY_COPY = {
   },
   'Completed': {
     title: (name) => `${name} completed an assessment`,
-    text: (score) => (score !== null && score !== undefined ? `Scored ${score}% on the career quiz` : 'Assessment completed'),
+    text: (score) => (score !== null && score !== undefined ? `Scored ${score}% on the career assessment` : 'Assessment completed'),
   },
   'Error': {
     title: (name) => `${name} left an assessment incomplete`,
     text: () => 'Assessment was abandoned before finishing',
   },
+  'Certificate Pending': {
+    title: (name) => `${name} completed all career roadmaps`,
+    text: (score, item) => `${item?.email ? `${item.email} · ` : ''}Assessment #${item?.assessment ?? ''} certificate is waiting for your approval`,
+    link: 'results',
+  },
+};
+
+const NAV_ITEMS = {
+  student: [
+    { key: 'browse', label: 'Careers' },
+    { key: 'roadmap', label: 'Progress' },
+    { key: 'assessment-history', label: 'Results' },
+    { key: 'profile', label: 'Profile' },
+  ],
+  admin: [
+    { key: 'careers', label: 'Careers' },
+    { key: 'quiz', label: 'Quiz' },
+    { key: 'results', label: 'Results' },
+    { key: 'total-students', label: 'Students' },
+    { key: 'recent-activity', label: 'Activity' },
+  ],
+};
+
+const getStoredRole = () => {
+  try {
+    return JSON.parse(sessionStorage.getItem('user') || '{}')?.role || null;
+  } catch {
+    return null;
+  }
 };
 
 const getInitials = (name) => {
@@ -58,33 +88,86 @@ const buildAdminNotifications = (items) =>
       avatarUrl: item.avatar || null,
       name: item.name,
       title: copy.title(item.name),
-      text: copy.text(item.score),
+      text: copy.text(item.score, item),
+      link: copy.link || null,
       time: item.time,
-      unread: idx < 2,
+      ts: Date.parse(item.timestamp) || 0,
     };
   });
 
 export default function Header({ onNavigate, onLogout, currentView = 'dashboard', userRole }) {
   const [displayName, setDisplayName] = useState('User');
-  const [role, setRole] = useState(userRole || 'student');
+  const [role, setRole] = useState(() => getStoredRole() || userRole || 'student');
   const [avatarUrl, setAvatarUrl] = useState(null);
   const [isNotifOpen, setIsNotifOpen] = useState(false);
   const [notifTab, setNotifTab] = useState('all');
   const [adminNotifications, setAdminNotifications] = useState([]);
   const [studentNotifications, setStudentNotifications] = useState([]);
   const notifRef = useRef(null);
-  const effectiveRole = userRole || role;
-  const notificationsSource = effectiveRole === 'admin' ? adminNotifications : studentNotifications;
-  const unreadCount = notificationsSource.filter((n) => n.unread).length;
+  const effectiveRole = getStoredRole() || userRole || role;
+
+  const navItems = NAV_ITEMS[effectiveRole === 'admin' ? 'admin' : 'student'];
+  const [viewportWidth, setViewportWidth] = useState(() => (typeof window !== 'undefined' ? window.innerWidth : 1280));
+  const [isMoreOpen, setIsMoreOpen] = useState(false);
+  const MAX_INLINE = 4;
+  const navSpace = viewportWidth - 726;
+  const maxInline = viewportWidth < 1024
+    ? 0
+    : navItems.length <= MAX_INLINE && navItems.length * 105 <= navSpace
+      ? navItems.length
+      : Math.max(1, Math.min(MAX_INLINE, Math.floor((navSpace - 95) / 105)));
+  const inlineItems = navItems.slice(0, maxInline);
+  const overflowItems = navItems.slice(maxInline);
+  const moreActive = overflowItems.some((item) => item.key === currentView);
+
+  useEffect(() => {
+    const onResize = () => setViewportWidth(window.innerWidth);
+    const onDocClick = (e) => {
+      if (!e.target.closest?.('[data-navmenu]')) setIsMoreOpen(false);
+    };
+    window.addEventListener('resize', onResize);
+    document.addEventListener('mousedown', onDocClick);
+    return () => {
+      window.removeEventListener('resize', onResize);
+      document.removeEventListener('mousedown', onDocClick);
+    };
+  }, []);
+
+  const handleNavClick = (key) => {
+    setIsMoreOpen(false);
+    if (onNavigate) onNavigate(key);
+  };
+  const [readMark, setReadMark] = useState(null);
+  const [serverUnread, setServerUnread] = useState({ admin: 0, student: 0 });
+  const [serverMark, setServerMark] = useState(0);
+  const authHeaders = () => ({ Authorization: `Bearer ${sessionStorage.getItem('token')}` });
+
+  const rawNotifications = effectiveRole === 'admin' ? adminNotifications : studentNotifications;
+  const notificationsSource = rawNotifications.map((n) => ({ ...n, unread: readMark !== null && n.ts > readMark }));
+  const markReadUpTo = (ms) => {
+    if (!ms || (readMark !== null && ms <= readMark)) return;
+    setReadMark(ms);
+    axios.post('/notifications/mark-read', { until: new Date(ms).toISOString() }, { headers: authHeaders() })
+      .catch(() => {});
+  };
+  const locallyRead = rawNotifications.filter((n) => n.ts > serverMark && readMark !== null && n.ts <= readMark).length;
+  const unreadCount = Math.max(0, serverUnread[effectiveRole === 'admin' ? 'admin' : 'student'] - locallyRead);
   const visibleNotifications = notifTab === 'unread' ? notificationsSource.filter((n) => n.unread) : notificationsSource;
 
   useEffect(() => {
     if (effectiveRole !== 'admin') return undefined;
+    if (!sessionStorage.getItem('token')) return undefined;
 
-    
     const fetchAdminActivity = () => {
-      axios.get('/admin/notifications')
-        .then((res) => setAdminNotifications(buildAdminNotifications(res.data?.activity)))
+      axios.get('/admin/notifications', { headers: authHeaders() })
+        .then((res) => {
+          const list = buildAdminNotifications(res.data?.activity);
+          const serverReadUntil = Date.parse(res.data?.read_until) || 0;
+          setServerMark(serverReadUntil);
+          setReadMark((prev) => Math.max(prev || 0, serverReadUntil));
+          setServerUnread((prev) => ({ ...prev, admin: res.data?.unread_count ?? 0 }));
+          setAdminNotifications(list);
+        })
         .catch(() => {});
     };
 
@@ -101,7 +184,14 @@ export default function Header({ onNavigate, onLogout, currentView = 'dashboard'
     
     const fetchStudentActivity = () => {
       axios.get('/student/notifications', { headers: { Authorization: `Bearer ${token}` } })
-        .then((res) => setStudentNotifications(buildStudentNotifications(res.data?.notifications)))
+        .then((res) => {
+          const list = buildStudentNotifications(res.data?.notifications);
+          const serverReadUntil = Date.parse(res.data?.read_until) || 0;
+          setServerMark(serverReadUntil);
+          setReadMark((prev) => Math.max(prev || 0, serverReadUntil));
+          setServerUnread((prev) => ({ ...prev, student: res.data?.unread_count ?? 0 }));
+          setStudentNotifications(list);
+        })
         .catch(() => {});
     };
 
@@ -128,7 +218,7 @@ export default function Header({ onNavigate, onLogout, currentView = 'dashboard'
       try {
         const userObj = JSON.parse(storedUser);
         if (userObj.role) setRole(userObj.role);
-        if (userObj.name) setDisplayName(userObj.name.split(' ')[0]); // Get first name
+        if (userObj.name) setDisplayName(userObj.name.split(' ')[0]); 
         setAvatarUrl(userObj.avatar_url || userObj.avatar || null);
         return userObj;
       } catch {
@@ -180,7 +270,6 @@ export default function Header({ onNavigate, onLogout, currentView = 'dashboard'
   const handleProfileClick = () => {
     if (!onNavigate) return;
   
-    const effectiveRole = userRole || role;
     if (effectiveRole === 'admin') {
       onNavigate('settings');
     } else {
@@ -224,7 +313,96 @@ export default function Header({ onNavigate, onLogout, currentView = 'dashboard'
           />
         </div>
 
+        <nav className="hidden lg:flex flex-1 items-center justify-center px-4 min-w-0" aria-label="Primary">
+          <div className="flex items-center gap-1 bg-gray-50/80 border border-gray-100/90 rounded-2xl p-1.5 shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)]">
+          {inlineItems.map((item) => {
+            const active = currentView === item.key;
+            return (
+              <button
+                key={item.key}
+                type="button"
+                onClick={() => handleNavClick(item.key)}
+                className={`flex items-center justify-center h-10 w-[100px] rounded-xl text-sm font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer flex-shrink-0 ${
+                  active
+                    ? 'bg-white text-[#bd24df] shadow-[0_1px_3px_rgba(16,24,40,0.08)] ring-1 ring-[#f5dbfc]'
+                    : 'bg-transparent text-gray-600 hover:bg-white/70 hover:text-[#bd24df]'
+                }`}
+              >
+                {item.label}
+              </button>
+            );
+          })}
+          {maxInline > 0 && overflowItems.length > 0 && (
+            <div data-navmenu className="relative">
+              <button
+                type="button"
+                onClick={() => setIsMoreOpen((prev) => !prev)}
+                className={`flex items-center gap-1.5 h-10 px-3.5 rounded-xl text-sm font-semibold transition-all duration-200 cursor-pointer flex-shrink-0 ${
+                  moreActive || isMoreOpen
+                    ? 'bg-white text-[#bd24df] shadow-[0_1px_3px_rgba(16,24,40,0.08)] ring-1 ring-[#f5dbfc]'
+                    : 'bg-transparent text-gray-600 hover:bg-white/70 hover:text-[#bd24df]'
+                }`}
+              >
+                More
+                <ChevronDown size={16} strokeWidth={2.5} className={`transition-transform ${isMoreOpen ? 'rotate-180' : ''}`} />
+              </button>
+              {isMoreOpen && (
+                <div className="absolute left-1/2 -translate-x-1/2 mt-2.5 w-[220px] bg-white rounded-2xl border border-gray-200 shadow-xl p-2 z-50">
+                  {(() => { const items = overflowItems; return (<>{items.map((item) => {
+                const active = currentView === item.key;
+                return (
+                  <button
+                    key={item.key}
+                    type="button"
+                    onClick={() => handleNavClick(item.key)}
+                    className={`w-full flex items-center px-3.5 py-2.5 rounded-xl text-[14px] font-medium text-left transition-colors cursor-pointer ${
+                      active ? 'bg-[#FDF2FA] text-[#890080]' : 'text-gray-700 hover:bg-gray-50 hover:text-[#890080]'
+                    }`}
+                  >
+                    {item.label}
+                  </button>
+                );
+              })}</>); })()}
+                </div>
+              )}
+            </div>
+          )}
+          </div>
+        </nav>
+
         <div className="flex items-center gap-2 sm:gap-3">
+        <div data-navmenu className="relative lg:hidden">
+          <button
+            type="button"
+            onClick={() => setIsMoreOpen((prev) => !prev)}
+            title="Menu"
+            className={`flex items-center justify-center w-10 h-10 rounded-full transition-all duration-200 cursor-pointer flex-shrink-0 ${
+              isMoreOpen ? 'bg-white text-[#890080] shadow-[0_1px_3px_rgba(16,24,40,0.08)] ring-1 ring-[#f5dbfc]' : 'text-gray-600 hover:bg-gray-50 hover:text-[#890080]'
+            }`}
+          >
+            <Menu size={20} strokeWidth={2.2} />
+          </button>
+          {isMoreOpen && (
+            <div className="absolute right-0 mt-2.5 w-[220px] bg-white rounded-2xl border border-gray-200 shadow-xl p-2 z-50">
+              {(() => { const items = navItems; return (<>{items.map((item) => {
+                const active = currentView === item.key;
+                return (
+                  <button
+                    key={item.key}
+                    type="button"
+                    onClick={() => handleNavClick(item.key)}
+                    className={`w-full flex items-center px-3.5 py-2.5 rounded-xl text-[14px] font-medium text-left transition-colors cursor-pointer ${
+                      active ? 'bg-[#FDF2FA] text-[#890080]' : 'text-gray-700 hover:bg-gray-50 hover:text-[#890080]'
+                    }`}
+                  >
+                    {item.label}
+                  </button>
+                );
+              })}</>); })()}
+            </div>
+          )}
+        </div>
+
 
         <div ref={notifRef} className="relative">
           <button
@@ -238,19 +416,20 @@ export default function Header({ onNavigate, onLogout, currentView = 'dashboard'
             <Bell size={20} strokeWidth={2.2} />
             {unreadCount > 0 && (
               <span className="absolute top-1 right-1 min-w-[16px] h-[16px] px-[3px] rounded-full bg-red-800 text-white text-[9.5px] font-bold flex items-center justify-center ring-2 ring-white">
-                {unreadCount > 9 ? '9+' : unreadCount}
+                {unreadCount > 99 ? '99+' : unreadCount}
               </span>
             )}
           </button>
 
           {isNotifOpen && (
-            <div className="absolute right-0 mt-2.5 w-[360px] bg-white rounded-2xl border border-gray-200 shadow-xl overflow-hidden z-50 animate-in fade-in zoom-in-95 duration-150 origin-top-right">
+            <div className="absolute right-0 mt-2.5 w-[calc(100vw-24px)] sm:w-[360px] max-w-[360px] bg-white rounded-2xl border border-gray-200 shadow-xl overflow-hidden z-50 animate-in fade-in zoom-in-95 duration-150 origin-top-right">
 
               <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
                 <h3 className="text-[14px] font-semibold text-gray-900">Notifications</h3>
                 <button
                   type="button"
                   disabled={unreadCount === 0}
+                  onClick={() => markReadUpTo(notificationsSource.reduce((m, n) => Math.max(m, n.ts || 0), 0))}
                   className="text-[12px] font-medium text-[#890080] hover:underline cursor-pointer disabled:text-gray-300 disabled:no-underline disabled:cursor-not-allowed"
                 >
                   Mark all read
@@ -278,7 +457,7 @@ export default function Header({ onNavigate, onLogout, currentView = 'dashboard'
                 {visibleNotifications.length === 0 ? (
                   <div className="flex flex-col items-center justify-center gap-1.5 py-10 px-4 text-center">
                     <BellOff size={20} strokeWidth={1.8} className="text-gray-300" />
-                    <p className="text-[12.5px] text-gray-400">No unread notifications</p>
+                    <p className="text-[12.5px] text-gray-400">{notifTab === 'unread' ? "You're all caught up" : 'No notifications yet'}</p>
                   </div>
                 ) : (
                   visibleNotifications.map((n) => {
@@ -286,6 +465,10 @@ export default function Header({ onNavigate, onLogout, currentView = 'dashboard'
                     return (
                       <div
                         key={n.id}
+                        onClick={() => {
+                          markReadUpTo(n.ts || 0);
+                          if (n.link && onNavigate) { setIsNotifOpen(false); onNavigate(n.link); }
+                        }}
                         className="flex items-start gap-3 px-4 py-3 hover:bg-gray-50 transition-colors cursor-pointer"
                       >
                         {n.isPerson ? (
@@ -306,10 +489,11 @@ export default function Header({ onNavigate, onLogout, currentView = 'dashboard'
                         )}
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center gap-1.5">
-                            <p className="text-[13px] font-medium text-gray-900 truncate">{n.title}</p>
+                            <p className="text-[13px] font-medium text-gray-900 line-clamp-2">{n.title}</p>
                             {n.unread && <span className="w-1.5 h-1.5 rounded-full bg-[#890080] flex-shrink-0" />}
                           </div>
-                          <span className="text-[11px] text-gray-400">{n.time}</span>
+                          {n.text && <p className="text-[12px] text-gray-500 leading-snug mt-0.5 line-clamp-2">{n.text}</p>}
+                          <span className="text-[11px] text-gray-400 mt-0.5 block">{n.time}</span>
                         </div>
                       </div>
                     );
@@ -317,13 +501,15 @@ export default function Header({ onNavigate, onLogout, currentView = 'dashboard'
                 )}
               </div>
 
-              <button
-                type="button"
-                onClick={() => setIsNotifOpen(false)}
-                className="w-full py-2.5 border-t border-gray-100 text-[12.5px] font-medium text-[#890080] hover:bg-gray-50 transition-colors cursor-pointer"
-              >
-                {effectiveRole === 'admin' ? 'View all student activity' : 'View all notifications'}
-              </button>
+              {effectiveRole === 'admin' && (
+                <button
+                  type="button"
+                  onClick={() => { setIsNotifOpen(false); if (onNavigate) onNavigate('recent-activity'); }}
+                  className="w-full py-2.5 border-t border-gray-100 text-[12.5px] font-medium text-[#890080] hover:bg-gray-50 transition-colors cursor-pointer"
+                >
+                  View all student activity
+                </button>
+              )}
             </div>
           )}
         </div>
@@ -340,8 +526,8 @@ export default function Header({ onNavigate, onLogout, currentView = 'dashboard'
             }`}
           >
             <LayoutDashboard
-              size={20}
-              strokeWidth={2.5}
+              size={18}
+              strokeWidth={2.2}
               className={isDashboardActive ? 'text-[#bd24df]' : 'text-gray-500'}
             />
             <span className="hidden sm:inline">Dashboard</span>
@@ -358,8 +544,8 @@ export default function Header({ onNavigate, onLogout, currentView = 'dashboard'
             }`}
           >
             <User
-              size={20}
-              strokeWidth={2.5}
+              size={18}
+              strokeWidth={2.2}
               className={`${isProfileOrSettingsActive ? 'text-[#bd24df]' : 'text-gray-500'} sm:hidden`}
             />
             <div
@@ -388,8 +574,8 @@ export default function Header({ onNavigate, onLogout, currentView = 'dashboard'
             className="flex items-center justify-center gap-1.5 text-gray-600 h-10 w-10 sm:w-auto sm:px-4 rounded-xl text-sm font-medium cursor-pointer hover:bg-red-50 hover:text-red-600 transition-all duration-200 font-inter flex-shrink-0"
           >
             <LogOut
-              size={20}
-              strokeWidth={2.5}
+              size={18}
+              strokeWidth={2.2}
               className="transition-colors"
             />
             <span className="hidden sm:inline">Logout</span>
