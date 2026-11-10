@@ -1,4 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
+import useModalHistory from '../utils/useModalHistory';
+import useRestoredState from '../utils/useRestoredState';
 import { createPortal, flushSync } from 'react-dom';
 import axios from 'axios';
 import Header from './Header';
@@ -23,7 +25,6 @@ import {
   BadgeCheck
 } from 'lucide-react';
 import { getScoreColorClass } from '../utils/scoreColors';
-import BackToDashboardButton from './BackToDashboardButton';
 import Signature from './Signature';
 
 const POLL_MS = 3000;
@@ -81,13 +82,13 @@ const formatEventTime = (student) => {
 };
 
 export default function StudentResults({ onNavigate, onLogout }) {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState('All Status');
-  const [dateFilter, setDateFilter] = useState('All Dates');
+  const [searchQuery, setSearchQuery] = useRestoredState('StudentResults.searchQuery', '');
+  const [statusFilter, setStatusFilter] = useRestoredState('StudentResults.statusFilter', 'All Status');
+  const [dateFilter, setDateFilter] = useRestoredState('StudentResults.dateFilter', 'All Dates');
 
   const [selectedStudentUserId, setSelectedStudentUserId] = useState(null);
   const [zoomedImage, setZoomedImage] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useRestoredState('StudentResults.currentPage', 1);
   const itemsPerPage = 20;
 
   const [results, setResults] = useState([]);
@@ -229,6 +230,9 @@ export default function StudentResults({ onNavigate, onLogout }) {
     setHistoryError('');
   };
 
+  useModalHistory(!!selectedStudent, () => handleCloseHistoryModal());
+  useModalHistory(!!zoomedImage, () => setZoomedImage(null));
+
   const handlePageChange = (pageNum) => {
     if (pageNum >= 1 && pageNum <= totalPages) {
       setCurrentPage(pageNum);
@@ -258,15 +262,7 @@ export default function StudentResults({ onNavigate, onLogout }) {
       new Promise((resolve) => setTimeout(resolve, 3000)),
     ]);
 
-    const date = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
-    const previousTitle = document.title;
-    const restoreTitle = () => {
-      document.title = previousTitle;
-      window.removeEventListener('afterprint', restoreTitle);
-    };
-    window.addEventListener('afterprint', restoreTitle);
-    document.title = `Student Results - CareerPath AI - ${date}`;
-    window.print();
+    setTimeout(() => window.print(), 50);
   };
 
   const handleSendEmail = (student) => {
@@ -322,7 +318,7 @@ export default function StudentResults({ onNavigate, onLogout }) {
   ];
 
   return (
-    <div className="w-full bg-[#fcf8fe] text-gray-900 antialiased space-y-8 pb-10 relative min-h-screen">
+    <div className="w-full bg-[#fcf8fe] text-gray-900 antialiased pb-10 relative min-h-screen">
       <style>
         {`
           .custom-quiz-border {
@@ -354,11 +350,9 @@ export default function StudentResults({ onNavigate, onLogout }) {
 
       <Header onNavigate={onNavigate} onLogout={onLogout} currentView="results" />
 
-      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 space-y-8">
 
-        <BackToDashboardButton onClick={() => onNavigate && onNavigate('dashboard')} />
-
-        <div className="pt-1 flex flex-col sm:flex-row sm:items-center justify-between gap-6 text-left">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 text-left">
           <div className="space-y-2">
             <h1 className="text-4xl font-bold tracking-tight text-gray-900 inline-flex items-center gap-2">
               Student Results
@@ -665,7 +659,7 @@ export default function StudentResults({ onNavigate, onLogout }) {
 
       {selectedStudent && (
         <div
-          className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6 overflow-y-auto"
+          className="fixed inset-0 m-0! z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6 overflow-y-auto"
           onClick={handleCloseHistoryModal}
         >
           <div
@@ -930,7 +924,7 @@ export default function StudentResults({ onNavigate, onLogout }) {
 
       {zoomedImage && (
         <div
-          className="fixed inset-0 z-[100] bg-black/50 backdrop-blur-md flex items-center justify-center p-4 cursor-pointer animate-in fade-in duration-200"
+          className="fixed inset-0 m-0! z-[100] bg-black/50 backdrop-blur-md flex items-center justify-center p-4 cursor-pointer animate-in fade-in duration-200"
           onClick={() => setZoomedImage(null)}
         >
           <div className="relative inline-flex items-center justify-center">

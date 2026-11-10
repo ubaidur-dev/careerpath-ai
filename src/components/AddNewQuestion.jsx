@@ -64,7 +64,7 @@ const AddNewQuestion = ({ existingCategories = [], onSave, onCancel }) => {
 
   return (
     <div 
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 p-4 sm:p-6 backdrop-blur-sm animate-in fade-in duration-200 cursor-pointer"
+      className="fixed inset-0 m-0! z-[100] flex items-center justify-center bg-black/40 p-4 sm:p-6 backdrop-blur-sm animate-in fade-in duration-200 cursor-pointer"
       onClick={onCancel}
     >
       <div

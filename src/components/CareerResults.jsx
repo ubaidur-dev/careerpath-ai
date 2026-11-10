@@ -188,7 +188,7 @@ export default function CareerResults({ onNavigate, onLogout, answers = {} }) {
 
       <Header onNavigate={onNavigate} onLogout={onLogout} userRole="student" currentView="quiz" />
 
-      <main className="max-w-6xl mx-auto px-4 py-10 flex flex-col gap-10">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-10 flex flex-col gap-10">
 
         <div className="text-center space-y-4 max-w-2xl mx-auto">
           <div className="inline-flex items-center gap-2 border border-[#FF00ED] text-gray-800 font-light px-5 py-1.5 rounded-full bg-white shadow-sm">

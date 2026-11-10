@@ -14,7 +14,6 @@ import {
   Eye,
   EyeOff
 } from 'lucide-react';
-import BackToDashboardButton from './BackToDashboardButton';
 import AvatarPicker from './AvatarPicker';
 import EmailSuggestion from './EmailSuggestion';
 
@@ -328,9 +327,7 @@ export default function SystemSettings({ onBack }) {
         </div>
       )}
 
-      <BackToDashboardButton onClick={() => onBack && onBack()} />
-
-      <div className="pt-1 flex flex-col sm:flex-row sm:items-center justify-between gap-6 text-left">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 text-left">
         <div className="space-y-2"> 
           <h1 className="text-4xl font-bold tracking-tight text-gray-900 inline-flex items-center gap-2">
             System Settings

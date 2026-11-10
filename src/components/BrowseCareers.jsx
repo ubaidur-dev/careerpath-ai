@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import useRestoredState from '../utils/useRestoredState';
 import axios from 'axios';
 import Header from './Header';
 import { Search, Zap, ArrowRight, Filter } from 'lucide-react';
@@ -8,12 +9,11 @@ import {
   CAREER_CARD_ICON_BG,
   CAREER_CARD_ICON_COLOR
 } from '../utils/careerVisuals';
-import BackToDashboardButton from './BackToDashboardButton';
 
 export default function BrowseCareers({ onNavigate, onLogout, activeCareerId }) {
   const [careers, setCareers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useRestoredState('BrowseCareers.currentPage', 1);
   const itemsPerPage = 9;
 
   useEffect(() => {
@@ -82,9 +82,7 @@ export default function BrowseCareers({ onNavigate, onLogout, activeCareerId }) 
 
       <Header onNavigate={onNavigate} onLogout={onLogout} currentView="browse" />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10 relative">
-
-        <BackToDashboardButton onClick={() => onNavigate('dashboard')} />
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-8 space-y-10 relative">
 
         <div className="text-center space-y-4 max-w-2xl mx-auto">
           <div
@@ -294,13 +292,13 @@ export default function BrowseCareers({ onNavigate, onLogout, activeCareerId }) 
                     <button
                       onClick={() => onNavigate('quiz')}
                       style={{
-                        fontSize: '18.5px',
-                        maxWidth: '432px',
+                        fontSize: 'clamp(14px, 4.2vw, 18.5px)',
+                        maxWidth: '480px',
                         height: '56px'
                       }}
-                      className="w-full xs:w-auto px-8 inline-flex items-center justify-center gap-3 figma-assessment-btn-prototype rounded-[20px] font-medium font-['Inter',sans-serif] tracking-wide shadow-sm hover:scale-[1.02] hover:shadow-md active:scale-[0.98] transition-all duration-300 cursor-pointer"
+                      className="w-full xs:w-auto px-6 sm:px-8 inline-flex items-center justify-center gap-3 figma-assessment-btn-prototype rounded-[20px] font-medium font-['Inter',sans-serif] tracking-wide shadow-sm hover:scale-[1.02] hover:shadow-md active:scale-[0.98] transition-all duration-300 cursor-pointer"
                     >
-                      <span>Get AI-Powered Career Suggestions</span>
+                      <span className="whitespace-nowrap">Get AI-Powered Career Suggestions</span>
                       <ArrowRight size={17} className="text-[#83047A] flex-shrink-0" />
                     </button>
                   </div>

@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import useModalHistory from '../utils/useModalHistory';
 import { Camera, Upload, Trash2, AlertTriangle, X } from 'lucide-react';
 
 export default function AvatarPicker({
@@ -14,6 +15,7 @@ export default function AvatarPicker({
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
+  useModalHistory(confirmOpen, () => setConfirmOpen(false));
   const rootRef = useRef(null);
 
   useEffect(() => {
@@ -105,7 +107,7 @@ export default function AvatarPicker({
       )}
 
       {confirmOpen && (
-        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setConfirmOpen(false)}>
+        <div className="fixed inset-0 m-0! z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setConfirmOpen(false)}>
           <div
             className="bg-white border border-[#FFD2F7] rounded-[28px] p-6 sm:p-8 max-w-md w-full shadow-[3px_6px_12px_0.5px_rgba(0,0,0,0.2)] text-left space-y-6 relative"
             onClick={(e) => e.stopPropagation()}

@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import useRestoredState from '../utils/useRestoredState';
 import axios from 'axios';
-import { createPortal } from 'react-dom';
+import { createPortal, flushSync } from 'react-dom';
 import Header from './Header';
 import Dropdown from './Dropdown';
 import { formatIssueDate } from '../utils/issueDate';
 import Signature from './Signature';
+import AssessmentReport from './AssessmentReport';
 import {
   Search,
   Download,
@@ -22,7 +24,6 @@ import {
   Lock
 } from 'lucide-react';
 import { getScoreColorClass } from '../utils/scoreColors';
-import BackToDashboardButton from './BackToDashboardButton';
 
 const POLL_MS = 4000;
 
@@ -31,16 +32,17 @@ const getAuthToken = () => sessionStorage.getItem('token');
 const getMatchColorClass = getScoreColorClass;
 
 export default function StudentAssessmentHistory({ onNavigate, onLogout }) {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState('All Status');
-  const [dateFilter, setDateFilter] = useState('All Dates');
-  const [currentPage, setCurrentPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useRestoredState('StudentAssessmentHistory.searchQuery', '');
+  const [statusFilter, setStatusFilter] = useRestoredState('StudentAssessmentHistory.statusFilter', 'All Status');
+  const [dateFilter, setDateFilter] = useRestoredState('StudentAssessmentHistory.dateFilter', 'All Dates');
+  const [currentPage, setCurrentPage] = useRestoredState('StudentAssessmentHistory.currentPage', 1);
   const itemsPerPage = 20;
 
   const [historyData, setHistoryData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [certificateAttempt, setCertificateAttempt] = useState(null);
+  const [reportPrint, setReportPrint] = useState(null);
   const [reportLoadingId, setReportLoadingId] = useState(null);
   const [lockTip, setLockTip] = useState(null);
   const [reportError, setReportError] = useState('');
@@ -141,11 +143,18 @@ export default function StudentAssessmentHistory({ onNavigate, onLogout }) {
     setReportError('');
     try {
       const token = getAuthToken();
-      const [{ data }, { downloadAssessmentReport }] = await Promise.all([
-        axios.get(`/quiz/results/${attempt.id}`, { headers: { Authorization: `Bearer ${token}` } }),
-        import('../utils/downloadAssessmentReport'),
-      ]);
-      await downloadAssessmentReport(data, studentName);
+      const { data } = await axios.get(`/quiz/results/${attempt.id}`, { headers: { Authorization: `Bearer ${token}` } });
+      flushSync(() => setReportPrint({ ...data, issuedAt: formatIssueDate(new Date()) }));
+      await document.fonts.ready;
+      await Promise.all([...document.querySelectorAll('.report-print-root img')].map((img) => (
+        img.complete ? null : new Promise((resolve) => { img.onload = resolve; img.onerror = resolve; })
+      )));
+      const restore = () => {
+        setReportPrint(null);
+        window.removeEventListener('afterprint', restore);
+      };
+      window.addEventListener('afterprint', restore);
+      window.print();
     } catch (err) {
       console.error('Failed to create assessment report', err);
       setReportError(err?.response?.data?.message || 'We could not create this report right now. Please try again.');
@@ -186,8 +195,8 @@ export default function StudentAssessmentHistory({ onNavigate, onLogout }) {
           @media print {
             @page { size: 297mm 210mm; margin: 0; }
             html, body { margin: 0 !important; padding: 0 !important; background: #ffffff !important; }
-            body > *:not(.certificate-print-root) { display: none !important; }
-            .certificate-print-root { display: block !important; }
+            body > *:not(.certificate-print-root):not(.report-print-root) { display: none !important; }
+            .certificate-print-root, .report-print-root { display: block !important; }
             .certificate-print-page {
               display: flex !important;
               width: 297mm;
@@ -230,7 +239,7 @@ export default function StudentAssessmentHistory({ onNavigate, onLogout }) {
                 <Lock size={15} /> Certificate locked
               </div>
               <p className="text-[13px] text-gray-600 mt-1 leading-relaxed">
-                Complete every career roadmap of this assessment on the Progress page to unlock your certificate.
+                Complete any one career's roadmap on the Progress page to unlock that career's certificate - finish more to unlock more.
               </p>
             </>
           )}
@@ -256,11 +265,9 @@ export default function StudentAssessmentHistory({ onNavigate, onLogout }) {
         </div>
       )}
 
-      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 space-y-8">
+      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 space-y-8">
 
-        <BackToDashboardButton onClick={() => onNavigate && onNavigate('dashboard')} />
-
-        <div className="pt-1 space-y-2 text-left">
+        <div className="space-y-2 text-left">
           <h1 className="text-4xl font-bold tracking-tight text-gray-900">My Assessment History</h1>
           <p className="text-[#525252] font-light text-[21.3px] mt-[5px] mb-[15px]">
             Every quiz attempt you've ever made — live and complete.
@@ -560,6 +567,29 @@ export default function StudentAssessmentHistory({ onNavigate, onLogout }) {
         )}
       </div>
       </div>
+
+      {reportPrint && createPortal(
+        <div className="report-print-root" style={{ display: 'none' }}>
+          <style>
+            {`@media print {
+              @page { size: A4 portrait; margin: 0; }
+              .report-print-root [data-pdf-page] {
+                zoom: 0.7087;
+                height: 1580px !important;
+                min-height: 0 !important;
+                overflow: hidden;
+                break-after: page;
+                page-break-after: always;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+              }
+              .report-print-root [data-pdf-page]:last-child { break-after: auto; page-break-after: auto; }
+            }`}
+          </style>
+          <AssessmentReport report={reportPrint} studentName={studentName || 'Student'} />
+        </div>,
+        document.body
+      )}
 
       {certificateAttempt && createPortal(
         <div className="certificate-print-root" style={{ display: 'none' }}>

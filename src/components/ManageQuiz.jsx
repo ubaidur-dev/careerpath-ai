@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import useModalHistory from '../utils/useModalHistory';
+import useRestoredState from '../utils/useRestoredState';
 import axios from 'axios';
 import {
   Plus,
@@ -15,7 +17,6 @@ import {
 import AddNewQuestion from './AddNewQuestion';
 import EditQuestion from './EditQuestion';
 import Dropdown from './Dropdown';
-import BackToDashboardButton from './BackToDashboardButton';
 
 const API_BASE_URL = 'http://localhost:8000/api';
 
@@ -29,12 +30,12 @@ const ManageQuiz = ({ onNavigate, onLogout, initialView = 'list' }) => {
     setShowAddForm(initialView === 'add');
   }, [initialView]);
 
-  const [selectedCategory, setSelectedCategory] = useState('All Categories');
-  const [selectedType, setSelectedType] = useState('All Types');
-  const [selectedStatus, setSelectedStatus] = useState('All Status');
-  const [selectedWeight, setSelectedWeight] = useState('All Weights');
+  const [selectedCategory, setSelectedCategory] = useRestoredState('ManageQuiz.selectedCategory', 'All Categories');
+  const [selectedType, setSelectedType] = useRestoredState('ManageQuiz.selectedType', 'All Types');
+  const [selectedStatus, setSelectedStatus] = useRestoredState('ManageQuiz.selectedStatus', 'All Status');
+  const [selectedWeight, setSelectedWeight] = useRestoredState('ManageQuiz.selectedWeight', 'All Weights');
 
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useRestoredState('ManageQuiz.currentPage', 1);
   const itemsPerPage = 7;
 
   const [editingId, setEditingId] = useState(null);
@@ -42,6 +43,9 @@ const ManageQuiz = ({ onNavigate, onLogout, initialView = 'list' }) => {
   const [toastMessage, setToastMessage] = useState('');
   const [showToast, setShowToast] = useState(false);
   const [deleteConfirmId, setDeleteConfirmId] = useState(null);
+  useModalHistory(showAddForm, () => setShowAddForm(false));
+  useModalHistory(editingId !== null, () => setEditingId(null));
+  useModalHistory(deleteConfirmId !== null, () => setDeleteConfirmId(null));
   const fetchQuestions = async () => {
     try {
       const response = await axios.get(`${API_BASE_URL}/admin/questions`);
@@ -182,7 +186,7 @@ const ManageQuiz = ({ onNavigate, onLogout, initialView = 'list' }) => {
 
       {deleteConfirmId !== null && (
         <div
-          className="fixed inset-0 w-screen h-screen z-[100] flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm animate-in fade-in duration-200"
+          className="fixed inset-0 m-0! w-screen h-screen z-[100] flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm animate-in fade-in duration-200"
           onClick={() => setDeleteConfirmId(null)}
         >
           <div
@@ -244,9 +248,7 @@ const ManageQuiz = ({ onNavigate, onLogout, initialView = 'list' }) => {
         </div>
       )}
 
-      <BackToDashboardButton onClick={() => onNavigate && onNavigate('dashboard')} />
-
-      <div className="pt-1 flex flex-col sm:flex-row sm:items-center justify-between gap-6 text-left">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 text-left">
         <div className="space-y-2"> 
           <h1 className="text-4xl font-bold tracking-tight text-gray-900 inline-flex items-center gap-2">
             Manage Quiz Questions

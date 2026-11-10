@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import useModalHistory from '../utils/useModalHistory';
+import useRestoredState from '../utils/useRestoredState';
 import axios from 'axios';
 import Dropdown from './Dropdown';
 import {
@@ -60,7 +62,6 @@ import {
   Clock
 } from 'lucide-react';
 import { getDemandBadgeProps } from '../utils/careerVisuals';
-import BackToDashboardButton from './BackToDashboardButton';
 
 const ICON_MAP = {
   Code2,
@@ -160,12 +161,14 @@ const mapLocalCareerToApi = (career) => {
 
 export default function ManageCareers({ onNavigate }) {
   const [careersList, setCareersList] = useState([]);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useRestoredState('ManageCareers.searchQuery', '');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [previewCareer, setPreviewCareer] = useState(null);
   const [editingId, setEditingId] = useState(null);
+  useModalHistory(isModalOpen, () => setIsModalOpen(false));
+  useModalHistory(!!previewCareer, () => setPreviewCareer(null));
   const [activeFormTab, setActiveFormTab] = useState('basic');
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useRestoredState('ManageCareers.currentPage', 1);
   const itemsPerPage = 5;
 
   const emptyFormState = {
@@ -400,7 +403,7 @@ export default function ManageCareers({ onNavigate }) {
   };
 
   return (
-    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 text-left">
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 text-left">
       <style>
         {`
           .custom-quiz-border { border: 0.7px solid #FF00D3; }
@@ -409,9 +412,7 @@ export default function ManageCareers({ onNavigate }) {
         `}
       </style>
 
-      <BackToDashboardButton onClick={() => onNavigate && onNavigate('dashboard')} />
-
-      <div className="pt-1 flex flex-col sm:flex-row sm:items-center justify-between gap-6 text-left">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 text-left">
         <div className="space-y-2"> 
           <h1 className="text-4xl font-bold tracking-tight text-gray-900 inline-flex items-center gap-2">
             Manage Careers
@@ -608,7 +609,7 @@ export default function ManageCareers({ onNavigate }) {
 
       {isModalOpen && (
         <div
-          className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6 overflow-y-auto"
+          className="fixed inset-0 m-0! z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6 overflow-y-auto"
           onClick={() => setIsModalOpen(false)}
         >
           <div
@@ -1101,7 +1102,7 @@ export default function ManageCareers({ onNavigate }) {
 
       {previewCareer && (
         <div
-          className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6 overflow-y-auto"
+          className="fixed inset-0 m-0! z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6 overflow-y-auto"
           onClick={() => setPreviewCareer(null)}
         >
           <div

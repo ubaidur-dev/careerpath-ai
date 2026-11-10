@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import Header from './Header';
 import {
+  ArrowLeft,
   DollarSign,
   TrendingUp,
   BookOpen,
@@ -13,7 +14,6 @@ import {
   Check
 } from 'lucide-react';
 import { getCareerIcon, getDemandBadgeProps } from '../utils/careerVisuals';
-import BackToDashboardButton from './BackToDashboardButton';
 
 export default function CareerDetails({ careerData, onBack, onNavigate, onLogout }) {
   const [dbCareer, setDbCareer] = useState(null);
@@ -120,9 +120,16 @@ export default function CareerDetails({ careerData, onBack, onNavigate, onLogout
 
       <Header onNavigate={onNavigate} onLogout={onLogout} userRole="student" currentView="browse" />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-8 space-y-8">
 
-        <BackToDashboardButton onClick={() => onNavigate && onNavigate('dashboard')} />
+        <button
+          type="button"
+          onClick={() => window.history.back()}
+          className="inline-flex items-center gap-1.5 -ml-1 px-2 py-1 rounded-lg text-sm font-medium text-gray-500 hover:text-[#890080] hover:bg-[#FDF2FA] transition-colors cursor-pointer"
+        >
+          <ArrowLeft size={16} strokeWidth={2.2} />
+          Back
+        </button>
 
         <div className="pt-1 space-y-2 text-left">
           <h1 className="text-4xl font-bold tracking-tight text-gray-900">Career Details</h1>

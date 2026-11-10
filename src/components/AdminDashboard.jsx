@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import useRestoredState from '../utils/useRestoredState';
 import axios from 'axios';
 import Header from './Header'; 
 import ManageQuiz from './ManageQuiz';
@@ -8,21 +9,36 @@ import TotalStudents from './TotalStudents';
 import RecentActivity from './RecentActivity';
 import { Plus, Briefcase, ClipboardList, FileText, Settings, LayoutDashboard, Users, Activity, Search, Filter, RotateCcw } from 'lucide-react';
 import { getScoreColorClass } from '../utils/scoreColors';
+import { pushAdminView, saveScroll, restoreScroll } from '../utils/navHistory';
 
 export default function AdminDashboard({ onLogout, onNavigateToResults, initialView = 'dashboard', onInitialViewConsumed }) {
-  const [currentView, setCurrentView] = useState(initialView);
+  const [currentView, setCurrentViewState] = useState(initialView);
+
+  const setCurrentView = (view) => {
+    saveScroll();
+    setCurrentViewState(view);
+    pushAdminView(view);
+  };
+
+  useEffect(() => {
+    const onPopState = (e) => {
+      if (e.state?.screen === 'admin-dash') setCurrentViewState(e.state.adminView || 'dashboard');
+    };
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
+  }, []);
 
   useEffect(() => {
     if (onInitialViewConsumed) onInitialViewConsumed();
   }, []);
 
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'instant' });
+    restoreScroll();
   }, [currentView]);
 
-  const [showAllStudents, setShowAllStudents] = useState(false);
-  const [careerSearch, setCareerSearch] = useState('');
-  const [careerPage, setCareerPage] = useState(1);
+  const [showAllStudents, setShowAllStudents] = useRestoredState('AdminDashboard.showAllStudents', false);
+  const [careerSearch, setCareerSearch] = useRestoredState('AdminDashboard.careerSearch', '');
+  const [careerPage, setCareerPage] = useRestoredState('AdminDashboard.careerPage', 1);
   const POPULAR_LIMIT = 10;
   
   const [dashboardData, setDashboardData] = useState({
@@ -113,11 +129,11 @@ export default function AdminDashboard({ onLogout, onNavigateToResults, initialV
         userRole="admin"
       />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-8 space-y-8">
         
         {currentView === 'dashboard' && (
           <>
-            <div className="pt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-6 text-left">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 text-left">
               <div className="space-y-2"> 
                 <h1 className="text-4xl font-bold tracking-tight text-gray-900 inline-flex items-center gap-2">
                   Admin Dashboard

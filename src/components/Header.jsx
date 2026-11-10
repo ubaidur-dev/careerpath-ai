@@ -286,7 +286,7 @@ export default function Header({ onNavigate, onLogout, currentView = 'dashboard'
   const initial = (displayName || 'U').trim().charAt(0).toUpperCase();
 
   return (
-    <header className="sticky top-0 z-50 bg-white/85 backdrop-blur-xl supports-[backdrop-filter]:bg-white/70 border-b border-gray-100 shadow-[0_1px_2px_rgba(16,24,40,0.04)] w-full font-inter">
+    <header className="sticky top-0 z-50 bg-white/85 backdrop-blur-xl supports-[backdrop-filter]:bg-white/75 border-b border-gray-200/70 shadow-[0_1px_0_rgba(16,24,40,0.02),0_6px_20px_-10px_rgba(16,24,40,0.10)] w-full font-inter">
       <style>
         {`
           @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
@@ -314,7 +314,7 @@ export default function Header({ onNavigate, onLogout, currentView = 'dashboard'
         </div>
 
         <nav className="hidden lg:flex flex-1 items-center justify-center px-4 min-w-0" aria-label="Primary">
-          <div className="flex items-center gap-1 bg-gray-50/80 border border-gray-100/90 rounded-2xl p-1.5 shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)]">
+          <div className="flex items-center gap-1">
           {inlineItems.map((item) => {
             const active = currentView === item.key;
             return (
@@ -322,13 +322,14 @@ export default function Header({ onNavigate, onLogout, currentView = 'dashboard'
                 key={item.key}
                 type="button"
                 onClick={() => handleNavClick(item.key)}
-                className={`flex items-center justify-center h-10 w-[100px] rounded-xl text-sm font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer flex-shrink-0 ${
+                className={`relative flex items-center justify-center h-10 w-[100px] rounded-xl text-sm font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer flex-shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-[#bd24df]/40 ${
                   active
-                    ? 'bg-white text-[#bd24df] shadow-[0_1px_3px_rgba(16,24,40,0.08)] ring-1 ring-[#f5dbfc]'
-                    : 'bg-transparent text-gray-600 hover:bg-white/70 hover:text-[#bd24df]'
+                    ? 'bg-[#FDF2FA] text-[#890080] ring-1 ring-[#f5dbfc]/70'
+                    : 'bg-transparent text-gray-600 hover:bg-gray-100/80 hover:text-gray-900'
                 }`}
               >
                 {item.label}
+                {active && <span className="absolute -bottom-[13px] left-4 right-4 h-[2px] rounded-full bg-[#bd24df]" />}
               </button>
             );
           })}
@@ -337,10 +338,10 @@ export default function Header({ onNavigate, onLogout, currentView = 'dashboard'
               <button
                 type="button"
                 onClick={() => setIsMoreOpen((prev) => !prev)}
-                className={`flex items-center gap-1.5 h-10 px-3.5 rounded-xl text-sm font-semibold transition-all duration-200 cursor-pointer flex-shrink-0 ${
+                className={`flex items-center gap-1.5 h-10 px-3.5 rounded-xl text-sm font-semibold transition-all duration-200 cursor-pointer flex-shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-[#bd24df]/40 ${
                   moreActive || isMoreOpen
-                    ? 'bg-white text-[#bd24df] shadow-[0_1px_3px_rgba(16,24,40,0.08)] ring-1 ring-[#f5dbfc]'
-                    : 'bg-transparent text-gray-600 hover:bg-white/70 hover:text-[#bd24df]'
+                    ? 'bg-[#FDF2FA] text-[#890080] ring-1 ring-[#f5dbfc]/70'
+                    : 'bg-transparent text-gray-600 hover:bg-gray-100/80 hover:text-gray-900'
                 }`}
               >
                 More
@@ -376,8 +377,8 @@ export default function Header({ onNavigate, onLogout, currentView = 'dashboard'
             type="button"
             onClick={() => setIsMoreOpen((prev) => !prev)}
             title="Menu"
-            className={`flex items-center justify-center w-10 h-10 rounded-full transition-all duration-200 cursor-pointer flex-shrink-0 ${
-              isMoreOpen ? 'bg-white text-[#890080] shadow-[0_1px_3px_rgba(16,24,40,0.08)] ring-1 ring-[#f5dbfc]' : 'text-gray-600 hover:bg-gray-50 hover:text-[#890080]'
+            className={`flex items-center justify-center w-10 h-10 rounded-full transition-all duration-200 cursor-pointer flex-shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-[#bd24df]/40 ${
+              isMoreOpen ? 'bg-[#FDF2FA] text-[#890080] ring-1 ring-[#f5dbfc]/70' : 'text-gray-600 hover:bg-gray-100/80 hover:text-gray-900'
             }`}
           >
             <Menu size={20} strokeWidth={2.2} />
@@ -408,8 +409,8 @@ export default function Header({ onNavigate, onLogout, currentView = 'dashboard'
           <button
             type="button"
             onClick={() => setIsNotifOpen((prev) => !prev)}
-            className={`relative flex items-center justify-center w-10 h-10 rounded-full transition-all duration-200 cursor-pointer flex-shrink-0 ${
-              isNotifOpen ? 'bg-white text-[#890080] shadow-[0_1px_3px_rgba(16,24,40,0.08)] ring-1 ring-[#f5dbfc]' : 'text-gray-600 hover:bg-gray-50 hover:text-[#890080]'
+            className={`relative flex items-center justify-center w-10 h-10 rounded-full transition-all duration-200 cursor-pointer flex-shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-[#bd24df]/40 ${
+              isNotifOpen ? 'bg-[#FDF2FA] text-[#890080] ring-1 ring-[#f5dbfc]/70' : 'text-gray-600 hover:bg-gray-100/80 hover:text-gray-900'
             }`}
             title="Notifications"
           >
@@ -514,21 +515,21 @@ export default function Header({ onNavigate, onLogout, currentView = 'dashboard'
           )}
         </div>
 
-        <div className="flex items-center gap-1 sm:gap-1.5 h-full bg-gray-50/80 border border-gray-100/90 rounded-2xl p-1.5 shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)]">
+        <div className="flex items-center gap-1 sm:gap-1.5 h-full">
 
           <button
             type="button"
             onClick={handleDashboardClick}
-            className={`flex items-center justify-center gap-2 h-10 w-10 sm:w-auto sm:px-4 rounded-xl text-sm font-semibold transition-all duration-200 font-inter cursor-pointer flex-shrink-0 ${
+            className={`flex items-center justify-center gap-2 h-10 w-10 sm:w-auto sm:px-4 rounded-xl text-sm font-semibold transition-all duration-200 font-inter cursor-pointer flex-shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-[#bd24df]/40 ${
               isDashboardActive
-                ? 'bg-white text-[#bd24df] shadow-[0_1px_3px_rgba(16,24,40,0.08)] ring-1 ring-[#f5dbfc]'
-                : 'bg-transparent text-gray-600 hover:bg-white/70 hover:text-[#bd24df]'
+                ? 'bg-[#FDF2FA] text-[#890080] ring-1 ring-[#f5dbfc]/70'
+                : 'bg-transparent text-gray-600 hover:bg-gray-100/80 hover:text-gray-900'
             }`}
           >
             <LayoutDashboard
               size={18}
               strokeWidth={2.2}
-              className={isDashboardActive ? 'text-[#bd24df]' : 'text-gray-500'}
+              className={isDashboardActive ? 'text-[#890080]' : 'text-gray-500'}
             />
             <span className="hidden sm:inline">Dashboard</span>
           </button>
@@ -537,16 +538,16 @@ export default function Header({ onNavigate, onLogout, currentView = 'dashboard'
 
           <div
             onClick={handleProfileClick}
-            className={`flex items-center justify-center gap-2.5 text-sm font-medium rounded-xl h-10 w-10 sm:w-auto sm:pl-1.5 sm:pr-4 transition-all duration-200 font-inter cursor-pointer flex-shrink-0 ${
+            className={`flex items-center justify-center gap-2.5 text-sm font-medium rounded-xl h-10 w-10 sm:w-auto sm:pl-1.5 sm:pr-4 transition-all duration-200 font-inter cursor-pointer flex-shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-[#bd24df]/40 ${
               isProfileOrSettingsActive
-                ? 'bg-white text-[#bd24df] shadow-[0_1px_3px_rgba(16,24,40,0.08)] ring-1 ring-[#f5dbfc]'
-                : 'bg-transparent text-gray-700 hover:bg-white/70 hover:text-[#bd24df]'
+                ? 'bg-[#FDF2FA] text-[#890080] ring-1 ring-[#f5dbfc]/70'
+                : 'bg-transparent text-gray-700 hover:bg-gray-100/80 hover:text-gray-900'
             }`}
           >
             <User
               size={18}
               strokeWidth={2.2}
-              className={`${isProfileOrSettingsActive ? 'text-[#bd24df]' : 'text-gray-500'} sm:hidden`}
+              className={`${isProfileOrSettingsActive ? 'text-[#890080]' : 'text-gray-500'} sm:hidden`}
             />
             <div
               style={{ boxShadow: `0 0 0 2px ${isProfileOrSettingsActive ? '#f5dbfc' : '#ffffff'}, 0 0 0 3px ${roleAccent}33` }}

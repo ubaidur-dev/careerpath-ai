@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import useModalHistory from '../utils/useModalHistory';
+import useRestoredState from '../utils/useRestoredState';
 import axios from 'axios';
 import Dropdown from './Dropdown';
 import {
@@ -15,7 +17,6 @@ import {
   User,
   X
 } from 'lucide-react';
-import BackToDashboardButton from './BackToDashboardButton';
 
 const POLL_MS = 3000;
 
@@ -100,11 +101,12 @@ const matchesDateRange = (isoString, range) => {
 };
 
 export default function RecentActivity({ onBack }) {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState('All Status');
-  const [dateRangeFilter, setDateRangeFilter] = useState('All Time');
-  const [currentPage, setCurrentPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useRestoredState('RecentActivity.searchQuery', '');
+  const [statusFilter, setStatusFilter] = useRestoredState('RecentActivity.statusFilter', 'All Status');
+  const [dateRangeFilter, setDateRangeFilter] = useRestoredState('RecentActivity.dateRangeFilter', 'All Time');
+  const [currentPage, setCurrentPage] = useRestoredState('RecentActivity.currentPage', 1);
   const [zoomedImage, setZoomedImage] = useState(null);
+  useModalHistory(!!zoomedImage, () => setZoomedImage(null));
   const itemsPerPage = 20;
 
   const [activity, setActivity] = useState([]);
@@ -203,16 +205,14 @@ export default function RecentActivity({ onBack }) {
   };
 
   return (
-    <div className="pt-4 space-y-6 text-left">
+    <div className="space-y-6 text-left">
       <style>
         {`
           .prototype-card-border { border: 0.5px solid #FFD2F7; }
         `}
       </style>
 
-      <BackToDashboardButton onClick={() => onBack && onBack()} />
-
-      <div className="pt-1 flex flex-col sm:flex-row sm:items-center justify-between gap-6 text-left">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 text-left">
         <div className="space-y-2">
           <h1 className="text-4xl font-bold tracking-tight text-gray-900 inline-flex items-center gap-2">
             Recent Activity
@@ -449,7 +449,7 @@ export default function RecentActivity({ onBack }) {
 
       {zoomedImage && (
         <div
-          className="fixed inset-0 z-[100] bg-black/50 backdrop-blur-md flex items-center justify-center p-4 cursor-pointer animate-in fade-in duration-200"
+          className="fixed inset-0 m-0! z-[100] bg-black/50 backdrop-blur-md flex items-center justify-center p-4 cursor-pointer animate-in fade-in duration-200"
           onClick={() => setZoomedImage(null)}
         >
           <div className="relative inline-flex items-center justify-center">

@@ -68,12 +68,12 @@ export default function LandingPage({ onNavigate }) {
         <div className="absolute top-[-5%] left-[-5%] w-[50%] h-[40%] bg-blue-500/10 blur-[130px] rounded-full pointer-events-none z-10"></div>
         <div className="absolute bottom-[5%] right-[-5%] w-[40%] h-[40%] bg-fuchsia-500/15 blur-[150px] rounded-full pointer-events-none z-10"></div>
 
-        <header className="w-full max-w-7xl mx-auto px-6 sm:px-12 lg:px-16 py-6 flex items-center justify-between relative z-30">
+        <header className="w-full max-w-7xl mx-auto px-6 sm:px-12 lg:px-16 py-3 flex items-center justify-between relative z-30">
           <div className="flex items-center select-none cursor-pointer" onClick={() => scrollToSection('home')}>
             <img
               src="/logoo.png"
               alt="CareerPath AI Logo"
-              className="h-11 sm:h-14 lg:h-[68px] w-auto object-contain transition-transform hover:scale-105 drop-shadow-[0_2px_18px_rgba(255,255,255,0.45)]"
+              className="-ml-[11px] sm:-ml-[15px] lg:-ml-[18px] h-[72px] sm:h-[92px] lg:h-[112px] w-auto object-contain brightness-0 invert transition-transform hover:scale-105 drop-shadow-[0_2px_18px_rgba(255,255,255,0.45)]"
             />
           </div>
 
@@ -333,7 +333,7 @@ export default function LandingPage({ onNavigate }) {
             <img
               src="/logoo.png"
               alt="CareerPath AI Logo"
-              className="h-16 sm:h-20 w-auto object-contain select-none drop-shadow-[0_2px_18px_rgba(255,255,255,0.45)]"
+              className="-ml-[10px] sm:-ml-[13px] h-16 sm:h-20 w-auto object-contain select-none brightness-0 invert"
             />
             <p className="text-gray-300 text-base leading-relaxed max-w-md font-medium">
               Your personal co-pilot for professional growth, powered by advanced AI guidance and cutting-edge career pathways.

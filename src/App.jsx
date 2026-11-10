@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 
 import LandingPage from './components/LandingPage';
@@ -16,6 +16,11 @@ import CareerResults from './components/CareerResults';
 import CareerRoadmapProgress from './components/CareerRoadmapProgress';
 import StudentAssessmentHistory from './components/StudentAssessmentHistory';
 import ProfileCompletionModal from './components/ProfileCompletionModal';
+import useModalHistory from './utils/useModalHistory';
+import {
+  getAuth, pathFor, resolveFromPath, guardScreen, writeHistory,
+  ensureEntryKey, enterEntry, saveScroll, restoreScroll,
+} from './utils/navHistory';
 
 axios.defaults.baseURL = 'http://127.0.0.1:8000/api';
 
@@ -32,28 +37,45 @@ const getResetLinkParams = () => {
 
 const ADMIN_VIEWS = ['dashboard', 'careers', 'quiz', 'total-students', 'recent-activity'];
 
-const getInitialScreen = () => {
-  if (getResetLinkParams()) return 'reset-password';
+const getBootState = () => {
+  ensureEntryKey();
+  if (getResetLinkParams()) return { screen: 'reset-password', adminView: 'dashboard' };
 
-  try {
-    const token = sessionStorage.getItem('token');
-    const storedUser = sessionStorage.getItem('user');
-    if (!token || !storedUser) return 'home';
-    const user = JSON.parse(storedUser);
-    return user?.role === 'admin' ? 'admin-dash' : 'student-dash';
-  } catch {
-    return 'home';
-  }
+  const auth = getAuth();
+  const saved = window.history.state || {};
+  const fromPath = resolveFromPath(window.location.pathname);
+  const sameEntry = saved.screen === fromPath.screen;
+  let screen = guardScreen(fromPath.screen, auth);
+
+  // These need data from an earlier step, or must pass the profile check first.
+  const home = auth.role === 'admin' ? 'admin-dash' : 'student-dash';
+  if (screen === 'quiz') screen = home;
+  if (screen === 'career-details' && !(sameEntry && saved.careerData)) screen = 'browse-careers';
+  if (screen === 'career-results' && !(sameEntry && saved.answers)) screen = home;
+
+  return {
+    screen,
+    adminView: screen === 'admin-dash' ? fromPath.adminView || 'dashboard' : 'dashboard',
+    careerData: sameEntry ? saved.careerData ?? null : null,
+    careerId: sameEntry ? saved.careerId ?? null : null,
+    answers: sameEntry ? saved.answers ?? null : null,
+  };
 };
 
 export default function App() {
-  const [currentScreen, setCurrentScreen] = useState(getInitialScreen);
+  const [boot] = useState(getBootState);
+  const [currentScreen, setScreenRaw] = useState(boot.screen);
+  // Remember the scroll position of the page we are leaving before switching.
+  const setCurrentScreen = (screen) => {
+    saveScroll();
+    setScreenRaw(screen);
+  };
   const [authMode, setAuthMode] = useState('login');
   const [forgotPasswordRole, setForgotPasswordRole] = useState('student');
-  const [adminInitialView, setAdminInitialView] = useState('dashboard');
+  const [adminInitialView, setAdminInitialView] = useState(boot.adminView);
   const [resetLinkParams] = useState(getResetLinkParams);
-  const [selectedCareerData, setSelectedCareerData] = useState(null); 
-  const [selectedCareerId, setSelectedCareerId] = useState(null); 
+  const [selectedCareerData, setSelectedCareerData] = useState(boot.careerData); 
+  const [selectedCareerId, setSelectedCareerId] = useState(boot.careerId); 
   
   const [backendStatus, setBackendStatus] = useState('checking');
   const [profileGate, setProfileGate] = useState(null);
@@ -73,10 +95,64 @@ export default function App() {
     setCurrentScreen('quiz');
   };
 
-  const [quizAnswers, setQuizAnswers] = useState({
+  const [quizAnswers, setQuizAnswers] = useState(boot.answers || {
     q1: null, q2: null, q3: null, q4: null, q5: null,
     q6: null, q7: null, q8: null, q9: null, q10: null
   });
+
+  const bootedRef = useRef(false);
+  useModalHistory(!!profileGate, () => setProfileGate(null));
+
+  // Every screen change becomes a browser history entry with its own URL.
+  useEffect(() => {
+    const state = {
+      screen: currentScreen,
+      adminView: currentScreen === 'admin-dash' ? adminInitialView : undefined,
+      careerData: currentScreen === 'career-details' ? selectedCareerData : undefined,
+      careerId: selectedCareerId,
+      answers: currentScreen === 'career-results' ? quizAnswers : undefined,
+    };
+    const path = pathFor(currentScreen, state.adminView);
+
+    if (!bootedRef.current) {
+      bootedRef.current = true;
+      writeHistory('replaceState', state, path);
+      return;
+    }
+    if (window.history.state?.screen === currentScreen) return;
+    writeHistory('pushState', state, path);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentScreen]);
+
+  // Browser Back / Forward: restore the screen that entry was showing.
+  useEffect(() => {
+    const onPopState = (e) => {
+      saveScroll();
+      const saved = e.state || {};
+      const target = saved.screen
+        ? { screen: saved.screen, adminView: saved.adminView }
+        : resolveFromPath(window.location.pathname);
+      const screen = guardScreen(target.screen, getAuth(), !!resetLinkParams);
+      const allowed = screen === target.screen;
+
+      if (!allowed) {
+        writeHistory('replaceState', { screen }, pathFor(screen));
+      }
+      setSelectedCareerData(allowed ? saved.careerData ?? null : null);
+      setSelectedCareerId(allowed ? saved.careerId ?? null : null);
+      if (allowed && saved.answers) setQuizAnswers(saved.answers);
+      setAdminInitialView(allowed ? target.adminView || 'dashboard' : 'dashboard');
+      setScreenRaw(screen);
+      enterEntry();
+    };
+    window.history.scrollRestoration = 'manual';
+    window.addEventListener('popstate', onPopState);
+    window.addEventListener('pagehide', saveScroll);
+    return () => {
+      window.removeEventListener('popstate', onPopState);
+      window.removeEventListener('pagehide', saveScroll);
+    };
+  }, [resetLinkParams]);
 
   const handleLogout = async () => {
     const historyId = sessionStorage.getItem('login_history_id');
@@ -128,7 +204,7 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'instant' });
+    restoreScroll();
   }, [currentScreen, authMode]);
 
   useEffect(() => {

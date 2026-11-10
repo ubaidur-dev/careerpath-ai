@@ -3,7 +3,6 @@ import axios from 'axios';
 import Header from './Header';
 import { TrendingUp, ChevronDown, ChevronUp, Check, Calendar, Clock } from 'lucide-react';
 import { getCareerIcon, CAREER_DETAILS_ICON_BG, CAREER_DETAILS_ICON_COLOR } from '../utils/careerVisuals';
-import BackToDashboardButton from './BackToDashboardButton';
 
 const getAuthToken = () => sessionStorage.getItem('token');
 
@@ -172,11 +171,9 @@ export default function CareerRoadmapProgress({ onNavigate, onLogout }) {
 
       <Header onNavigate={onNavigate} onLogout={onLogout} userRole="student" currentView="roadmap" />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-8 space-y-8">
 
-        <BackToDashboardButton onClick={() => onNavigate && onNavigate('dashboard')} />
-
-        <div className="pt-1 space-y-2 text-left">
+        <div className="space-y-2 text-left">
           <h1 className="text-4xl font-bold tracking-tight text-gray-900">My Learning Progress</h1>
           <p className="text-[#525252] font-light text-[21.3px] mt-[5px] mb-[15px]">
             Track every skill, course, and certification step across all your career roadmaps — for life.

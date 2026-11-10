@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
+import useModalHistory from '../utils/useModalHistory';
 import axios from 'axios';
 import { parsePhoneNumberFromString, validatePhoneNumberLength } from 'libphonenumber-js';
 import Header from './Header';
@@ -33,7 +34,6 @@ import {
   Eye,
   EyeOff
 } from 'lucide-react';
-import BackToDashboardButton from './BackToDashboardButton';
 import AvatarPicker from './AvatarPicker';
 import SearchMultiSelect from './SearchMultiSelect';
 import EmailSuggestion from './EmailSuggestion';
@@ -296,6 +296,13 @@ export default function UserProfile({ onNavigate, onLogout, autoEdit = false }) 
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const passwordMsgTimeoutRef = useRef(null);
+  useModalHistory(!!discardPrompt, () => setDiscardPrompt(null));
+  useModalHistory(!!emailVerify, () => setEmailVerify(null));
+  useModalHistory(isPasswordModalOpen, () => {
+    if (passwordMsgTimeoutRef.current) clearTimeout(passwordMsgTimeoutRef.current);
+    setIsPasswordModalOpen(false);
+    setPasswordMsg({ type: '', text: '' });
+  });
 
   const showPasswordError = (text) => {
     if (passwordMsgTimeoutRef.current) clearTimeout(passwordMsgTimeoutRef.current);
@@ -775,7 +782,7 @@ export default function UserProfile({ onNavigate, onLogout, autoEdit = false }) 
   const errorBorder = (key) => (fieldErrors[key] ? ' !border-red-400 focus:!ring-red-100' : '');
 
   return (
-    <div className="w-full bg-transparent text-gray-900 antialiased space-y-6 pb-10 relative text-left">
+    <div className="w-full bg-transparent text-gray-900 antialiased pb-10 relative text-left">
 
       <Header onNavigate={guardedNavigate} onLogout={guardedLogout} currentView="profile" />
 
@@ -788,11 +795,9 @@ export default function UserProfile({ onNavigate, onLogout, autoEdit = false }) 
         </div>
       )}
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-2 pb-8 space-y-8">
+      <main className="mt-0! max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-8 space-y-8">
 
-        <BackToDashboardButton onClick={() => guardedNavigate('dashboard')} />
-
-        <div className="pt-1 space-y-2 text-left">
+        <div className="space-y-2 text-left">
           <h1 className="text-4xl font-bold tracking-tight text-gray-900">Your Profile</h1>
           <p className="text-[#525252] font-light text-[21.3px] mt-[5px] mb-[15px]">
             Manage your personal information and preferences
@@ -1536,7 +1541,7 @@ export default function UserProfile({ onNavigate, onLogout, autoEdit = false }) 
       </main>
 
       {discardPrompt && (
-        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setDiscardPrompt(null)}>
+        <div className="fixed inset-0 m-0! z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setDiscardPrompt(null)}>
           <div
             className="bg-white border border-[#FFD2F7] rounded-[28px] p-6 sm:p-8 max-w-md w-full shadow-[3px_6px_12px_0.5px_rgba(0,0,0,0.2)] text-left space-y-6 relative"
             onClick={(e) => e.stopPropagation()}
@@ -1581,7 +1586,7 @@ export default function UserProfile({ onNavigate, onLogout, autoEdit = false }) 
       )}
 
       {emailVerify && (
-        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4">
+        <div className="fixed inset-0 m-0! z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-white border border-[#FFD2F7] rounded-[28px] p-6 sm:p-8 max-w-md w-full shadow-[3px_6px_12px_0.5px_rgba(0,0,0,0.2)] text-left space-y-6 relative">
             <div className="flex items-center justify-between pb-2 border-b border-gray-100">
               <div className="flex items-center gap-2.5 text-[25px] font-semibold text-[#000000]">
@@ -1645,7 +1650,7 @@ export default function UserProfile({ onNavigate, onLogout, autoEdit = false }) 
 
       {isPasswordModalOpen && (
         <div
-          className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4"
+          className="fixed inset-0 m-0! z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4"
           onClick={() => {
             if (passwordMsgTimeoutRef.current) clearTimeout(passwordMsgTimeoutRef.current);
             setIsPasswordModalOpen(false);

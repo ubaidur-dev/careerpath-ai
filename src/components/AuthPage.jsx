@@ -549,11 +549,11 @@ export default function AuthPage({ mode, setMode, onBackHome, onForgotPassword }
         </button>
       </div>
 
-      <div ref={scrollContainerRef} className={`w-full lg:w-[55%] flex flex-col justify-start items-center px-8 sm:px-16 lg:px-24 py-10 lg:py-16 h-screen overflow-y-auto ${isLogin ? 'order-1' : 'order-2'}`}>
-        <div className="w-full max-w-[420px] space-y-6 pt-4">
+      <div ref={scrollContainerRef} className={`w-full lg:w-[55%] flex flex-col justify-start items-center px-8 sm:px-16 lg:px-24 py-8 lg:py-6 h-screen overflow-y-auto ${isLogin ? 'order-1' : 'order-2'}`}>
+        <div className="w-full max-w-[420px] space-y-4 pt-0 my-auto">
           
-          <div className={`text-center space-y-2 mt-4 lg:mt-6 ${!isLogin ? 'lg:w-[560px] lg:-mx-[70px]' : ''}`}>
-            <h1 className={`font-bold text-black tracking-tight ${isLogin ? 'text-[30px] lg:text-[35px]' : 'text-[22px] sm:text-[26px] lg:text-[35px] lg:whitespace-nowrap'}`}>
+          <div className={`text-center space-y-2 mt-8 lg:mt-4 ${!isLogin ? 'lg:w-[560px] lg:-mx-[70px]' : ''}`}>
+            <h1 className={`font-bold text-black tracking-tight ${isLogin ? 'text-[28px] lg:text-[32px]' : 'text-[22px] sm:text-[26px] lg:text-[35px] lg:whitespace-nowrap'}`}>
               {isLogin ? 'Welcome Back' : (role === 'admin' ? 'Create Your Admin Account' : 'Create Your Student Account')}
             </h1>
             <p className="text-[20px] font-light text-[#000000]">
@@ -564,9 +564,9 @@ export default function AuthPage({ mode, setMode, onBackHome, onForgotPassword }
           </div>
 
           {isLogin && (
-            <div className="flex bg-gray-100/80 p-1.5 rounded-full items-center w-[320px] mx-auto border border-gray-200 mt-[30px]">
-              <button type="button" onClick={() => setRole('student')} className={`flex-1 py-2 text-[20px] font-semibold rounded-full cursor-pointer ${role === 'student' ? 'bg-white text-[#83047A] shadow-sm' : 'text-black'}`}>Student</button>
-              <button type="button" onClick={() => setRole('admin')} className={`flex-1 py-2 text-[20px] font-semibold rounded-full cursor-pointer ${role === 'admin' ? 'bg-white text-[#83047A] shadow-sm' : 'text-black'}`}>Admin</button>
+            <div className="flex bg-gray-100/80 p-1.5 rounded-full items-center w-[300px] mx-auto border border-gray-200 mt-5">
+              <button type="button" onClick={() => setRole('student')} className={`flex-1 py-1.5 text-[17px] font-semibold rounded-full cursor-pointer ${role === 'student' ? 'bg-white text-[#83047A] shadow-sm' : 'text-black'}`}>Student</button>
+              <button type="button" onClick={() => setRole('admin')} className={`flex-1 py-1.5 text-[17px] font-semibold rounded-full cursor-pointer ${role === 'admin' ? 'bg-white text-[#83047A] shadow-sm' : 'text-black'}`}>Admin</button>
             </div>
           )}
 
@@ -658,19 +658,19 @@ export default function AuthPage({ mode, setMode, onBackHome, onForgotPassword }
 
           {!inAdminGate && !inStudentOtpGate && (
           <>
-          <form key={`${role}-${mode}`} onSubmit={handleFormSubmit} autoComplete="off" className={`space-y-5 ${isLogin ? 'mt-[30px]' : 'mt-[52px]'}`}>
+          <form key={`${role}-${mode}`} onSubmit={handleFormSubmit} autoComplete="off" className={`space-y-5 ${isLogin ? 'mt-5' : 'mt-[52px]'}`}>
 
             {role === 'admin' && (
               <>
                 <div className="space-y-1">
                   <label htmlFor={`${role}-${mode}-admin_id`} className="text-[16px] font-semibold text-black block">Admin ID</label>
-                  <input id={`${role}-${mode}-admin_id`} type="text" name={`admin_id_${mode}`} data-field="admin_id" value={formData.admin_id} onChange={handleChange} required autoComplete="off" placeholder="Enter Admin ID" className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-4 py-3.5 text-[14px] font-medium focus:outline-none focus:border-pink-300 focus:ring-1 focus:ring-pink-300 placeholder-gray-400" />
+                  <input id={`${role}-${mode}-admin_id`} type="text" name={`admin_id_${mode}`} data-field="admin_id" value={formData.admin_id} onChange={handleChange} required autoComplete="off" placeholder="Enter Admin ID" className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-4 py-2.5 text-[14px] font-medium focus:outline-none focus:border-pink-300 focus:ring-1 focus:ring-pink-300 placeholder-gray-400" />
                 </div>
                 {!isLogin && (
                   <div className="space-y-1">
                     <label htmlFor={`${role}-${mode}-security_passcode`} className="text-[16px] font-semibold text-black block">Security Passcode</label>
                     <div className="relative">
-                      <input id={`${role}-${mode}-security_passcode`} type={showAdminPass ? "text" : "password"} name="admin_security_passcode" data-field="security_passcode" value={formData.security_passcode} onChange={handleChange} required autoComplete="new-password" placeholder="Enter Security Passcode" className="w-full bg-gray-50/50 border border-gray-200 rounded-xl pl-4 pr-12 py-3.5 text-[14px] font-medium focus:outline-none focus:border-pink-300 focus:ring-1 focus:ring-pink-300 placeholder-gray-400" />
+                      <input id={`${role}-${mode}-security_passcode`} type={showAdminPass ? "text" : "password"} name="admin_security_passcode" data-field="security_passcode" value={formData.security_passcode} onChange={handleChange} required autoComplete="new-password" placeholder="Enter Security Passcode" className="w-full bg-gray-50/50 border border-gray-200 rounded-xl pl-4 pr-12 py-2.5 text-[14px] font-medium focus:outline-none focus:border-pink-300 focus:ring-1 focus:ring-pink-300 placeholder-gray-400" />
                       <button type="button" onClick={() => setShowAdminPass(!showAdminPass)} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer">{showAdminPass ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}</button>
                     </div>
                   </div>
@@ -681,13 +681,13 @@ export default function AuthPage({ mode, setMode, onBackHome, onForgotPassword }
             {!isLogin && (
               <div className="space-y-1">
                 <label htmlFor={`${role}-${mode}-name`} className="text-[16px] font-semibold text-black block">Full Name</label>
-                <input id={`${role}-${mode}-name`} type="text" name={`${role}_name`} data-field="name" value={formData.name} onChange={handleChange} required autoCapitalize="words" autoComplete="name" placeholder="Enter Full Name" className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-4 py-3.5 text-[14px] font-medium focus:outline-none focus:border-pink-300 focus:ring-1 focus:ring-pink-300 placeholder-gray-400" />
+                <input id={`${role}-${mode}-name`} type="text" name={`${role}_name`} data-field="name" value={formData.name} onChange={handleChange} required autoCapitalize="words" autoComplete="name" placeholder="Enter Full Name" className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-4 py-2.5 text-[14px] font-medium focus:outline-none focus:border-pink-300 focus:ring-1 focus:ring-pink-300 placeholder-gray-400" />
               </div>
             )}
 
             <div className="space-y-1">
               <label htmlFor={`${role}-${mode}-email`} className="text-[16px] font-semibold text-black block">Email</label>
-              <input id={`${role}-${mode}-email`} type="email" name={`${role}_email`} data-field="email" value={formData.email} onChange={handleChange} required autoComplete={isLogin ? 'username' : 'email'} placeholder="Enter email address" className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-4 py-3.5 text-[14px] font-medium focus:outline-none focus:border-pink-300 focus:ring-1 focus:ring-pink-300 placeholder-gray-400" />
+              <input id={`${role}-${mode}-email`} type="email" name={`${role}_email`} data-field="email" value={formData.email} onChange={handleChange} required autoComplete={isLogin ? 'username' : 'email'} placeholder="Enter email address" className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-4 py-2.5 text-[14px] font-medium focus:outline-none focus:border-pink-300 focus:ring-1 focus:ring-pink-300 placeholder-gray-400" />
               <EmailSuggestion email={formData.email} onAccept={(value) => setFormData((prev) => ({ ...prev, email: value }))} />
             </div>
 
@@ -696,7 +696,7 @@ export default function AuthPage({ mode, setMode, onBackHome, onForgotPassword }
                 <label className="text-[16px] font-semibold text-black block">Phone Number</label>
                 <div className="flex gap-2">
                   <div className="relative w-[130px] shrink-0" ref={dropdownRef}>
-                    <button type="button" onClick={() => setIsCountryOpen(!isCountryOpen)} className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-3 py-3.5 text-[14px] font-medium text-gray-700 flex items-center justify-between cursor-pointer">
+                    <button type="button" onClick={() => setIsCountryOpen(!isCountryOpen)} className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-3 py-2.5 text-[14px] font-medium text-gray-700 flex items-center justify-between cursor-pointer">
                       <span className="truncate">{selectedCountry.flag} {selectedCountry.code}</span>
                       <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${isCountryOpen ? 'rotate-180' : ''}`} />
                     </button>
@@ -717,7 +717,7 @@ export default function AuthPage({ mode, setMode, onBackHome, onForgotPassword }
                       </div>
                     )}
                   </div>
-                  <input type="tel" name="phone" value={formData.phone} onChange={handlePhoneChange} required autoComplete="tel-national" placeholder={selectedCountry.placeholder} className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-4 py-3.5 text-[14px] font-medium focus:outline-none focus:border-pink-300 focus:ring-1 focus:ring-pink-300 placeholder-gray-400" />
+                  <input type="tel" name="phone" value={formData.phone} onChange={handlePhoneChange} required autoComplete="tel-national" placeholder={selectedCountry.placeholder} className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-4 py-2.5 text-[14px] font-medium focus:outline-none focus:border-pink-300 focus:ring-1 focus:ring-pink-300 placeholder-gray-400" />
                 </div>
               </div>
             )}
@@ -725,7 +725,7 @@ export default function AuthPage({ mode, setMode, onBackHome, onForgotPassword }
             <div className="space-y-1">
               <label htmlFor={`${role}-${mode}-password`} className="text-[16px] font-semibold text-black block">Password</label>
               <div className="relative">
-                <input id={`${role}-${mode}-password`} type={showPass ? "text" : "password"} name={`${role}_password`} data-field="password" value={formData.password} onChange={handleChange} required autoComplete={isLogin ? 'current-password' : 'new-password'} placeholder="Enter Password" className="w-full bg-gray-50/50 border border-gray-200 rounded-xl pl-4 pr-12 py-3.5 text-[14px] font-medium focus:outline-none focus:border-pink-300 focus:ring-1 focus:ring-pink-300 placeholder-gray-400" />
+                <input id={`${role}-${mode}-password`} type={showPass ? "text" : "password"} name={`${role}_password`} data-field="password" value={formData.password} onChange={handleChange} required autoComplete={isLogin ? 'current-password' : 'new-password'} placeholder="Enter Password" className="w-full bg-gray-50/50 border border-gray-200 rounded-xl pl-4 pr-12 py-2.5 text-[14px] font-medium focus:outline-none focus:border-pink-300 focus:ring-1 focus:ring-pink-300 placeholder-gray-400" />
                 <button type="button" onClick={() => setShowPass(!showPass)} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer">{showPass ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}</button>
               </div>
             </div>
@@ -734,7 +734,7 @@ export default function AuthPage({ mode, setMode, onBackHome, onForgotPassword }
               <div className="space-y-1">
                 <label htmlFor={`${role}-${mode}-confirmPassword`} className="text-[16px] font-semibold text-black block">Confirm Password</label>
                 <div className="relative">
-                  <input id={`${role}-${mode}-confirmPassword`} type={showConfirmPass ? "text" : "password"} name={`${role}_confirm_password`} data-field="confirmPassword" value={formData.confirmPassword} onChange={handleChange} required autoComplete="new-password" placeholder="Enter Confirm Password" className="w-full bg-gray-50/50 border border-gray-200 rounded-xl pl-4 pr-12 py-3.5 text-[14px] font-medium focus:outline-none focus:border-pink-300 focus:ring-1 focus:ring-pink-300 placeholder-gray-400" />
+                  <input id={`${role}-${mode}-confirmPassword`} type={showConfirmPass ? "text" : "password"} name={`${role}_confirm_password`} data-field="confirmPassword" value={formData.confirmPassword} onChange={handleChange} required autoComplete="new-password" placeholder="Enter Confirm Password" className="w-full bg-gray-50/50 border border-gray-200 rounded-xl pl-4 pr-12 py-2.5 text-[14px] font-medium focus:outline-none focus:border-pink-300 focus:ring-1 focus:ring-pink-300 placeholder-gray-400" />
                   <button type="button" onClick={() => setShowConfirmPass(!showConfirmPass)} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer">{showConfirmPass ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}</button>
                 </div>
               </div>
@@ -743,7 +743,7 @@ export default function AuthPage({ mode, setMode, onBackHome, onForgotPassword }
             {isLogin ? (
               <div className="flex items-center justify-between text-[15px] pt-1">
                 <label className="flex items-center gap-2 cursor-pointer font-medium text-black text-[14px]"><input type="checkbox" className="rounded border-gray-300 w-4 h-4" /> Remember Me</label>
-                <button type="button" onClick={() => onForgotPassword && onForgotPassword(role)} className="text-red-500 font-medium text-[14px] hover:underline cursor-pointer">Forgot Password?</button>
+                <button type="button" onClick={() => onForgotPassword && onForgotPassword(role)} className="text-[#890080] font-medium text-[14px] hover:underline cursor-pointer">Forgot Password?</button>
               </div>
             ) : (
               <div className="flex items-start gap-2 text-[12px] pt-1 leading-normal text-gray-600 font-medium text-[14px]">
@@ -752,14 +752,14 @@ export default function AuthPage({ mode, setMode, onBackHome, onForgotPassword }
               </div>
             )}
 
-            <button type="submit" disabled={loading} className="w-full bg-[#ffa3f5] hover:bg-[#f88def] text-[#890080] font-medium py-3.5 rounded-full text-[18px] tracking-wider cursor-pointer disabled:opacity-50">
+            <button type="submit" disabled={loading} className="w-full bg-[#ffa3f5] hover:bg-[#f88def] text-[#890080] font-medium py-3 rounded-full text-[17px] tracking-wider cursor-pointer disabled:opacity-50">
               {loading ? 'Processing...' : (isLogin ? 'Sign In' : 'Create Account')}
             </button>
           </form>
           
           {role === 'student' && (
             <>
-              <div className="relative flex items-center justify-center py-2">
+              <div className="relative flex items-center justify-center py-0">
                 <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-gray-200"></div></div>
                 <span className="relative bg-[#ffffff] px-4 text-[16px] font-normal text-gray-500 lowercase">or continue with</span>
               </div>
@@ -768,15 +768,15 @@ export default function AuthPage({ mode, setMode, onBackHome, onForgotPassword }
                 type="button"
                 onClick={handleGoogleSignIn}
                 disabled={googleLoading || loading}
-                className="w-full border border-gray-200 bg-white hover:bg-gray-50 text-black py-3 rounded-[20px] font-medium flex items-center justify-center gap-3 cursor-pointer shadow-sm disabled:opacity-60 disabled:cursor-wait"
+                className="w-full border border-gray-200 bg-white hover:bg-gray-50 text-black py-2.5 rounded-[20px] font-medium flex items-center justify-center gap-3 cursor-pointer shadow-sm disabled:opacity-60 disabled:cursor-wait"
               >
                 <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" className="w-5 h-5" />
-                <span className="font-medium text-[20px]">{googleLoading ? 'Connecting to Google...' : (isLogin ? 'Sign in with Google' : 'Sign up with Google')}</span>
+                <span className="font-medium text-[17px]">{googleLoading ? 'Connecting to Google...' : (isLogin ? 'Sign in with Google' : 'Sign up with Google')}</span>
               </button>
             </>
           )}
 
-          <p className="text-center text-[15px] font-normal text-black mt-[20px]">
+          <p className="text-center text-[15px] font-normal text-black mt-3">
             {isLogin
               ? (role === 'admin' ? 'New administrator?' : "Don't have an account?")
               : "Already have an account?"}{' '}

@@ -1,4 +1,6 @@
 import { useState, useMemo, useEffect } from 'react';
+import useModalHistory from '../utils/useModalHistory';
+import useRestoredState from '../utils/useRestoredState';
 import { createPortal } from 'react-dom';
 import axios from 'axios';
 import {
@@ -20,7 +22,6 @@ import {
   Download,
   Check
 } from 'lucide-react';
-import BackToDashboardButton from './BackToDashboardButton';
 import Signature from './Signature';
 
 
@@ -87,10 +88,10 @@ function Avatar({ name, src, className = '', textClass = 'text-[13px]', onClick 
 }
 
 export default function TotalStudents({ onBack }) {
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useRestoredState('TotalStudents.searchQuery', '');
   const [selectedStudentId, setSelectedStudentId] = useState(null);
   const [zoomedImage, setZoomedImage] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useRestoredState('TotalStudents.currentPage', 1);
   const itemsPerPage = 20;
 
   const [students, setStudents] = useState([]);
@@ -149,17 +150,7 @@ export default function TotalStudents({ onBack }) {
   };
 
   const handleExportPdf = () => {
-    const now = new Date();
-    const date = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
-    const name = String(selectedStudent?.name || 'Student').replace(/[\\/:*?"<>|]+/g, ' ').replace(/\s+/g, ' ').trim();
-    const previousTitle = document.title;
-    const restoreTitle = () => {
-      document.title = previousTitle;
-      window.removeEventListener('afterprint', restoreTitle);
-    };
-    window.addEventListener('afterprint', restoreTitle);
-    document.title = `${name} - Student Details - CareerPath AI - ${date}`;
-    window.print();
+    setTimeout(() => window.print(), 50);
   };
 
   useEffect(() => {
@@ -173,6 +164,9 @@ export default function TotalStudents({ onBack }) {
   const selectedStudent = selectedStudentId
     ? students.find((s) => s.id === selectedStudentId) || null
     : null;
+
+  useModalHistory(!!selectedStudent, () => setSelectedStudentId(null));
+  useModalHistory(!!zoomedImage, () => setZoomedImage(null));
 
   const filteredStudents = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
@@ -237,12 +231,11 @@ export default function TotalStudents({ onBack }) {
           .custom-card-shadow { box-shadow: 3px 8px 8px 2px rgba(0, 0, 0, 0.25); }
           .student-print-area { display: none; }
           @media print {
-            body * { visibility: hidden; }
-            .student-print-area, .student-print-area * { visibility: visible; }
+            @page { size: A4 portrait; margin: 10mm 0; }
+            html, body { margin: 0 !important; padding: 0 !important; background: #ffffff !important; }
+            body > *:not(.student-print-area) { display: none !important; }
             .student-print-area {
               display: block !important;
-              position: absolute;
-              top: 0; left: 0;
               width: 100%;
               background: #ffffff;
               -webkit-print-color-adjust: exact;
@@ -264,9 +257,7 @@ export default function TotalStudents({ onBack }) {
         </div>
       )}
 
-      <BackToDashboardButton onClick={() => onBack && onBack()} />
-
-      <div className="pt-1 flex flex-col sm:flex-row sm:items-center justify-between gap-6 text-left">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 text-left">
         <div className="space-y-2">
           <h1 className="text-4xl font-extrabold tracking-tight text-gray-900 inline-flex items-center gap-2">
             Total Students
@@ -457,7 +448,7 @@ export default function TotalStudents({ onBack }) {
 
       {selectedStudent && createPortal(
         <div
-          className="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 overflow-y-auto"
+          className="fixed inset-0 m-0! z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 overflow-y-auto"
           onClick={() => setSelectedStudentId(null)}
         >
           <div
@@ -656,7 +647,7 @@ export default function TotalStudents({ onBack }) {
         document.body
       )}
 
-      {selectedStudent && (
+      {selectedStudent && createPortal(
         <div className="student-print-area px-14 py-12 text-left font-['Inter',sans-serif]">
           <div className="print-avoid flex items-center justify-between pb-6 border-b border-[#FFD2F7]">
             <div className="flex items-center">
@@ -754,12 +745,13 @@ export default function TotalStudents({ onBack }) {
               <p className="text-[12px] text-gray-400">CareerPath AI Team</p>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {zoomedImage && (
         <div
-          className="fixed inset-0 z-[100] bg-black/50 backdrop-blur-md flex items-center justify-center p-4 cursor-pointer animate-in fade-in duration-200"
+          className="fixed inset-0 m-0! z-[100] bg-black/50 backdrop-blur-md flex items-center justify-center p-4 cursor-pointer animate-in fade-in duration-200"
           onClick={() => setZoomedImage(null)}
         >
           <div className="relative inline-flex items-center justify-center">

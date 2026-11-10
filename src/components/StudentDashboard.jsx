@@ -119,9 +119,9 @@ export default function StudentDashboard({ onLogout, onNavigate, isFirstTimeLogi
   const [showWelcomeOverlay, setShowWelcomeOverlay] = useState(renderOverlay);
   const [greeting, setGreeting] = useState('Hello');
   const [careerMatches, setCareerMatches] = useState([
-    { title: 'Software Developer', match: '92%', icon: 'Code2' },
-    { title: 'Data Analyst', match: '87%', icon: 'BarChart3' },
-    { title: 'UX Designer', match: '82%', icon: 'PenTool' },
+    { title: 'Software Development', match: '92%', icon: 'Code2' },
+    { title: 'Data Science & AI', match: '87%', icon: 'BarChart3' },
+    { title: 'Business & Marketing', match: '82%', icon: 'Briefcase' },
   ]);
 
   const currentUser = user || (() => {
@@ -344,7 +344,7 @@ export default function StudentDashboard({ onLogout, onNavigate, isFirstTimeLogi
 
       {renderOverlay && (
         <div 
-          className={`fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#fcf8fe]/95 backdrop-blur-md transition-opacity duration-500 ease-in-out ${
+          className={`fixed inset-0 m-0! z-50 flex flex-col items-center justify-center bg-[#fcf8fe]/95 backdrop-blur-md transition-opacity duration-500 ease-in-out ${
             showWelcomeOverlay ? 'opacity-100' : 'opacity-0 pointer-events-none'
           }`}
         >
@@ -375,8 +375,8 @@ export default function StudentDashboard({ onLogout, onNavigate, isFirstTimeLogi
       
       <Header onNavigate={onNavigate} onLogout={handleEnhancedLogout} userRole="student" />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-        <div className="pt-4 space-y-7 text-left">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-8 space-y-8">
+        <div className="space-y-7 text-left">
           <div className="space-y-2"> 
             <h1 className="text-4xl font-bold tracking-tight text-gray-900 inline-flex items-center gap-2">
               Hello, {firstName}! <span className="select-none">👋🏼</span>
